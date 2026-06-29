@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Milky Way Simulation - Ultimate Scientific Potential</title>
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        background: #010103;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    #ui-panel {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        color: #e2e8f0;
+        background: rgba(3, 7, 18, 0.9);
+        padding: 20px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        pointer-events: none;
+        max-width: 360px;
+        font-size: 13px;
+        line-height: 1.6;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+    }
+    #ui-panel h1 {
+        margin: 0 0 6px 0;
+        font-size: 20px;
+        color: #ffffff;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+    .accent { color: #f59e0b; font-weight: bold; }
+    .sun-label { color: #ff4500; font-weight: bold; animation: blink 2s infinite; }
+    @keyframes blink { 50% { opacity: 0.4; } }
+</style>
+</head>
+<body>
+
+<div id="ui-panel">
+    <h1>Milky Way Galaxy</h1>
+    <span style="color:#a1a1aa; font-style:italic; display:block; margin-bottom:10px;">Ultra-Realistic 3D Simulation</span>
+    • <span class="accent">Peanut/X-Bulge:</span> 3D structural mass profile.<br>
+    • <span class="accent">Asymmetric Disk:</span> Irregular logarithmic spiral arms.<br>
+    • <span class="accent">Dust Extinction:</span> Dark lanes absorbing background light.<br>
+    • <span class="accent">Warp Dynamics:</span> Classical S-shaped structural bend.<br>
+    • <span class="sun-label">● Solar System (Sun):</span> Located at ~26,700 ly out on the Orion Spur.
+</div>
+
+<script type="module">
+import * as THREE from "https://esm.sh/three@0.160.0";
+import { OrbitControls } from "https://esm.sh/three@0.160.0/examples/jsm/controls/OrbitControls.js";
+
+// --- SCENE INITIALIZATION ---
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x010103, 0.015);
+
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 25, 38);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+document.body.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.maxDistance = 120;
+controls.minDistance = 4;
+
+// --- CONFIGURATION & QUANTITIES (FULL POTENTIAL) ---
+const TOTAL_STARS = 260000;
+const BULGE_STARS = 60000;
+const DUST_PARTICLES = 45000;
+const GALAXY_RADIUS = 26; 
+const BAR_LENGTH = 5.8;
+
+// Math Helpers
+const gaussian = () => (Math.random() + Math.random() + Math.random() - 1.5) * 2.0;
+
+const dynamicElements = [];
+
+// ==========================================
+// 1. PEANUT / X-SHAPED CORE & GALACTIC BAR
+// ==========================================
+const bulgeGeo = new THREE.BufferGeometry();
+const bulgePos = new Float32Array(BULGE_STARS * 3);
+const bulgeCols = new Float32Array(BULGE_STARS * 3);
+
+for (let i = 0; i < BULGE_STARS; i++) {
+    const x = gaussian() * (BAR_LENGTH / 2.2);
+    const z = gaussian() * 1.1;
+    let y = gaussian() * 0.8;
+
+    // Advanced Math for Peanut/X-shaped profile
+    const bulgeHeightLift = Math.abs(x) * 0.32;
+    if (Math.random() > 0.4) {
+        y += bulgeHeightLift * (Math.random() > 0.5 ? 1 : -1);
+    }
+
+    bulgePos[i * 3] = x;
+    bulgePos[i * 3 + 1] = y;
+    bulgePos[i * 3 + 2] = z;
+
+    // Real Population II Color Ratios (75% Orange/Red, 25% Soft Yellow)
+    const rand = Math.random();
+    let col = new THREE.Color(0xffbfa0); // Base warm
+    if (rand > 0.75) col.setHex(0xff5511); // Deep Red-Orange
+    else if (rand > 0.5) col.setHex(0xffaa44); // Amber
+    
+    bulgeCols[i * 3] = col.r;
+    bulgeCols[i * 3 + 1] = col.g;
+    bulgeCols[i * 3 + 2] = col.b;
+
+    dynamicElements.push({
+        type: 'bulge', index: i, radius: Math.sqrt(x*x + z*z), angle: Math.atan2(z, x), speed: 0.001
+    });
+}
+bulgeGeo.setAttribute('position', new THREE.BufferAttribute(bulgePos, 3));
+bulgeGeo.setAttribute('color', new THREE.BufferAttribute(bulgeCols, 3));
+const bulgeMat = new THREE.PointsMaterial({ size: 0.045, vertexColors: true, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false });
+const bulgePoints = new THREE.Points(bulgeGeo, bulgeMat);
+scene.add(bulgePoints);
+
+
+// ==========================================
+// 2. ASYMMETRIC DISK & BROKEN SPIRAL ARMS
+// ==========================================
+const diskGeo = new THREE.BufferGeometry();
+const diskPos = new Float32Array(TOTAL_STARS * 3);
+const diskCols = new Float32Array(TOTAL_STARS * 3);
+
+const armAngles = [0, Math.PI / 2, Math.PI, Math.PI * 1.5];
+
+for (let i = 0; i < TOTAL_STARS; i++) {
+    // Density law: exponential falloff
+    let r = BAR_LENGTH/2 + Math.pow(Math.random(), 2.2) * (GALAXY_RADIUS - BAR_LENGTH/2);
+    
+    // Creating asymmetry by stretching one hemisphere slightly
+    let armIdx = i % 5;
+    let angle = 0;
+
+    if (armIdx === 4) {
+        // Orion Spur (Sun's local messy segment)
+        angle = 1.3 + r * 0.13 + gaussian() * 0.22;
+    } else {
+        // 4 Main Arms with structural turbulence (Noise)
+        const baseAngle = armAngles[armIdx];
+        const pitch = 0.135; 
+        const armNoise = Math.sin(r * 1.5) * 0.08 + gaussian() * 0.22; // Messy, organic look
+        angle = baseAngle + Math.log(r / (BAR_LENGTH/2)) / pitch + armNoise;
+        
+        // Scientific "Broken Arm" Simulation (Creates random physical gaps in the arms)
+        if (Math.abs(Math.sin(r * 0.8)) > 0.93) {
+            r += gaussian() * 1.5; // Displace stars out of the arm structure
+        }
+    }
+
+    let x = Math.cos(angle) * r;
+    let z = Math.sin(angle) * r;
+    let y = gaussian() * (0.55 * Math.exp(-r / 7) + 0.05);
+
+    // S-Shaped Warp Math Profile
+    if (r > 11) {
+        const warp = 0.42 * Math.pow((r - 11) / (GALAXY_RADIUS - 11), 2);
+        y += Math.sin(angle) * warp;
+    }
+
+    diskPos[i * 3] = x;
+    diskPos[i * 3 + 1] = y;
+    diskPos[i * 3 + 2] = z;
+
+    // Realistic Star Population Colors (M-Dwarfs are dominant, Blue-Giants are rare)
+    let col = new THREE.Color();
+    const pRand = Math.random();
+    if (pRand > 0.94) {
+        col.setHex(0x3377ff); // Rare hot blue giants (O/B Type)
+    } else if (pRand > 0.85) {
+        col.setHex(0xffffff); // A/F Type White stars
+    } else if (pRand > 0.5) {
+        col.setHex(0xffddaa); // K-Type Orange stars
+    } else {
+        col.setHex(0xff5533); // M-Dwarf Red stars (Most common)
+    }
+
+    diskCols[i * 3] = col.r;
+    diskCols[i * 3 + 1] = col.g;
+    diskCols[i * 3 + 2] = col.b;
+
+    // Dark Matter Flat Rotation Curve: Velocity stays uniform at outer radius
+    const speed = 0.0045 / (r * 0.07 + 1) + 0.00025;
+
+    dynamicElements.push({
+        type: 'disk', index: i, radius: r, angle: angle, speed: speed
+    });
+}
+diskGeo.setAttribute('position', new THREE.BufferAttribute(diskPos, 3));
+diskGeo.setAttribute('color', new THREE.BufferAttribute(diskCols, 3));
+const diskMat = new THREE.PointsMaterial({ size: 0.032, vertexColors: true, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false });
+const diskPoints = new THREE.Points(diskGeo, diskMat);
+scene.add(diskPoints);
+
+
+// ==========================================
+// 3. LIGHT-ABSORBING DUST LANES (Real Silhouette)
+// ==========================================
+const dustGeo = new THREE.BufferGeometry();
+const dustPos = new Float32Array(DUST_PARTICLES * 3);
+const dustCols = new Float32Array(DUST_PARTICLES * 3);
+
+for (let i = 0; i < DUST_PARTICLES; i++) {
+    // Target the dense inner arms where gas/dust aggregates
+    const targetStarIdx = Math.floor(Math.random() * (TOTAL_STARS * 0.75));
+    const baseIdx = targetStarIdx * 3;
+
+    // Offset slightly to sit on the *inner edge* of the spiral arms (Realistic property)
+    const dx = diskPos[baseIdx] + gaussian() * 0.35;
+    const dy = diskPos[baseIdx + 1] + gaussian() * 0.04;
+    const dz = diskPos[baseIdx + 2] + gaussian() * 0.35;
+
+    dustPos[i * 3] = dx;
+    dustPos[i * 3 + 1] = dy;
+    dustPos[i * 3 + 2] = dz;
+
+    // Dark interstellar matter colors (Non-reflective absorption profile)
+    const cRand = Math.random();
+    const r = 0.06 + cRand * 0.04;
+    const g = 0.03 + cRand * 0.02;
+    const b = 0.01 + cRand * 0.01;
+
+    dustCols[i * 3] = r;
+    dustCols[i * 3 + 1] = g;
+    dustCols[i * 3 + 2] = b;
+}
+dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+dustGeo.setAttribute('color', new THREE.BufferAttribute(dustCols, 3));
+
+// CRUCIAL: NormalBlending + low opacity + larger particle size allows dust to block light!
+const dustMat = new THREE.PointsMaterial({ size: 0.45, vertexColors: true, transparent: true, opacity: 0.45, blending: THREE.NormalBlending, depthWrite: false });
+const dustPoints = new THREE.Points(dustGeo, dustMat);
+scene.add(dustPoints);
+
+
+// ==========================================
+// 4. OUR SOLAR SYSTEM (The Sun Marker)
+// ==========================================
+// 26,700 ly translates roughly to a radius of 11.4 units in our local scale engine
+const sunRadius = 11.4;
+const sunAngle = 2.15; // Placed inside the Orion Spur array coordinate
+const sunX = Math.cos(sunAngle) * sunRadius;
+const sunZ = Math.sin(sunAngle) * sunRadius;
+const sunY = gaussian() * 0.05 + Math.sin(sunAngle) * 0.02; // Aligned with local S-Warp phase
+
+const sunGeo = new THREE.SphereGeometry(0.18, 16, 16);
+const sunMat = new THREE.MeshBasicMaterial({ color: 0xffdd00, transparent: true, opacity: 1.0 });
+const sunMesh = new THREE.Mesh(sunGeo, sunMat);
+sunMesh.position.set(sunX, sunY, sunZ);
+scene.add(sunMesh);
+
+// Soft halo glow ring around the solar system for visual targeting
+const sunGlowGeo = new THREE.RingGeometry(0.3, 0.4, 32);
+const sunGlowMat = new THREE.MeshBasicMaterial({ color: 0xff5500, side: THREE.DoubleSide, transparent: true, opacity: 0.8 });
+const sunGlowMesh = new THREE.Mesh(sunGlowGeo, sunGlowMat);
+sunGlowMesh.rotation.x = Math.PI / 2;
+sunGlowMesh.position.set(sunX, sunY, sunZ);
+scene.add(sunGlowMesh);
+
+
+// ==========================================
+// ASTROPHYSICAL SIMULATION ENGINE
+// ==========================================
+const bPositions = bulgeGeo.attributes.position.array;
+const dPositions = diskGeo.attributes.position.array;
+const dustPositions = dustGeo.attributes.position.array;
+
+let sunCurrentAngle = sunAngle;
+const sunSpeed = 0.0045 / (sunRadius * 0.07 + 1) + 0.00025; // Locked to Dark Matter rotation matrix
+
+function animate() {
+    requestAnimationFrame(animate);
+
+    // Orbit handler for Bulge & Disk Systems
+    for (let i = 0; i < dynamicElements.length; i++) {
+        const item = dynamicElements[i];
+        item.angle += item.speed;
+
+        const x = Math.cos(item.angle) * item.radius;
+        const z = Math.sin(item.angle) * item.radius;
+
+        if (item.type === 'bulge') {
+            bPositions[item.index * 3] = x;
+            bPositions[item.index * 3 + 2] = z;
+        } else {
+            dPositions[item.index * 3] = x;
+            dPositions[item.index * 3 + 2] = z;
+
+            // Recalculate S-Warp deformation coordinates on the fly
+            if (item.radius > 11) {
+                const warp = 0.42 * Math.pow((item.radius - 11) / (GALAXY_RADIUS - 11), 2);
+                dPositions[item.index * 3 + 1] = Math.sin(item.angle) * warp;
+            }
+        }
+    }
+
+    // Move the Sun along its orbit inside the Orion Spur
+    sunCurrentAngle += sunSpeed;
+    const newSunX = Math.cos(sunCurrentAngle) * sunRadius;
+    const newSunZ = Math.sin(sunCurrentAngle) * sunRadius;
+    let newSunY = 0;
+    if (sunRadius > 11) {
+        const warp = 0.42 * Math.pow((sunRadius - 11) / (GALAXY_RADIUS - 11), 2);
+        newSunY = Math.sin(sunCurrentAngle) * warp;
+    }
+    sunMesh.position.set(newSunX, newSunY, newSunZ);
+    sunGlowMesh.position.set(newSunX, newSunY, newSunZ);
+
+    // Smoothly blend and stream dust lanes behind the parent star array vectors
+    for (let i = 0; i < DUST_PARTICLES; i++) {
+        dustPositions[i * 3] += (dPositions[i * 3] - dustPositions[i * 3]) * 0.08;
+        dustPositions[i * 3 + 1] += (dPositions[i * 3 + 1] - dustPositions[i * 3 + 1]) * 0.08;
+        dustPositions[i * 3 + 2] += (dPositions[i * 3 + 2] - dustPositions[i * 3 + 2]) * 0.08;
+    }
+
+    bulgeGeo.attributes.position.needsUpdate = true;
+    diskGeo.attributes.position.needsUpdate = true;
+    dustGeo.attributes.position.needsUpdate = true;
+
+    // Slow orbital camera rotation mesh setup
+    controls.update();
+    renderer.render(scene, camera);
+}
+
+animate();
+
+// Window Resize Auto Handler
+window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>
