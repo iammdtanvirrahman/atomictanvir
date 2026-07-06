@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AtomicTanvir</title>
-
 <style>
 *{
     margin:0;
@@ -12,45 +11,37 @@
     box-sizing:border-box;
     font-family:Arial, sans-serif;
 }
-
 body{
     min-height:100vh;
     background:radial-gradient(circle at center,#0b1020,#000);
     overflow-x:hidden;
     color:white;
 }
-
 .stars{
     position:fixed;
     inset:0;
-    background-image:
-    radial-gradient(white 1px, transparent 1px);
+    background-image: radial-gradient(white 1px, transparent 1px);
     background-size:50px 50px;
     opacity:.4;
     animation:moveStars 60s linear infinite;
     z-index: -1;
 }
-
 @keyframes moveStars{
     from{transform:translateY(0);}
     to{transform:translateY(500px);}
 }
-
 header{
     text-align:center;
     padding:60px 20px 30px;
 }
-
 h1{
     font-size:4rem;
     text-shadow:0 0 20px cyan;
 }
-
 .subtitle{
     color:#aaa;
     margin-top:10px;
 }
-
 .container{
     max-width:1200px;
     margin:auto;
@@ -59,7 +50,6 @@ h1{
     grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
     gap:25px;
 }
-
 .card{
     text-decoration:none;
     color:white;
@@ -72,7 +62,6 @@ h1{
     position:relative;
     overflow:hidden;
 }
-
 .card::before{
     content:'';
     position:absolute;
@@ -83,27 +72,21 @@ h1{
     top:-100px;
     right:-100px;
 }
-
 .card:hover{
     transform:translateY(-10px) scale(1.03);
     box-shadow:0 0 25px cyan;
 }
-
 .icon{
     font-size:3rem;
     margin-bottom:15px;
 }
-
 .card h2{
     margin-bottom:10px;
 }
-
 .card p{
     color:#ccc;
     line-height:1.5;
 }
-
-/* --- Firebase Interaction UI Styling --- */
 .interactive-section {
     max-width: 1200px;
     margin: 40px auto;
@@ -112,11 +95,9 @@ h1{
     grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
     gap: 40px;
 }
-
 @media(max-width: 768px) {
     .interactive-section { grid-template-columns: 1fr; }
 }
-
 .fb-box {
     background: rgba(255,255,255,.03);
     backdrop-filter: blur(10px);
@@ -124,13 +105,11 @@ h1{
     border-radius: 20px;
     padding: 30px;
 }
-
 .fb-box h2 {
     margin-bottom: 20px;
     text-shadow: 0 0 10px cyan;
     font-size: 1.8rem;
 }
-
 .fb-form input, .fb-form textarea {
     width: 100%;
     background: rgba(255,255,255,0.05);
@@ -142,12 +121,10 @@ h1{
     outline: none;
     transition: 0.3s;
 }
-
 .fb-form input:focus, .fb-form textarea:focus {
     border-color: cyan;
     box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
 }
-
 .fb-form button {
     background: linear-gradient(45deg, #0055ff, cyan);
     color: black;
@@ -158,19 +135,16 @@ h1{
     cursor: pointer;
     transition: 0.3s;
 }
-
 .fb-form button:hover {
     transform: scale(1.05);
     box-shadow: 0 0 15px cyan;
 }
-
 .comments-display {
     max-height: 400px;
     overflow-y: auto;
     margin-top: 20px;
     padding-right: 5px;
 }
-
 .comments-display::-webkit-scrollbar {
     width: 5px;
 }
@@ -178,7 +152,6 @@ h1{
     background: cyan;
     border-radius: 5px;
 }
-
 .comment-card {
     background: rgba(255,255,255,0.05);
     border-left: 4px solid cyan;
@@ -186,18 +159,15 @@ h1{
     border-radius: 0 10px 10px 0;
     margin-bottom: 15px;
 }
-
 .comment-card h4 {
     color: cyan;
     margin-bottom: 5px;
 }
-
 .comment-card p {
     font-size: 0.95rem;
     color: #ddd;
     margin-bottom: 10px;
 }
-
 .react-btn {
     background: transparent;
     border: 1px solid rgba(255,255,255,0.2);
@@ -208,12 +178,10 @@ h1{
     font-size: 0.85rem;
     transition: 0.3s;
 }
-
 .react-btn:hover {
     background: rgba(0, 255, 255, 0.2);
     border-color: cyan;
 }
-
 footer{
     text-align:center;
     padding:40px;
@@ -227,88 +195,71 @@ footer{
 
 <header>
     <h1>AtomicTanvir</h1>
-    <p class="subtitle">
-        Explore the Universe Through Interactive Simulations
-    </p>
+    <p class="subtitle">Explore the Universe Through Interactive Simulations</p>
 </header>
 
 <div class="container">
-
     <a href="atom.html" class="card">
         <div class="icon">⚛️</div>
         <h2>Atomic Models</h2>
         <p>Explore Hydrogen, Helium, Carbon and realistic quantum orbitals.</p>
     </a>
-
     <a href="blackhole.html" class="card">
         <div class="icon">🕳️</div>
         <h2>Black Hole</h2>
         <p>Visualize event horizons, accretion disks and gravitational effects.</p>
     </a>
-
     <a href="solar.html" class="card">
         <div class="icon">☀️</div>
         <h2>Solar System</h2>
         <p>Interactive 3D journey through planets and moons.</p>
     </a>
-
     <a href="galaxy.html" class="card">
         <div class="icon">🌌</div>
         <h2>Galaxy Explorer</h2>
         <p>Travel through stars, nebulae and distant galaxies.</p>
     </a>
-
     <a href="quantum.html" class="card">
         <div class="icon">🔬</div>
         <h2>Quantum World</h2>
         <p>Explore wave functions, orbitals and quantum mechanics.</p>
     </a>
-
     <a href="about.html" class="card">
         <div class="icon">🚀</div>
         <h2>About Project</h2>
         <p>Learn about AtomicTanvir and the science behind each simulation.</p>
     </a>
-
 </div>
 
 <div class="interactive-section">
-    
     <div class="fb-box">
         <h2>🌌 Space Discussion</h2>
         <div class="fb-form">
             <input type="text" id="username" placeholder="Your Name" required>
-            <textarea id="commentText" placeholder="Write your thoughts or feedback about the project..." rows="3" required></textarea>
+            <textarea id="commentText" placeholder="Write your thoughts or feedback..." rows="3" required></textarea>
             <button id="submitCommentBtn">Post Comment</button>
         </div>
-        
         <div class="comments-display" id="commentsContainer"></div>
     </div>
 
     <div class="fb-box">
         <h2>🚀 Submit Your Model Code</h2>
-        <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 15px;">
-            Have a cool physics or space simulation? Paste your HTML/JS code below. Admin will review and add it to the portal!
-        </p>
+        <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 15px;">Have a cool simulation? Paste your code below!</p>
         <div class="fb-form">
             <input type="text" id="authorName" placeholder="Your Name" required>
-            <input type="text" id="modelName" placeholder="Model Name (e.g., Quantum Wave)" required>
-            <textarea id="modelCode" placeholder="Paste your complete HTML/CSS/JS code here..." rows="6" required></textarea>
+            <input type="text" id="modelName" placeholder="Model Name" required>
+            <textarea id="modelCode" placeholder="Paste HTML/CSS/JS code here..." rows="6" required></textarea>
             <button id="submitModelBtn">Submit Code to Admin</button>
         </div>
     </div>
-
 </div>
 
-<footer>
-    © 2026 AtomicTanvir • Science Visualization Project
-</footer>
+<footer>© 2026 AtomicTanvir • Science Visualization Project</footer>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, updateDoc, doc, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getDatabase, ref, push, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  // আপনার রিয়েল ফায়ারবেস কনফিগারেশন অবজেক্ট
   const firebaseConfig = {
     apiKey: "AIzaSyCit_SKjXRUpr8FNY1ahKhiG5sdDyOlW6k",
     authDomain: "atomictanvir.firebaseapp.com",
@@ -316,57 +267,56 @@ footer{
     storageBucket: "atomictanvir.firebasestorage.app",
     messagingSenderId: "140595401471",
     appId: "1:140595401471:web:8f92115a8c8b58d1ec32ca",
-    measurementId: "G-WQG0CXS5NH"
+    measurementId: "G-WQG0CXS5NH",
+    databaseURL: "https://atomictanvir-default-rtdb.firebaseio.com" // রিয়েলটাইম ডাটাবেজ ইউআরএল
   };
 
   const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const currentProjectId = "home_index"; 
+  const db = getDatabase(app);
 
-  // --- ১. কমেন্ট সাবমিট ---
+  // --- ১. কমেন্ট পোস্ট করা ---
   document.getElementById('submitCommentBtn').addEventListener('click', async () => {
       const usernameInput = document.getElementById('username');
       const commentTextInput = document.getElementById('commentText');
 
       if(usernameInput.value.trim() && commentTextInput.value.trim()) {
-          try {
-              await addDoc(collection(db, "comments"), {
-                  projectId: currentProjectId,
-                  username: usernameInput.value.trim(),
-                  commentText: commentTextInput.value.trim(),
-                  likes: 0,
-                  timestamp: new Date()
-              });
-              commentTextInput.value = '';
-          } catch (error) {
-              console.error("Error adding comment: ", error);
-          }
+          const commentsRef = ref(db, 'comments');
+          const newCommentRef = push(commentsRef);
+          await set(newCommentRef, {
+              username: usernameInput.value.trim(),
+              commentText: commentTextInput.value.trim(),
+              likes: 0,
+              timestamp: Date.now()
+          });
+          commentTextInput.value = '';
       } else {
           alert("Please fill in both fields!");
       }
   });
 
-  // --- ২. রিয়েল-টাইম কমেন্ট লোড ---
-  const q = query(collection(db, "comments"), where("projectId", "==", currentProjectId), orderBy("timestamp", "desc"));
-  onSnapshot(q, (snapshot) => {
+  // --- ২. রিয়েল-টাইম কমেন্ট লোড ও লাইক ---
+  const commentsRef = ref(db, 'comments');
+  onValue(commentsRef, (snapshot) => {
       const container = document.getElementById('commentsContainer');
       container.innerHTML = '';
       
-      if(snapshot.empty) {
+      if(!snapshot.exists()) {
           container.innerHTML = `<p style="color: #666; font-style: italic;">No comments yet. Be the first!</p>`;
           return;
       }
 
-      snapshot.forEach((docSnap) => {
-          const comment = docSnap.data();
-          const commentId = docSnap.id;
+      const data = snapshot.val();
+      // তারিখ অনুযায়ী নতুন কমেন্ট উপরে দেখানোর জন্য সর্টিং
+      const sortedComments = Object.keys(data).map(key => ({ id: key, ...data[key] }))
+                                   .sort((a,b) => b.timestamp - a.timestamp);
 
+      sortedComments.forEach((comment) => {
           const commentCard = document.createElement('div');
           commentCard.className = 'comment-card';
           commentCard.innerHTML = `
               <h4>${escapeHTML(comment.username)}</h4>
               <p>${escapeHTML(comment.commentText)}</p>
-              <button class="react-btn" data-id="${commentId}">❤️ ${comment.likes || 0}</button>
+              <button class="react-btn" data-id="${comment.id}">❤️ ${comment.likes || 0}</button>
           `;
           container.appendChild(commentCard);
       });
@@ -374,46 +324,38 @@ footer{
       document.querySelectorAll('.react-btn').forEach(btn => {
           btn.addEventListener('click', async (e) => {
               const id = e.target.getAttribute('data-id');
-              const commentRef = doc(db, "comments", id);
-              await updateDoc(commentRef, {
-                  likes: increment(1)
-              });
+              const currentLikes = data[id].likes || 0;
+              await update(ref(db, `comments/${id}`), { likes: currentLikes + 1 });
           });
       });
   });
 
-  // --- ৩. কোড সাবমিশন ---
+  // --- ৩. কোড সাবমিট করা ---
   document.getElementById('submitModelBtn').addEventListener('click', async () => {
       const authorName = document.getElementById('authorName');
       const modelName = document.getElementById('modelName');
       const modelCode = document.getElementById('modelCode');
 
       if(authorName.value.trim() && modelName.value.trim() && modelCode.value.trim()) {
-          try {
-              await addDoc(collection(db, "submissions"), {
-                  authorName: authorName.value.trim(),
-                  modelName: modelName.value.trim(),
-                  code: modelCode.value.trim(),
-                  timestamp: new Date()
-              });
-              alert("🚀 Model submitted successfully! Admin will review it.");
-              modelName.value = '';
-              modelCode.value = '';
-          } catch (error) {
-              console.error("Submission error: ", error);
-              alert("Something went wrong. Try again.");
-          }
+          const submissionsRef = ref(db, 'submissions');
+          const newSubRef = push(submissionsRef);
+          await set(newSubRef, {
+              authorName: authorName.value.trim(),
+              modelName: modelName.value.trim(),
+              code: modelCode.value.trim(),
+              timestamp: Date.now()
+          });
+          alert("🚀 Model submitted successfully! Admin will review it.");
+          modelName.value = '';
+          modelCode.value = '';
       } else {
-          alert("Please fill in all submission fields!");
+          alert("Please fill in all fields!");
       }
   });
 
   function escapeHTML(str) {
-      return str.replace(/[&<>'"]/g, 
-          tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-      );
+      return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
   }
 </script>
-
 </body>
 </html>
