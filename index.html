@@ -6,261 +6,219 @@
 <title>AtomicTanvir</title>
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
 }
 
-body {
-    min-height: 100vh;
-    background: radial-gradient(circle at center, #0b1020, #000);
-    overflow-x: hidden;
-    color: white;
+body{
+    min-height:100vh;
+    background:radial-gradient(circle at center,#0b1020,#000);
+    overflow-x:hidden;
+    color:white;
 }
 
-.stars {
-    position: fixed;
-    inset: 0;
-    background-image: radial-gradient(white 1px, transparent 1px);
-    background-size: 50px 50px;
-    opacity: .4;
-    animation: moveStars 60s linear infinite;
+.stars{
+    position:fixed;
+    inset:0;
+    background-image:
+    radial-gradient(white 1px, transparent 1px);
+    background-size:50px 50px;
+    opacity:.4;
+    animation:moveStars 60s linear infinite;
     z-index: -1;
 }
 
-@keyframes moveStars {
-    from { transform: translateY(0); }
-    to { transform: translateY(500px); }
+@keyframes moveStars{
+    from{transform:translateY(0);}
+    to{transform:translateY(500px);}
 }
 
-header {
-    text-align: center;
-    padding: 60px 20px 30px;
+header{
+    text-align:center;
+    padding:60px 20px 30px;
 }
 
-h1 {
-    font-size: 4rem;
-    text-shadow: 0 0 20px cyan;
+h1{
+    font-size:4rem;
+    text-shadow:0 0 20px cyan;
 }
 
-.subtitle {
-    color: #aaa;
-    margin-top: 10px;
+.subtitle{
+    color:#aaa;
+    margin-top:10px;
 }
 
-.action-bar {
-    text-align: center;
-    margin-bottom: 30px;
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:30px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:25px;
 }
 
-button {
-    background: rgba(0, 255, 255, 0.1);
-    border: 1px solid cyan;
-    color: cyan;
-    padding: 10px 20px;
+.card{
+    text-decoration:none;
+    color:white;
+    background:rgba(255,255,255,.05);
+    backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:20px;
+    padding:30px;
+    transition:.4s;
+    position:relative;
+    overflow:hidden;
+}
+
+.card::before{
+    content:'';
+    position:absolute;
+    width:200px;
+    height:200px;
+    background:rgba(0,255,255,.15);
+    border-radius:50%;
+    top:-100px;
+    right:-100px;
+}
+
+.card:hover{
+    transform:translateY(-10px) scale(1.03);
+    box-shadow:0 0 25px cyan;
+}
+
+.icon{
+    font-size:3rem;
+    margin-bottom:15px;
+}
+
+.card h2{
+    margin-bottom:10px;
+}
+
+.card p{
+    color:#ccc;
+    line-height:1.5;
+}
+
+/* --- New Styled Sections for Firebase --- */
+.interactive-section {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 40px;
+}
+
+@media(max-width: 768px) {
+    .interactive-section { grid-template-columns: 1fr; }
+}
+
+.fb-box {
+    background: rgba(255,255,255,.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.08);
     border-radius: 20px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: 0.3s;
-    margin: 0 10px;
-    backdrop-filter: blur(5px);
+    padding: 30px;
 }
 
-button:hover {
-    background: cyan;
-    color: #000;
+.fb-box h2 {
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px cyan;
+    font-size: 1.8rem;
+}
+
+.fb-form input, .fb-form textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 12px;
+    color: white;
+    margin-bottom: 15px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.fb-form input:focus, .fb-form textarea:focus {
+    border-color: cyan;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.fb-form button {
+    background: linear-gradient(45deg, #0055ff, cyan);
+    color: black;
+    font-weight: bold;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.fb-form button:hover {
+    transform: scale(1.05);
     box-shadow: 0 0 15px cyan;
 }
 
-#admin-add-btn {
-    display: none; 
-    border-color: #ff00ff;
-    color: #ff00ff;
-}
-#admin-add-btn:hover {
-    background: #ff00ff;
-    color: white;
-    box-shadow: 0 0 15px #ff00ff;
+.comments-display {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 20px;
+    padding-right: 5px;
 }
 
-.container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 30px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
+.comments-display::-webkit-scrollbar {
+    width: 5px;
+}
+.comments-display::-webkit-scrollbar-thumb {
+    background: cyan;
+    border-radius: 5px;
 }
 
-.card {
-    text-decoration: none;
-    color: white;
-    background: rgba(255, 255, 255, .05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, .1);
-    border-radius: 20px;
-    padding: 30px 30px 60px 30px; 
-    transition: .4s;
-    position: relative;
-    overflow: hidden;
-    display: block;
-}
-
-.card::before {
-    content: '';
-    position: absolute;
-    width: 200px;
-    height: 200px;
-    background: rgba(0, 255, 255, .15);
-    border-radius: 50%;
-    top: -100px;
-    right: -100px;
-    z-index: 0;
-}
-
-.card:hover {
-    transform: translateY(-10px) scale(1.03);
-    box-shadow: 0 0 25px cyan;
-}
-
-.icon {
-    font-size: 3rem;
-    margin-bottom: 15px;
-    position: relative;
-    z-index: 1;
-}
-
-.card h2 {
-    margin-bottom: 10px;
-    position: relative;
-    z-index: 1;
-}
-
-.card p {
-    color: #ccc;
-    line-height: 1.5;
-    position: relative;
-    z-index: 1;
-}
-
-.card-interactions {
-    position: absolute;
-    bottom: 20px;
-    left: 30px;
-    right: 30px;
-    display: flex;
-    justify-content: space-between;
-    z-index: 2;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    padding-top: 10px;
-}
-
-.interaction-btn {
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: #aaa;
-    transition: 0.2s;
-    user-select: none;
-}
-
-.interaction-btn:hover {
-    color: cyan;
-}
-
-.reacted {
-    color: #ff4d4d !important;
-}
-
-footer {
-    text-align: center;
-    padding: 40px;
-    color: #888;
-}
-
-.admin-login {
-    cursor: pointer;
-    text-decoration: underline;
-    font-size: 0.8rem;
-    margin-top: 10px;
-    display: inline-block;
-}
-
-/* Modals System Layout */
-.modal-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.8);
-    backdrop-filter: blur(5px);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal {
-    background: #111827;
-    border: 1px solid rgba(0,255,255,0.3);
-    padding: 30px;
-    border-radius: 20px;
-    width: 90%;
-    max-width: 500px;
-    position: relative;
-    box-shadow: 0 0 30px rgba(0,255,255,0.1);
-}
-
-.close-btn {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #aaa;
-}
-
-.close-btn:hover { color: white; }
-
-.modal h3 {
-    margin-bottom: 20px;
-    color: cyan;
-}
-
-.modal input, .modal textarea {
-    width: 100%;
+.comment-card {
     background: rgba(255,255,255,0.05);
+    border-left: 4px solid cyan;
+    padding: 15px;
+    border-radius: 0 10px 10px 0;
+    margin-bottom: 15px;
+}
+
+.comment-card h4 {
+    color: cyan;
+    margin-bottom: 5px;
+}
+
+.comment-card p {
+    font-size: 0.95rem;
+    color: #ddd;
+    margin-bottom: 10px;
+}
+
+.react-btn {
+    background: transparent;
     border: 1px solid rgba(255,255,255,0.2);
     color: white;
-    padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    outline: none;
+    padding: 5px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: 0.3s;
 }
 
-.modal input:focus, .modal textarea:focus {
+.react-btn:hover {
+    background: rgba(0, 255, 255, 0.2);
     border-color: cyan;
 }
 
-.modal-submit {
-    width: 100%;
-    margin: 0;
+footer{
+    text-align:center;
+    padding:40px;
+    color:#888;
 }
-
-.comments-list {
-    max-height: 200px;
-    overflow-y: auto;
-    margin-bottom: 15px;
-    text-align: left;
-    font-size: 0.9rem;
-}
-
-.comment-item {
-    background: rgba(255,255,255,0.05);
-    padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-}
-.comment-item strong { color: cyan; }
 </style>
 </head>
 <body>
@@ -269,225 +227,198 @@ footer {
 
 <header>
     <h1>AtomicTanvir</h1>
-    <p class="subtitle">Explore the Universe Through Interactive Simulations</p>
+    <p class="subtitle">
+        Explore the Universe Through Interactive Simulations
+    </p>
 </header>
 
-<div class="action-bar">
-    <button onclick="openModal('submit-modal')">💡 Submit Idea & Code</button>
-    <button id="admin-add-btn" onclick="openModal('admin-modal')">➕ Add New Project</button>
+<div class="container">
+
+    <a href="atom.html" class="card">
+        <div class="icon">⚛️</div>
+        <h2>Atomic Models</h2>
+        <p>Explore Hydrogen, Helium, Carbon and realistic quantum orbitals.</p>
+    </a>
+
+    <a href="blackhole.html" class="card">
+        <div class="icon">🕳️</div>
+        <h2>Black Hole</h2>
+        <p>Visualize event horizons, accretion disks and gravitational effects.</p>
+    </a>
+
+    <a href="solar.html" class="card">
+        <div class="icon">☀️</div>
+        <h2>Solar System</h2>
+        <p>Interactive 3D journey through planets and moons.</p>
+    </a>
+
+    <a href="galaxy.html" class="card">
+        <div class="icon">🌌</div>
+        <h2>Galaxy Explorer</h2>
+        <p>Travel through stars, nebulae and distant galaxies.</p>
+    </a>
+
+    <a href="quantum.html" class="card">
+        <div class="icon">🔬</div>
+        <h2>Quantum World</h2>
+        <p>Explore wave functions, orbitals and quantum mechanics.</p>
+    </a>
+
+    <a href="about.html" class="card">
+        <div class="icon">🚀</div>
+        <h2>About Project</h2>
+        <p>Learn about AtomicTanvir and the science behind each simulation.</p>
+    </a>
+
 </div>
 
-<div class="container" id="project-container">
-    <!-- Projects render here dynamically via server configuration -->
+<div class="interactive-section">
+    
+    <div class="fb-box">
+        <h2>🌌 Space Discussion</h2>
+        <div class="fb-form">
+            <input type="text" id="username" placeholder="Your Name" required>
+            <textarea id="commentText" placeholder="Write your thoughts or feedback about the project..." rows="3" required></textarea>
+            <button id="submitCommentBtn">Post Comment</button>
+        </div>
+        
+        <div class="comments-display" id="commentsContainer">
+            </div>
+    </div>
+
+    <div class="fb-box">
+        <h2>🚀 Submit Your Model Code</h2>
+        <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 15px;">
+            Have a cool physics or space simulation? Paste your HTML/JS code below. Admin will review and add it to the portal!
+        </p>
+        <div class="fb-form">
+            <input type="text" id="authorName" placeholder="Your Name" required>
+            <input type="text" id="modelName" placeholder="Model Name (e.g., Quantum Wave)" required>
+            <textarea id="modelCode" placeholder="Paste your complete HTML/CSS/JS code here..." rows="6" required></textarea>
+            <button id="submitModelBtn">Submit Code to Admin</button>
+        </div>
+    </div>
+
 </div>
 
 <footer>
-    © 2026 AtomicTanvir • Science Visualization Project <br>
-    <span class="admin-login" onclick="adminLogin()">Admin Login</span>
+    © 2026 AtomicTanvir • Science Visualization Project
 </footer>
 
-<!-- Modals System Container -->
+<script type="module">
+  // Firebase SDK modules ইম্পোর্ট করা হচ্ছে
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, updateDoc, doc, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-<!-- 1. Submit Idea Form -->
-<div class="modal-overlay" id="submit-modal">
-    <div class="modal">
-        <span class="close-btn" onclick="closeModals()">×</span>
-        <h3>Submit Your Idea or Code</h3>
-        <input type="text" id="submit-name" placeholder="Your Name or GitHub Username" required>
-        <textarea id="submit-desc" rows="4" placeholder="Describe your project idea or share a pastebin/github link for your code model..." required></textarea>
-        <button class="modal-submit" onclick="submitIdea()">Submit to Admin</button>
-    </div>
-</div>
+  // ⚠️ এখানে আপনার Firebase প্রজেক্টের আসল Config অবজেক্টটি বসাবেন
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
 
-<!-- 2. Interactive Client Comments Terminal -->
-<div class="modal-overlay" id="comment-modal">
-    <div class="modal">
-        <span class="close-btn" onclick="closeModals()">×</span>
-        <h3 id="comment-project-title">Project Comments</h3>
-        <div class="comments-list" id="comments-list"></div>
-        <input type="text" id="comment-author" placeholder="Your Name" required>
-        <input type="text" id="new-comment" placeholder="Add a public comment..." required>
-        <button class="modal-submit" onclick="addComment()">Post Comment</button>
-    </div>
-</div>
+  // Firebase Initialize করা হচ্ছে
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-<!-- 3. Admin Engine Creation Prompt -->
-<div class="modal-overlay" id="admin-modal">
-    <div class="modal">
-        <span class="close-btn" onclick="closeModals()">×</span>
-        <h3 style="color: #ff00ff;">Admin: Add Project</h3>
-        <input type="text" id="new-proj-icon" placeholder="Emoji Icon (e.g., 🪐)" required>
-        <input type="text" id="new-proj-title" placeholder="Project Title" required>
-        <input type="text" id="new-proj-desc" placeholder="Short Description" required>
-        <input type="text" id="new-proj-link" placeholder="HTML File Link (e.g., solar.html)" required>
-        <button class="modal-submit" style="background:#ff00ff; color:white; border:none;" onclick="addNewProject()">Publish Project</button>
-    </div>
-</div>
+  // এই পেজের ইউনিক আইডি (Index বা Home পেজের কমেন্টের জন্য)
+  const currentProjectId = "home_index"; 
 
-<script>
-    let fetchedProjects = [];
-    let activeProjectId = '';
+  // --- ১. কমেন্ট সাবমিট করার ফাংশন ---
+  document.getElementById('submitCommentBtn').addEventListener('click', async () => {
+      const usernameInput = document.getElementById('username');
+      const commentTextInput = document.getElementById('commentText');
 
-    window.onload = loadProjects;
+      if(usernameInput.value.trim() && commentTextInput.value.trim()) {
+          try {
+              await addDoc(collection(db, "comments"), {
+                  projectId: currentProjectId,
+                  username: usernameInput.value.trim(),
+                  commentText: commentTextInput.value.trim(),
+                  likes: 0,
+                  timestamp: new Date()
+              });
+              commentTextInput.value = ''; // শুধু কমেন্ট বক্স ক্লিয়ার হবে, নাম থাকবে
+          } catch (error) {
+              console.error("Error adding comment: ", error);
+          }
+      } else {
+          alert("Please fill in both fields!");
+      }
+  });
 
-    // --- Core API Data Synchronization ---
-    async function loadProjects() {
-        try {
-            const res = await fetch('/api/projects');
-            fetchedProjects = await res.json();
-            renderCards(fetchedProjects);
-        } catch (err) {
-            console.error("Critical server connection fault:", err);
-        }
-    }
+  // --- ২. রিয়েল-টাইম কমেন্ট ও রিয়্যাকশন লোড করা ---
+  const q = query(collection(db, "comments"), where("projectId", "==", currentProjectId), orderBy("timestamp", "desc"));
+  onSnapshot(q, (snapshot) => {
+      const container = document.getElementById('commentsContainer');
+      container.innerHTML = '';
+      
+      if(snapshot.empty) {
+          container.innerHTML = `<p style="color: #666; font-style: italic;">No comments yet. Be the first!</p>`;
+          return;
+      }
 
-    function renderCards(projects) {
-        const container = document.getElementById('project-container');
-        container.innerHTML = '';
-        
-        projects.forEach(proj => {
-            const card = document.createElement('a');
-            card.href = proj.link;
-            card.className = 'card';
-            card.innerHTML = `
-                <div class="icon">${proj.icon}</div>
-                <h2>${proj.title}</h2>
-                <p>${proj.desc}</p>
-                <div class="card-interactions">
-                    <span class="interaction-btn" onclick="toggleReact(event, '${proj.id}', this)">❤️ <span class="count">${proj.likes}</span></span>
-                    <span class="interaction-btn" onclick="openComments(event, '${proj.id}')">💬 Comments (${proj.comments.length})</span>
-                </div>
-            `;
-            container.appendChild(card);
-        });
-    }
+      snapshot.forEach((docSnap) => {
+          const comment = docSnap.data();
+          const commentId = docSnap.id;
 
-    // --- API Interactions ---
-    async function toggleReact(event, id, element) {
-        event.preventDefault(); 
-        if (element.classList.contains('reacted')) return; // Avoid spamming multiple clicks
+          const commentCard = document.createElement('div');
+          commentCard.className = 'comment-card';
+          commentCard.innerHTML = `
+              <h4>${escapeHTML(comment.username)}</h4>
+              <p>${escapeHTML(comment.commentText)}</p>
+              <button class="react-btn" data-id="${commentId}">❤️ ${comment.likes || 0}</button>
+          `;
+          container.appendChild(commentCard);
+      });
 
-        try {
-            const res = await fetch('/api/react', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ id })
-            });
-            const data = await res.json();
-            if (data.success) {
-                element.classList.add('reacted');
-                element.querySelector('.count').innerText = data.likes;
-            }
-        } catch (err) { alert("Server connectivity lost."); }
-    }
+      // লাইক বাটনে ক্লিক ইভেন্ট লিসেনার অ্যাড করা
+      document.querySelectorAll('.react-btn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+              const id = e.target.getAttribute('data-id');
+              const commentRef = doc(db, "comments", id);
+              await updateDoc(commentRef, {
+                  likes: increment(1)
+              });
+          });
+      });
+  });
 
-    function openComments(event, id) {
-        event.preventDefault();
-        activeProjectId = id;
-        const proj = fetchedProjects.find(p => p.id === id);
-        
-        document.getElementById('comment-project-title').innerText = `${proj.title} Comments`;
-        const listContainer = document.getElementById('comments-list');
-        listContainer.innerHTML = '';
-        
-        proj.comments.forEach(c => {
-            const parts = c.split(': ');
-            const author = parts[0];
-            const text = parts.slice(1).join(': ');
-            const div = document.createElement('div');
-            div.className = 'comment-item';
-            div.innerHTML = `<strong>${author}:</strong> ${text}`;
-            listContainer.appendChild(div);
-        });
-        
-        openModal('comment-modal');
-    }
+  // --- ৩. কোড সাবমিশন ফাংশন ---
+  document.getElementById('submitModelBtn').addEventListener('click', async () => {
+      const authorName = document.getElementById('authorName');
+      const modelName = document.getElementById('modelName');
+      const modelCode = document.getElementById('modelCode');
 
-    async function addComment() {
-        const authorInput = document.getElementById('comment-author');
-        const textInput = document.getElementById('new-comment');
-        
-        if (!authorInput.value.trim() || !textInput.value.trim()) return alert("Fields cannot be empty.");
+      if(authorName.value.trim() && modelName.value.trim() && modelCode.value.trim()) {
+          try {
+              await addDoc(collection(db, "submissions"), {
+                  authorName: authorName.value.trim(),
+                  modelName: modelName.value.trim(),
+                  code: modelCode.value.trim(),
+                  timestamp: new Date()
+              });
+              alert("🚀 Model submitted successfully! Admin will review it.");
+              modelName.value = '';
+              modelCode.value = '';
+          } catch (error) {
+              console.error("Submission error: ", error);
+              alert("Something went wrong. Try again.");
+          }
+      } else {
+          alert("Please fill in all submission fields!");
+      }
+  });
 
-        try {
-            const res = await fetch('/api/comments', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ id: activeProjectId, author: authorInput.value, text: textInput.value })
-            });
-            const data = await res.json();
-            if (data.success) {
-                // Instantly sync frontend layout matrix
-                await loadProjects();
-                openComments({ preventDefault: () => {} }, activeProjectId);
-                textInput.value = '';
-            }
-        } catch (err) { alert("Comment configuration delivery broken."); }
-    }
-
-    async function submitIdea() {
-        const name = document.getElementById('submit-name').value;
-        const desc = document.getElementById('submit-desc').value;
-        
-        if(!name || !desc) return alert("Please fill in all fields.");
-
-        try {
-            const res = await fetch('/api/submit-idea', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ name, desc })
-            });
-            if (res.ok) {
-                alert(`Thank you ${name}! Your entry logs were written directly to Admin.`);
-                closeModals();
-                document.getElementById('submit-name').value = '';
-                document.getElementById('submit-desc').value = '';
-            }
-        } catch(err) { alert("Transmission failed."); }
-    }
-
-    // --- Admin Verification Configuration ---
-    function adminLogin() {
-        const email = prompt("Enter Admin Email to access Developer Tools:");
-        if(email === "mdtanirrahman2022a@gmail.com") {
-            alert("Welcome, Admin Tanvir! Access Configuration Granted.");
-            document.getElementById('admin-add-btn').style.display = 'inline-block';
-        } else {
-            alert("Access Denied.");
-        }
-    }
-
-    async function addNewProject() {
-        const icon = document.getElementById('new-proj-icon').value;
-        const title = document.getElementById('new-proj-title').value;
-        const desc = document.getElementById('new-proj-desc').value;
-        const link = document.getElementById('new-proj-link').value;
-
-        if(!icon || !title || !desc || !link) return alert("All properties must be filled.");
-
-        try {
-            const res = await fetch('/api/projects', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ icon, title, desc, link })
-            });
-            if (res.ok) {
-                await loadProjects();
-                closeModals();
-                // Flush forms
-                document.getElementById('new-proj-icon').value = '';
-                document.getElementById('new-proj-title').value = '';
-                document.getElementById('new-proj-desc').value = '';
-                document.getElementById('new-proj-link').value = '';
-                alert("New engine node dynamically compiled onto main timeline server!");
-            }
-        } catch(err) { alert("Failed to append deployment payload."); }
-    }
-
-    // --- Structural Helpers ---
-    function openModal(modalId) { document.getElementById(modalId).style.display = 'flex'; }
-    function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
-    window.onclick = function(e) { if (e.target.classList.contains('modal-overlay')) closeModals(); }
+  // HTML Injection রোধ করার জন্য হেল্পার ফাংশন (XSS Protection)
+  function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, 
+          tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+  }
 </script>
 
 </body>
