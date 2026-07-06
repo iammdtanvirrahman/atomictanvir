@@ -103,7 +103,7 @@ h1{
     line-height:1.5;
 }
 
-/* --- New Styled Sections for Firebase --- */
+/* --- Firebase Interaction UI Styling --- */
 .interactive-section {
     max-width: 1200px;
     margin: 40px auto;
@@ -282,8 +282,7 @@ footer{
             <button id="submitCommentBtn">Post Comment</button>
         </div>
         
-        <div class="comments-display" id="commentsContainer">
-            </div>
+        <div class="comments-display" id="commentsContainer"></div>
     </div>
 
     <div class="fb-box">
@@ -306,28 +305,25 @@ footer{
 </footer>
 
 <script type="module">
-  // Firebase SDK modules ইম্পোর্ট করা হচ্ছে
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, updateDoc, doc, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // ⚠️ এখানে আপনার Firebase প্রজেক্টের আসল Config অবজেক্টটি বসাবেন
+  // আপনার রিয়েল ফায়ারবেস কনফিগারেশন অবজেক্ট
   const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyCit_SKjXRUpr8FNY1ahKhiG5sdDyOlW6k",
+    authDomain: "atomictanvir.firebaseapp.com",
+    projectId: "atomictanvir",
+    storageBucket: "atomictanvir.firebasestorage.app",
+    messagingSenderId: "140595401471",
+    appId: "1:140595401471:web:8f92115a8c8b58d1ec32ca",
+    measurementId: "G-WQG0CXS5NH"
   };
 
-  // Firebase Initialize করা হচ্ছে
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-
-  // এই পেজের ইউনিক আইডি (Index বা Home পেজের কমেন্টের জন্য)
   const currentProjectId = "home_index"; 
 
-  // --- ১. কমেন্ট সাবমিট করার ফাংশন ---
+  // --- ১. কমেন্ট সাবমিট ---
   document.getElementById('submitCommentBtn').addEventListener('click', async () => {
       const usernameInput = document.getElementById('username');
       const commentTextInput = document.getElementById('commentText');
@@ -341,7 +337,7 @@ footer{
                   likes: 0,
                   timestamp: new Date()
               });
-              commentTextInput.value = ''; // শুধু কমেন্ট বক্স ক্লিয়ার হবে, নাম থাকবে
+              commentTextInput.value = '';
           } catch (error) {
               console.error("Error adding comment: ", error);
           }
@@ -350,7 +346,7 @@ footer{
       }
   });
 
-  // --- ২. রিয়েল-টাইম কমেন্ট ও রিয়্যাকশন লোড করা ---
+  // --- ২. রিয়েল-টাইম কমেন্ট লোড ---
   const q = query(collection(db, "comments"), where("projectId", "==", currentProjectId), orderBy("timestamp", "desc"));
   onSnapshot(q, (snapshot) => {
       const container = document.getElementById('commentsContainer');
@@ -375,7 +371,6 @@ footer{
           container.appendChild(commentCard);
       });
 
-      // লাইক বাটনে ক্লিক ইভেন্ট লিসেনার অ্যাড করা
       document.querySelectorAll('.react-btn').forEach(btn => {
           btn.addEventListener('click', async (e) => {
               const id = e.target.getAttribute('data-id');
@@ -387,7 +382,7 @@ footer{
       });
   });
 
-  // --- ৩. কোড সাবমিশন ফাংশন ---
+  // --- ৩. কোড সাবমিশন ---
   document.getElementById('submitModelBtn').addEventListener('click', async () => {
       const authorName = document.getElementById('authorName');
       const modelName = document.getElementById('modelName');
@@ -413,7 +408,6 @@ footer{
       }
   });
 
-  // HTML Injection রোধ করার জন্য হেল্পার ফাংশন (XSS Protection)
   function escapeHTML(str) {
       return str.replace(/[&<>'"]/g, 
           tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
