@@ -75,7 +75,7 @@ button:hover {
 }
 
 #admin-add-btn {
-    display: none; /* Hidden by default until admin logs in */
+    display: none; 
     border-color: #ff00ff;
     color: #ff00ff;
 }
@@ -101,7 +101,7 @@ button:hover {
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, .1);
     border-radius: 20px;
-    padding: 30px 30px 60px 30px; /* Extra bottom padding for reactions */
+    padding: 30px 30px 60px 30px; 
     transition: .4s;
     position: relative;
     overflow: hidden;
@@ -145,7 +145,6 @@ button:hover {
     z-index: 1;
 }
 
-/* Reactions and Comments styling */
 .card-interactions {
     position: absolute;
     bottom: 20px;
@@ -188,7 +187,7 @@ footer {
     display: inline-block;
 }
 
-/* Modals System */
+/* Modals System Layout */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -262,7 +261,6 @@ footer {
     margin-bottom: 10px;
 }
 .comment-item strong { color: cyan; }
-
 </style>
 </head>
 <body>
@@ -280,46 +278,7 @@ footer {
 </div>
 
 <div class="container" id="project-container">
-    <!-- Projects -->
-    <a href="atom.html" class="card">
-        <div class="icon">⚛️</div>
-        <h2>Atomic Models</h2>
-        <p>Explore Hydrogen, Helium, Carbon and realistic quantum orbitals.</p>
-        <div class="card-interactions">
-            <span class="interaction-btn" onclick="toggleReact(event, this)">❤️ <span class="count">24</span></span>
-            <span class="interaction-btn" onclick="openComments(event, 'Atomic Models')">💬 Comments</span>
-        </div>
-    </a>
-
-    <a href="blackhole.html" class="card">
-        <div class="icon">🕳️</div>
-        <h2>Black Hole</h2>
-        <p>Visualize event horizons, accretion disks and gravitational effects.</p>
-        <div class="card-interactions">
-            <span class="interaction-btn" onclick="toggleReact(event, this)">❤️ <span class="count">42</span></span>
-            <span class="interaction-btn" onclick="openComments(event, 'Black Hole')">💬 Comments</span>
-        </div>
-    </a>
-
-    <a href="solar.html" class="card">
-        <div class="icon">☀️</div>
-        <h2>Solar System</h2>
-        <p>Interactive 3D journey through planets and moons.</p>
-        <div class="card-interactions">
-            <span class="interaction-btn" onclick="toggleReact(event, this)">❤️ <span class="count">18</span></span>
-            <span class="interaction-btn" onclick="openComments(event, 'Solar System')">💬 Comments</span>
-        </div>
-    </a>
-
-    <a href="galaxy.html" class="card">
-        <div class="icon">🌌</div>
-        <h2>Galaxy Explorer</h2>
-        <p>Travel through stars, nebulae and distant galaxies.</p>
-        <div class="card-interactions">
-            <span class="interaction-btn" onclick="toggleReact(event, this)">❤️ <span class="count">31</span></span>
-            <span class="interaction-btn" onclick="openComments(event, 'Galaxy Explorer')">💬 Comments</span>
-        </div>
-    </a>
+    <!-- Projects render here dynamically via server configuration -->
 </div>
 
 <footer>
@@ -327,9 +286,9 @@ footer {
     <span class="admin-login" onclick="adminLogin()">Admin Login</span>
 </footer>
 
-<!-- Modals -->
+<!-- Modals System Container -->
 
-<!-- 1. Submit Idea Modal -->
+<!-- 1. Submit Idea Form -->
 <div class="modal-overlay" id="submit-modal">
     <div class="modal">
         <span class="close-btn" onclick="closeModals()">×</span>
@@ -340,21 +299,19 @@ footer {
     </div>
 </div>
 
-<!-- 2. Comments Modal -->
+<!-- 2. Interactive Client Comments Terminal -->
 <div class="modal-overlay" id="comment-modal">
     <div class="modal">
         <span class="close-btn" onclick="closeModals()">×</span>
         <h3 id="comment-project-title">Project Comments</h3>
-        <div class="comments-list" id="comments-list">
-            <div class="comment-item"><strong>Guest User:</strong> This simulation looks amazing!</div>
-            <div class="comment-item"><strong>AstroFan:</strong> Can we add more gravity physics to this?</div>
-        </div>
-        <input type="text" id="new-comment" placeholder="Add a public comment...">
+        <div class="comments-list" id="comments-list"></div>
+        <input type="text" id="comment-author" placeholder="Your Name" required>
+        <input type="text" id="new-comment" placeholder="Add a public comment..." required>
         <button class="modal-submit" onclick="addComment()">Post Comment</button>
     </div>
 </div>
 
-<!-- 3. Admin Add Project Modal -->
+<!-- 3. Admin Engine Creation Prompt -->
 <div class="modal-overlay" id="admin-modal">
     <div class="modal">
         <span class="close-btn" onclick="closeModals()">×</span>
@@ -362,122 +319,175 @@ footer {
         <input type="text" id="new-proj-icon" placeholder="Emoji Icon (e.g., 🪐)" required>
         <input type="text" id="new-proj-title" placeholder="Project Title" required>
         <input type="text" id="new-proj-desc" placeholder="Short Description" required>
-        <input type="text" id="new-proj-link" placeholder="HTML File Link (e.g., new.html)" required>
+        <input type="text" id="new-proj-link" placeholder="HTML File Link (e.g., solar.html)" required>
         <button class="modal-submit" style="background:#ff00ff; color:white; border:none;" onclick="addNewProject()">Publish Project</button>
     </div>
 </div>
 
 <script>
-    // --- Reaction Logic ---
-    function toggleReact(event, element) {
-        event.preventDefault(); // Prevents clicking the card link
-        const countSpan = element.querySelector('.count');
-        let count = parseInt(countSpan.innerText);
-        
-        if (element.classList.contains('reacted')) {
-            element.classList.remove('reacted');
-            element.innerHTML = `❤️ <span class="count">${count - 1}</span>`;
-        } else {
-            element.classList.add('reacted');
-            element.innerHTML = `❤️ <span class="count">${count + 1}</span>`;
+    let fetchedProjects = [];
+    let activeProjectId = '';
+
+    window.onload = loadProjects;
+
+    // --- Core API Data Synchronization ---
+    async function loadProjects() {
+        try {
+            const res = await fetch('/api/projects');
+            fetchedProjects = await res.json();
+            renderCards(fetchedProjects);
+        } catch (err) {
+            console.error("Critical server connection fault:", err);
         }
     }
 
-    // --- Modal Logic ---
-    function openModal(modalId) {
-        document.getElementById(modalId).style.display = 'flex';
-    }
-    
-    function closeModals() {
-        document.querySelectorAll('.modal-overlay').forEach(modal => {
-            modal.style.display = 'none';
+    function renderCards(projects) {
+        const container = document.getElementById('project-container');
+        container.innerHTML = '';
+        
+        projects.forEach(proj => {
+            const card = document.createElement('a');
+            card.href = proj.link;
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="icon">${proj.icon}</div>
+                <h2>${proj.title}</h2>
+                <p>${proj.desc}</p>
+                <div class="card-interactions">
+                    <span class="interaction-btn" onclick="toggleReact(event, '${proj.id}', this)">❤️ <span class="count">${proj.likes}</span></span>
+                    <span class="interaction-btn" onclick="openComments(event, '${proj.id}')">💬 Comments (${proj.comments.length})</span>
+                </div>
+            `;
+            container.appendChild(card);
         });
     }
 
-    function openComments(event, projectTitle) {
-        event.preventDefault(); // Prevents clicking the card link
-        document.getElementById('comment-project-title').innerText = projectTitle + " Comments";
+    // --- API Interactions ---
+    async function toggleReact(event, id, element) {
+        event.preventDefault(); 
+        if (element.classList.contains('reacted')) return; // Avoid spamming multiple clicks
+
+        try {
+            const res = await fetch('/api/react', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ id })
+            });
+            const data = await res.json();
+            if (data.success) {
+                element.classList.add('reacted');
+                element.querySelector('.count').innerText = data.likes;
+            }
+        } catch (err) { alert("Server connectivity lost."); }
+    }
+
+    function openComments(event, id) {
+        event.preventDefault();
+        activeProjectId = id;
+        const proj = fetchedProjects.find(p => p.id === id);
+        
+        document.getElementById('comment-project-title').innerText = `${proj.title} Comments`;
+        const listContainer = document.getElementById('comments-list');
+        listContainer.innerHTML = '';
+        
+        proj.comments.forEach(c => {
+            const parts = c.split(': ');
+            const author = parts[0];
+            const text = parts.slice(1).join(': ');
+            const div = document.createElement('div');
+            div.className = 'comment-item';
+            div.innerHTML = `<strong>${author}:</strong> ${text}`;
+            listContainer.appendChild(div);
+        });
+        
         openModal('comment-modal');
     }
 
-    function addComment() {
-        const input = document.getElementById('new-comment');
-        const list = document.getElementById('comments-list');
-        if(input.value.trim() !== "") {
-            const newDiv = document.createElement('div');
-            newDiv.className = 'comment-item';
-            newDiv.innerHTML = `<strong>You:</strong> ${input.value}`;
-            list.appendChild(newDiv);
-            input.value = "";
-            list.scrollTop = list.scrollHeight; // scroll to bottom
-        }
+    async function addComment() {
+        const authorInput = document.getElementById('comment-author');
+        const textInput = document.getElementById('new-comment');
+        
+        if (!authorInput.value.trim() || !textInput.value.trim()) return alert("Fields cannot be empty.");
+
+        try {
+            const res = await fetch('/api/comments', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ id: activeProjectId, author: authorInput.value, text: textInput.value })
+            });
+            const data = await res.json();
+            if (data.success) {
+                // Instantly sync frontend layout matrix
+                await loadProjects();
+                openComments({ preventDefault: () => {} }, activeProjectId);
+                textInput.value = '';
+            }
+        } catch (err) { alert("Comment configuration delivery broken."); }
     }
 
-    function submitIdea() {
+    async function submitIdea() {
         const name = document.getElementById('submit-name').value;
         const desc = document.getElementById('submit-desc').value;
-        if(name && desc) {
-            alert(`Thank you ${name}! Your idea has been sent to Admin (mdtanirrahman2022a@gmail.com).`);
-            closeModals();
-            document.getElementById('submit-name').value = '';
-            document.getElementById('submit-desc').value = '';
-        } else {
-            alert("Please fill in all fields.");
-        }
+        
+        if(!name || !desc) return alert("Please fill in all fields.");
+
+        try {
+            const res = await fetch('/api/submit-idea', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ name, desc })
+            });
+            if (res.ok) {
+                alert(`Thank you ${name}! Your entry logs were written directly to Admin.`);
+                closeModals();
+                document.getElementById('submit-name').value = '';
+                document.getElementById('submit-desc').value = '';
+            }
+        } catch(err) { alert("Transmission failed."); }
     }
 
-    // --- Admin System Logic ---
+    // --- Admin Verification Configuration ---
     function adminLogin() {
         const email = prompt("Enter Admin Email to access Developer Tools:");
         if(email === "mdtanirrahman2022a@gmail.com") {
-            alert("Welcome, Admin Tanvir! Access Granted.");
+            alert("Welcome, Admin Tanvir! Access Configuration Granted.");
             document.getElementById('admin-add-btn').style.display = 'inline-block';
         } else {
-            alert("Access Denied. Invalid Admin Email.");
+            alert("Access Denied.");
         }
     }
 
-    function addNewProject() {
+    async function addNewProject() {
         const icon = document.getElementById('new-proj-icon').value;
         const title = document.getElementById('new-proj-title').value;
         const desc = document.getElementById('new-proj-desc').value;
         const link = document.getElementById('new-proj-link').value;
 
-        if(icon && title && desc && link) {
-            const container = document.getElementById('project-container');
-            const newCard = document.createElement('a');
-            newCard.href = link;
-            newCard.className = 'card';
-            newCard.innerHTML = `
-                <div class="icon">${icon}</div>
-                <h2>${title}</h2>
-                <p>${desc}</p>
-                <div class="card-interactions">
-                    <span class="interaction-btn" onclick="toggleReact(event, this)">❤️ <span class="count">0</span></span>
-                    <span class="interaction-btn" onclick="openComments(event, '${title}')">💬 Comments</span>
-                </div>
-            `;
-            container.appendChild(newCard);
-            closeModals();
-            
-            // Clear inputs
-            document.getElementById('new-proj-icon').value = '';
-            document.getElementById('new-proj-title').value = '';
-            document.getElementById('new-proj-desc').value = '';
-            document.getElementById('new-proj-link').value = '';
-            
-            alert("Project successfully added to the homepage!");
-        } else {
-            alert("Please fill out all project details.");
-        }
+        if(!icon || !title || !desc || !link) return alert("All properties must be filled.");
+
+        try {
+            const res = await fetch('/api/projects', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ icon, title, desc, link })
+            });
+            if (res.ok) {
+                await loadProjects();
+                closeModals();
+                // Flush forms
+                document.getElementById('new-proj-icon').value = '';
+                document.getElementById('new-proj-title').value = '';
+                document.getElementById('new-proj-desc').value = '';
+                document.getElementById('new-proj-link').value = '';
+                alert("New engine node dynamically compiled onto main timeline server!");
+            }
+        } catch(err) { alert("Failed to append deployment payload."); }
     }
 
-    // Close modals when clicking outside of them
-    window.onclick = function(event) {
-        if (event.target.classList.contains('modal-overlay')) {
-            closeModals();
-        }
-    }
+    // --- Structural Helpers ---
+    function openModal(modalId) { document.getElementById(modalId).style.display = 'flex'; }
+    function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
+    window.onclick = function(e) { if (e.target.classList.contains('modal-overlay')) closeModals(); }
 </script>
 
 </body>
