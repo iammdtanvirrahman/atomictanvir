@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AtomicTanvir - Admin Panel</title>
+<style>
+    body {
+        background: radial-gradient(circle at center,#0b1020,#000);
+        color: white;
+        font-family: Arial, sans-serif;
+        padding: 40px;
+        min-height: 100vh;
+    }
+    h1 {
+        text-align: center;
+        text-shadow: 0 0 20px #ff0055;
+        color: #ff3377;
+        margin-bottom: 40px;
+    }
+    .admin-container {
+        max-width: 1000px;
+        margin: auto;
+    }
+    .submission-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255, 33, 119, 0.2);
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 0 15px rgba(255, 33, 119, 0.05);
+    }
+    .submission-card h3 {
+        color: #ff3377;
+        margin-bottom: 5px;
+    }
+    .meta {
+        color: #888;
+        font-size: 0.85rem;
+        margin-bottom: 15px;
+    }
+    pre {
+        background: #050811;
+        padding: 15px;
+        border-radius: 8px;
+        overflow-x: auto;
+        border: 1px solid #111a33;
+    }
+    code {
+        color: #00ffcc;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.9rem;
+    }
+</style>
+</head>
+<body>
+
+    <h1>🚀 Admin Dashboard - Code Review</h1>
+    <div class="admin-container" id="adminList">
+        <p style="text-align: center; color: #666;">Fetching submissions from Firestore...</p>
+    </div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // আপনার কনফিগ
+  const firebaseConfig = {
+    apiKey: "AIzaSyCit_SKjXRUpr8FNY1ahKhiG5sdDyOlW6k",
+    authDomain: "atomictanvir.firebaseapp.com",
+    projectId: "atomictanvir",
+    storageBucket: "atomictanvir.firebasestorage.app",
+    messagingSenderId: "140595401471",
+    appId: "1:140595401471:web:8f92115a8c8b58d1ec32ca",
+    measurementId: "G-WQG0CXS5NH"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // রিয়েল-টাইমে সাবমিট করা কোডগুলো ডাটাবেজ থেকে নিয়ে আসা
+  const qSub = query(collection(db, "submissions"), orderBy("timestamp", "desc"));
+  onSnapshot(qSub, (snapshot) => {
+      const listContainer = document.getElementById('adminList');
+      listContainer.innerHTML = '';
+      
+      if(snapshot.empty) {
+          listContainer.innerHTML = `<p style="text-align: center; color: #888; font-style: italic;">No code submissions yet.</p>`;
+          return;
+      }
+      
+      snapshot.forEach((docSnap) => {
+          const sub = docSnap.data();
+          const date = sub.timestamp ? new Date(sub.timestamp.seconds * 1000).toLocaleString() : 'N/A';
+
+          const card = document.createElement('div');
+          card.className = 'submission-card';
+          card.innerHTML = `
+              <h3>${escapeHTML(sub.modelName)}</h3>
+              <div class="meta">Submitted by <b>${escapeHTML(sub.authorName)}</b> on ${date}</div>
+              <pre><code>${escapeHTML(sub.code)}</code></pre>
+          `;
+          listContainer.appendChild(card);
+      });
+  });
+
+  function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, 
+          tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+  }
+</script>
+</body>
+</html>
