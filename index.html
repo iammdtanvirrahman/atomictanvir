@@ -6,107 +6,263 @@
 <title>AtomicTanvir</title>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, sans-serif;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
 }
 
-body{
-    min-height:100vh;
-    background:radial-gradient(circle at center,#0b1020,#000);
-    overflow-x:hidden;
-    color:white;
+body {
+    min-height: 100vh;
+    background: radial-gradient(circle at center, #0b1020, #000);
+    overflow-x: hidden;
+    color: white;
 }
 
-.stars{
-    position:fixed;
-    inset:0;
-    background-image:
-    radial-gradient(white 1px, transparent 1px);
-    background-size:50px 50px;
-    opacity:.4;
-    animation:moveStars 60s linear infinite;
+.stars {
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(white 1px, transparent 1px);
+    background-size: 50px 50px;
+    opacity: .4;
+    animation: moveStars 60s linear infinite;
+    z-index: -1;
 }
 
-@keyframes moveStars{
-    from{transform:translateY(0);}
-    to{transform:translateY(500px);}
+@keyframes moveStars {
+    from { transform: translateY(0); }
+    to { transform: translateY(500px); }
 }
 
-header{
-    text-align:center;
-    padding:60px 20px 30px;
+header {
+    text-align: center;
+    padding: 60px 20px 30px;
 }
 
-h1{
-    font-size:4rem;
-    text-shadow:0 0 20px cyan;
+h1 {
+    font-size: 4rem;
+    text-shadow: 0 0 20px cyan;
 }
 
-.subtitle{
-    color:#aaa;
-    margin-top:10px;
+.subtitle {
+    color: #aaa;
+    margin-top: 10px;
 }
 
-.container{
-    max-width:1200px;
-    margin:auto;
-    padding:30px;
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-    gap:25px;
+.action-bar {
+    text-align: center;
+    margin-bottom: 30px;
 }
 
-.card{
-    text-decoration:none;
-    color:white;
-    background:rgba(255,255,255,.05);
-    backdrop-filter:blur(10px);
-    border:1px solid rgba(255,255,255,.1);
-    border-radius:20px;
-    padding:30px;
-    transition:.4s;
-    position:relative;
-    overflow:hidden;
+button {
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid cyan;
+    color: cyan;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.3s;
+    margin: 0 10px;
+    backdrop-filter: blur(5px);
 }
 
-.card::before{
-    content:'';
-    position:absolute;
-    width:200px;
-    height:200px;
-    background:rgba(0,255,255,.15);
-    border-radius:50%;
-    top:-100px;
-    right:-100px;
+button:hover {
+    background: cyan;
+    color: #000;
+    box-shadow: 0 0 15px cyan;
 }
 
-.card:hover{
-    transform:translateY(-10px) scale(1.03);
-    box-shadow:0 0 25px cyan;
+#admin-add-btn {
+    display: none; /* Hidden by default until admin logs in */
+    border-color: #ff00ff;
+    color: #ff00ff;
+}
+#admin-add-btn:hover {
+    background: #ff00ff;
+    color: white;
+    box-shadow: 0 0 15px #ff00ff;
 }
 
-.icon{
-    font-size:3rem;
-    margin-bottom:15px;
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
 }
 
-.card h2{
-    margin-bottom:10px;
+.card {
+    text-decoration: none;
+    color: white;
+    background: rgba(255, 255, 255, .05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, .1);
+    border-radius: 20px;
+    padding: 30px 30px 60px 30px; /* Extra bottom padding for reactions */
+    transition: .4s;
+    position: relative;
+    overflow: hidden;
+    display: block;
 }
 
-.card p{
-    color:#ccc;
-    line-height:1.5;
+.card::before {
+    content: '';
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: rgba(0, 255, 255, .15);
+    border-radius: 50%;
+    top: -100px;
+    right: -100px;
+    z-index: 0;
 }
 
-footer{
-    text-align:center;
-    padding:40px;
-    color:#888;
+.card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 0 25px cyan;
 }
+
+.icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+}
+
+.card h2 {
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.card p {
+    color: #ccc;
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+}
+
+/* Reactions and Comments styling */
+.card-interactions {
+    position: absolute;
+    bottom: 20px;
+    left: 30px;
+    right: 30px;
+    display: flex;
+    justify-content: space-between;
+    z-index: 2;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 10px;
+}
+
+.interaction-btn {
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #aaa;
+    transition: 0.2s;
+    user-select: none;
+}
+
+.interaction-btn:hover {
+    color: cyan;
+}
+
+.reacted {
+    color: #ff4d4d !important;
+}
+
+footer {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+}
+
+.admin-login {
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 0.8rem;
+    margin-top: 10px;
+    display: inline-block;
+}
+
+/* Modals System */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(5px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: #111827;
+    border: 1px solid rgba(0,255,255,0.3);
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    box-shadow: 0 0 30px rgba(0,255,255,0.1);
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #aaa;
+}
+
+.close-btn:hover { color: white; }
+
+.modal h3 {
+    margin-bottom: 20px;
+    color: cyan;
+}
+
+.modal input, .modal textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    outline: none;
+}
+
+.modal input:focus, .modal textarea:focus {
+    border-color: cyan;
+}
+
+.modal-submit {
+    width: 100%;
+    margin: 0;
+}
+
+.comments-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+.comment-item {
+    background: rgba(255,255,255,0.05);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+.comment-item strong { color: cyan; }
+
 </style>
 </head>
 <body>
@@ -115,66 +271,214 @@ footer{
 
 <header>
     <h1>AtomicTanvir</h1>
-    <p class="subtitle">
-        Explore the Universe Through Interactive Simulations
-    </p>
+    <p class="subtitle">Explore the Universe Through Interactive Simulations</p>
 </header>
 
-<div class="container">
+<div class="action-bar">
+    <button onclick="openModal('submit-modal')">💡 Submit Idea & Code</button>
+    <button id="admin-add-btn" onclick="openModal('admin-modal')">➕ Add New Project</button>
+</div>
 
+<div class="container" id="project-container">
+    <!-- Projects -->
     <a href="atom.html" class="card">
         <div class="icon">⚛️</div>
         <h2>Atomic Models</h2>
-        <p>
-            Explore Hydrogen, Helium, Carbon and realistic quantum orbitals.
-        </p>
+        <p>Explore Hydrogen, Helium, Carbon and realistic quantum orbitals.</p>
+        <div class="card-interactions">
+            <span class="interaction-btn" onclick="toggleReact(event, this)">❤️ <span class="count">24</span></span>
+            <span class="interaction-btn" onclick="openComments(event, 'Atomic Models')">💬 Comments</span>
+        </div>
     </a>
 
     <a href="blackhole.html" class="card">
         <div class="icon">🕳️</div>
         <h2>Black Hole</h2>
-        <p>
-            Visualize event horizons, accretion disks and gravitational effects.
-        </p>
+        <p>Visualize event horizons, accretion disks and gravitational effects.</p>
+        <div class="card-interactions">
+            <span class="interaction-btn" onclick="toggleReact(event, this)">❤️ <span class="count">42</span></span>
+            <span class="interaction-btn" onclick="openComments(event, 'Black Hole')">💬 Comments</span>
+        </div>
     </a>
 
     <a href="solar.html" class="card">
         <div class="icon">☀️</div>
         <h2>Solar System</h2>
-        <p>
-            Interactive 3D journey through planets and moons.
-        </p>
+        <p>Interactive 3D journey through planets and moons.</p>
+        <div class="card-interactions">
+            <span class="interaction-btn" onclick="toggleReact(event, this)">❤️ <span class="count">18</span></span>
+            <span class="interaction-btn" onclick="openComments(event, 'Solar System')">💬 Comments</span>
+        </div>
     </a>
 
     <a href="galaxy.html" class="card">
         <div class="icon">🌌</div>
         <h2>Galaxy Explorer</h2>
-        <p>
-            Travel through stars, nebulae and distant galaxies.
-        </p>
+        <p>Travel through stars, nebulae and distant galaxies.</p>
+        <div class="card-interactions">
+            <span class="interaction-btn" onclick="toggleReact(event, this)">❤️ <span class="count">31</span></span>
+            <span class="interaction-btn" onclick="openComments(event, 'Galaxy Explorer')">💬 Comments</span>
+        </div>
     </a>
-
-    <a href="quantum.html" class="card">
-        <div class="icon">🔬</div>
-        <h2>Quantum World</h2>
-        <p>
-            Explore wave functions, orbitals and quantum mechanics.
-        </p>
-    </a>
-
-    <a href="about.html" class="card">
-        <div class="icon">🚀</div>
-        <h2>About Project</h2>
-        <p>
-            Learn about AtomicTanvir and the science behind each simulation.
-        </p>
-    </a>
-
 </div>
 
 <footer>
-    © 2026 AtomicTanvir • Science Visualization Project
+    © 2026 AtomicTanvir • Science Visualization Project <br>
+    <span class="admin-login" onclick="adminLogin()">Admin Login</span>
 </footer>
+
+<!-- Modals -->
+
+<!-- 1. Submit Idea Modal -->
+<div class="modal-overlay" id="submit-modal">
+    <div class="modal">
+        <span class="close-btn" onclick="closeModals()">×</span>
+        <h3>Submit Your Idea or Code</h3>
+        <input type="text" id="submit-name" placeholder="Your Name or GitHub Username" required>
+        <textarea id="submit-desc" rows="4" placeholder="Describe your project idea or share a pastebin/github link for your code model..." required></textarea>
+        <button class="modal-submit" onclick="submitIdea()">Submit to Admin</button>
+    </div>
+</div>
+
+<!-- 2. Comments Modal -->
+<div class="modal-overlay" id="comment-modal">
+    <div class="modal">
+        <span class="close-btn" onclick="closeModals()">×</span>
+        <h3 id="comment-project-title">Project Comments</h3>
+        <div class="comments-list" id="comments-list">
+            <div class="comment-item"><strong>Guest User:</strong> This simulation looks amazing!</div>
+            <div class="comment-item"><strong>AstroFan:</strong> Can we add more gravity physics to this?</div>
+        </div>
+        <input type="text" id="new-comment" placeholder="Add a public comment...">
+        <button class="modal-submit" onclick="addComment()">Post Comment</button>
+    </div>
+</div>
+
+<!-- 3. Admin Add Project Modal -->
+<div class="modal-overlay" id="admin-modal">
+    <div class="modal">
+        <span class="close-btn" onclick="closeModals()">×</span>
+        <h3 style="color: #ff00ff;">Admin: Add Project</h3>
+        <input type="text" id="new-proj-icon" placeholder="Emoji Icon (e.g., 🪐)" required>
+        <input type="text" id="new-proj-title" placeholder="Project Title" required>
+        <input type="text" id="new-proj-desc" placeholder="Short Description" required>
+        <input type="text" id="new-proj-link" placeholder="HTML File Link (e.g., new.html)" required>
+        <button class="modal-submit" style="background:#ff00ff; color:white; border:none;" onclick="addNewProject()">Publish Project</button>
+    </div>
+</div>
+
+<script>
+    // --- Reaction Logic ---
+    function toggleReact(event, element) {
+        event.preventDefault(); // Prevents clicking the card link
+        const countSpan = element.querySelector('.count');
+        let count = parseInt(countSpan.innerText);
+        
+        if (element.classList.contains('reacted')) {
+            element.classList.remove('reacted');
+            element.innerHTML = `❤️ <span class="count">${count - 1}</span>`;
+        } else {
+            element.classList.add('reacted');
+            element.innerHTML = `❤️ <span class="count">${count + 1}</span>`;
+        }
+    }
+
+    // --- Modal Logic ---
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'flex';
+    }
+    
+    function closeModals() {
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.style.display = 'none';
+        });
+    }
+
+    function openComments(event, projectTitle) {
+        event.preventDefault(); // Prevents clicking the card link
+        document.getElementById('comment-project-title').innerText = projectTitle + " Comments";
+        openModal('comment-modal');
+    }
+
+    function addComment() {
+        const input = document.getElementById('new-comment');
+        const list = document.getElementById('comments-list');
+        if(input.value.trim() !== "") {
+            const newDiv = document.createElement('div');
+            newDiv.className = 'comment-item';
+            newDiv.innerHTML = `<strong>You:</strong> ${input.value}`;
+            list.appendChild(newDiv);
+            input.value = "";
+            list.scrollTop = list.scrollHeight; // scroll to bottom
+        }
+    }
+
+    function submitIdea() {
+        const name = document.getElementById('submit-name').value;
+        const desc = document.getElementById('submit-desc').value;
+        if(name && desc) {
+            alert(`Thank you ${name}! Your idea has been sent to Admin (mdtanirrahman2022a@gmail.com).`);
+            closeModals();
+            document.getElementById('submit-name').value = '';
+            document.getElementById('submit-desc').value = '';
+        } else {
+            alert("Please fill in all fields.");
+        }
+    }
+
+    // --- Admin System Logic ---
+    function adminLogin() {
+        const email = prompt("Enter Admin Email to access Developer Tools:");
+        if(email === "mdtanirrahman2022a@gmail.com") {
+            alert("Welcome, Admin Tanvir! Access Granted.");
+            document.getElementById('admin-add-btn').style.display = 'inline-block';
+        } else {
+            alert("Access Denied. Invalid Admin Email.");
+        }
+    }
+
+    function addNewProject() {
+        const icon = document.getElementById('new-proj-icon').value;
+        const title = document.getElementById('new-proj-title').value;
+        const desc = document.getElementById('new-proj-desc').value;
+        const link = document.getElementById('new-proj-link').value;
+
+        if(icon && title && desc && link) {
+            const container = document.getElementById('project-container');
+            const newCard = document.createElement('a');
+            newCard.href = link;
+            newCard.className = 'card';
+            newCard.innerHTML = `
+                <div class="icon">${icon}</div>
+                <h2>${title}</h2>
+                <p>${desc}</p>
+                <div class="card-interactions">
+                    <span class="interaction-btn" onclick="toggleReact(event, this)">❤️ <span class="count">0</span></span>
+                    <span class="interaction-btn" onclick="openComments(event, '${title}')">💬 Comments</span>
+                </div>
+            `;
+            container.appendChild(newCard);
+            closeModals();
+            
+            // Clear inputs
+            document.getElementById('new-proj-icon').value = '';
+            document.getElementById('new-proj-title').value = '';
+            document.getElementById('new-proj-desc').value = '';
+            document.getElementById('new-proj-link').value = '';
+            
+            alert("Project successfully added to the homepage!");
+        } else {
+            alert("Please fill out all project details.");
+        }
+    }
+
+    // Close modals when clicking outside of them
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal-overlay')) {
+            closeModals();
+        }
+    }
+</script>
 
 </body>
 </html>
