@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AtomicTanvir - Admin Panel</title>
+<title>AtomicTanvir - Advanced Admin Panel</title>
 <style>
     body {
         background: radial-gradient(circle at center,#0b1020,#000);
@@ -19,29 +19,100 @@
         margin-bottom: 40px;
     }
     .admin-container { max-width: 1000px; margin: auto; }
+    
+    .section-title {
+        color: #ff3377;
+        border-bottom: 2px solid rgba(255, 33, 119, 0.3);
+        padding-bottom: 10px;
+        margin: 40px 0 20px;
+        font-size: 1.5rem;
+    }
+
     .submission-card {
         background: rgba(255,255,255,0.03);
         border: 1px solid rgba(255, 33, 119, 0.2);
         border-radius: 15px;
         padding: 25px;
         margin-bottom: 25px;
+        backdrop-filter: blur(10px);
     }
-    .submission-card h3 { color: #ff3377; margin-bottom: 5px; }
-    .meta { color: #888; font-size: 0.85rem; margin-bottom: 15px; }
-    pre { background: #050811; padding: 15px; border-radius: 8px; overflow-x: auto; border: 1px solid #111a33; }
-    code { color: #00ffcc; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; }
+    
+    .submission-card.approved {
+        border-color: #00ffcc;
+    }
+
+    .edit-group {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .edit-group div { flex: 1; }
+
+    label {
+        display: block;
+        font-size: 0.85rem;
+        color: #aaa;
+        margin-bottom: 5px;
+    }
+
+    input, textarea {
+        width: 100%;
+        background: rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 8px;
+        padding: 10px;
+        color: white;
+        outline: none;
+    }
+
+    input:focus, textarea:focus {
+        border-color: cyan;
+    }
+
+    .meta { color: #666; font-size: 0.8rem; margin-top: 5px; }
+
+    .btn-container {
+        display: flex;
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .btn-approve { background: #00ffcc; color: black; }
+    .btn-approve:hover { box-shadow: 0 0 15px #00ffcc; transform: scale(1.02); }
+    
+    .btn-delete { background: #ff3377; color: white; }
+    .btn-delete:hover { box-shadow: 0 0 15px #ff3377; transform: scale(1.02); }
 </style>
 </head>
 <body>
 
-    <h1>🚀 Admin Dashboard - Code Review</h1>
-    <div class="admin-container" id="adminList">
-        <p style="text-align: center; color: #666;">Fetching submissions...</p>
+    <h1>🚀 Admin Control Center</h1>
+    
+    <div class="admin-container">
+        <div class="section-title">📥 Pending Approval</div>
+        <div id="pendingList">
+            <p style="text-align: center; color: #666;">Loading pending items...</p>
+        </div>
+
+        <div class="section-title">✅ Live on Website (Approved)</div>
+        <div id="approvedList">
+            <p style="text-align: center; color: #666;">Loading approved items...</p>
+        </div>
     </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCit_SKjXRUpr8FNY1ahKhiG5sdDyOlW6k",
@@ -58,29 +129,103 @@
   const db = getDatabase(app);
 
   const subsRef = ref(db, 'submissions');
+  
   onValue(subsRef, (snapshot) => {
-      const listContainer = document.getElementById('adminList');
-      listContainer.innerHTML = '';
+      const pendingContainer = document.getElementById('pendingList');
+      const approvedContainer = document.getElementById('approvedList');
+      
+      pendingContainer.innerHTML = '';
+      approvedContainer.innerHTML = '';
       
       if(!snapshot.exists()) {
-          listContainer.innerHTML = `<p style="text-align: center; color: #888; font-style: italic;">No code submissions yet.</p>`;
+          pendingContainer.innerHTML = `<p style="color: #666; font-style: italic;">No submissions found.</p>`;
+          approvedContainer.innerHTML = `<p style="color: #666; font-style: italic;">No approved projects yet.</p>`;
           return;
       }
       
       const data = snapshot.val();
-      const sortedSubs = Object.keys(data).map(key => ({ id: key, ...data[key] }))
-                               .sort((a,b) => b.timestamp - a.timestamp);
       
-      sortedSubs.forEach((sub) => {
-          const date = sub.timestamp ? new Date(sub.timestamp).toLocaleString() : 'N/A';
+      let hasPending = false;
+      let hasApproved = false;
+
+      // নতুন সাবমিশনগুলো উপরে রাখার জন্য সর্টিং
+      const sortedKeys = Object.keys(data).sort((a,b) => data[b].timestamp - data[a].timestamp);
+
+      sortedKeys.forEach((key) => {
+          const sub = data[key];
+          const date = new Date(sub.timestamp).toLocaleString();
+          
           const card = document.createElement('div');
-          card.className = 'submission-card';
+          card.className = `submission-card ${sub.approved ? 'approved' : ''}`;
+          
+          // ডাইনামিক ইনপুট ফিল্ড তৈরি করা হচ্ছে যাতে অ্যাডমিন এডিট করতে পারে
           card.innerHTML = `
-              <h3>${escapeHTML(sub.modelName)}</h3>
-              <div class="meta">Submitted by <b>${escapeHTML(sub.authorName)}</b> on ${date}</div>
-              <pre><code>${escapeHTML(sub.code)}</code></pre>
+              <div class="edit-group">
+                  <div>
+                      <label>Project/Model Name</label>
+                      <input type="text" id="name-${key}" value="${escapeHTML(sub.modelName)}">
+                  </div>
+                  <div>
+                      <label>Creator Name</label>
+                      <input type="text" id="author-${key}" value="${escapeHTML(sub.authorName)}">
+                  </div>
+              </div>
+              <div>
+                  <label>Source Code (HTML/CSS/JS)</label>
+                  <textarea id="code-${key}" rows="8">${escapeHTML(sub.code)}</textarea>
+              </div>
+              <div class="meta">Submitted on: ${date}</div>
+              <div class="btn-container">
+                  ${!sub.approved ? `<button class="btn btn-approve" data-id="${key}">Approve & Publish</button>` : `<button class="btn btn-approve" data-id="${key}">Save Changes</button>`}
+                  <button class="btn btn-delete" data-id="${key}">Delete</button>
+              </div>
           `;
-          listContainer.appendChild(card);
+
+          if (sub.approved) {
+              approvedContainer.appendChild(card);
+              hasApproved = true;
+          } else {
+              pendingContainer.appendChild(card);
+              hasPending = true;
+          }
+      });
+
+      if(!hasPending) pendingContainer.innerHTML = `<p style="color: #666; font-style: italic;">Hurrah! No pending models to review.</p>`;
+      if(!hasApproved) approvedContainer.innerHTML = `<p style="color: #666; font-style: italic;">No models published yet.</p>`;
+
+      // --- ইভেন্ট লিসেনার সেটআপ ---
+      
+      // ১. অনুমোদন বা আপডেট করা
+      document.querySelectorAll('.btn-approve').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+              const id = e.target.getAttribute('data-id');
+              const updatedName = document.getElementById(`name-${id}`).value.trim();
+              const updatedAuthor = document.getElementById(`author-${id}`).value.trim();
+              const updatedCode = document.getElementById(`code-${id}`).value.trim();
+
+              if(updatedName && updatedAuthor && updatedCode) {
+                  await update(ref(db, `submissions/${id}`), {
+                      modelName: updatedName,
+                      authorName: updatedAuthor,
+                      code: updatedCode,
+                      approved: true // স্ট্যাটাস ট্রু করে দেওয়া হচ্ছে
+                  });
+                  alert("🎉 Successfully Published/Updated!");
+              } else {
+                  alert("Fields cannot be empty!");
+              }
+          });
+      });
+
+      // ২. ডিলিট করা
+      document.querySelectorAll('.btn-delete').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+              if(confirm("Are you sure you want to delete this submission?")) {
+                  const id = e.target.getAttribute('data-id');
+                  await remove(ref(db, `submissions/${id}`));
+                  alert("🗑️ Submission Deleted.");
+              }
+          });
       });
   });
 
