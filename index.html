@@ -42,10 +42,18 @@ h1{
     color:#aaa;
     margin-top:10px;
 }
+.section-header {
+    max-width: 1200px;
+    margin: 40px auto 10px;
+    padding: 0 30px;
+    color: #00ffcc;
+    text-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
+    font-size: 2rem;
+}
 .container{
     max-width:1200px;
     margin:auto;
-    padding:30px;
+    padding:15px 30px 30px;
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
     gap:25px;
@@ -61,6 +69,7 @@ h1{
     transition:.4s;
     position:relative;
     overflow:hidden;
+    cursor: pointer;
 }
 .card::before{
     content:'';
@@ -72,9 +81,15 @@ h1{
     top:-100px;
     right:-100px;
 }
+.card.community-card::before {
+    background: rgba(0, 255, 204, 0.15);
+}
 .card:hover{
     transform:translateY(-10px) scale(1.03);
     box-shadow:0 0 25px cyan;
+}
+.card.community-card:hover {
+    box-shadow:0 0 25px #00ffcc;
 }
 .icon{
     font-size:3rem;
@@ -86,6 +101,12 @@ h1{
 .card p{
     color:#ccc;
     line-height:1.5;
+}
+.creator-tag {
+    font-size: 0.85rem;
+    color: #00ffcc;
+    margin-top: 15px;
+    font-weight: bold;
 }
 .interactive-section {
     max-width: 1200px;
@@ -145,13 +166,9 @@ h1{
     margin-top: 20px;
     padding-right: 5px;
 }
-.comments-display::-webkit-scrollbar {
-    width: 5px;
-}
-.comments-display::-webkit-scrollbar-thumb {
-    background: cyan;
-    border-radius: 5px;
-}
+.comments-display::-webkit-scrollbar { width: 5px; }
+.comments-display::-webkit-scrollbar-thumb { background: cyan; border-radius: 5px; }
+
 .comment-card {
     background: rgba(255,255,255,0.05);
     border-left: 4px solid cyan;
@@ -159,15 +176,8 @@ h1{
     border-radius: 0 10px 10px 0;
     margin-bottom: 15px;
 }
-.comment-card h4 {
-    color: cyan;
-    margin-bottom: 5px;
-}
-.comment-card p {
-    font-size: 0.95rem;
-    color: #ddd;
-    margin-bottom: 10px;
-}
+.comment-card h4 { color: cyan; margin-bottom: 5px; }
+.comment-card p { font-size: 0.95rem; color: #ddd; margin-bottom: 10px; }
 .react-btn {
     background: transparent;
     border: 1px solid rgba(255,255,255,0.2);
@@ -178,15 +188,8 @@ h1{
     font-size: 0.85rem;
     transition: 0.3s;
 }
-.react-btn:hover {
-    background: rgba(0, 255, 255, 0.2);
-    border-color: cyan;
-}
-footer{
-    text-align:center;
-    padding:40px;
-    color:#888;
-}
+.react-btn:hover { background: rgba(0, 255, 255, 0.2); border-color: cyan; }
+footer{ text-align:center; padding:40px; color:#888; }
 </style>
 </head>
 <body>
@@ -198,6 +201,7 @@ footer{
     <p class="subtitle">Explore the Universe Through Interactive Simulations</p>
 </header>
 
+<div class="section-header">Core Simulations</div>
 <div class="container">
     <a href="atom.html" class="card">
         <div class="icon">⚛️</div>
@@ -230,6 +234,9 @@ footer{
         <p>Learn about AtomicTanvir and the science behind each simulation.</p>
     </a>
 </div>
+
+<div class="section-header" id="communityTitle" style="display:none;">🚀 Community Simulations</div>
+<div class="container" id="communityProjectsContainer"></div>
 
 <div class="interactive-section">
     <div class="fb-box">
@@ -268,20 +275,18 @@ footer{
     messagingSenderId: "140595401471",
     appId: "1:140595401471:web:8f92115a8c8b58d1ec32ca",
     measurementId: "G-WQG0CXS5NH",
-    databaseURL: "https://atomictanvir-default-rtdb.firebaseio.com" // রিয়েলটাইম ডাটাবেজ ইউআরএল
+    databaseURL: "https://atomictanvir-default-rtdb.firebaseio.com"
   };
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  // --- ১. কমেন্ট পোস্ট করা ---
+  // --- ১. কমেন্ট সাবমিট ---
   document.getElementById('submitCommentBtn').addEventListener('click', async () => {
       const usernameInput = document.getElementById('username');
       const commentTextInput = document.getElementById('commentText');
-
       if(usernameInput.value.trim() && commentTextInput.value.trim()) {
-          const commentsRef = ref(db, 'comments');
-          const newCommentRef = push(commentsRef);
+          const newCommentRef = push(ref(db, 'comments'));
           await set(newCommentRef, {
               username: usernameInput.value.trim(),
               commentText: commentTextInput.value.trim(),
@@ -289,68 +294,94 @@ footer{
               timestamp: Date.now()
           });
           commentTextInput.value = '';
-      } else {
-          alert("Please fill in both fields!");
-      }
+      } else { alert("Please fill in both fields!"); }
   });
 
-  // --- ২. রিয়েল-টাইম কমেন্ট লোড ও লাইক ---
-  const commentsRef = ref(db, 'comments');
-  onValue(commentsRef, (snapshot) => {
+  // --- ২. রিয়েল-টাইম কমেন্ট ও লাইক লোড ---
+  onValue(ref(db, 'comments'), (snapshot) => {
       const container = document.getElementById('commentsContainer');
       container.innerHTML = '';
-      
       if(!snapshot.exists()) {
-          container.innerHTML = `<p style="color: #666; font-style: italic;">No comments yet. Be the first!</p>`;
+          container.innerHTML = `<p style="color: #666; font-style: italic;">No comments yet.</p>`;
           return;
       }
-
       const data = snapshot.val();
-      // তারিখ অনুযায়ী নতুন কমেন্ট উপরে দেখানোর জন্য সর্টিং
-      const sortedComments = Object.keys(data).map(key => ({ id: key, ...data[key] }))
-                                   .sort((a,b) => b.timestamp - a.timestamp);
-
-      sortedComments.forEach((comment) => {
-          const commentCard = document.createElement('div');
-          commentCard.className = 'comment-card';
-          commentCard.innerHTML = `
-              <h4>${escapeHTML(comment.username)}</h4>
-              <p>${escapeHTML(comment.commentText)}</p>
-              <button class="react-btn" data-id="${comment.id}">❤️ ${comment.likes || 0}</button>
-          `;
-          container.appendChild(commentCard);
+      const sorted = Object.keys(data).map(k => ({ id: k, ...data[k] })).sort((a,b) => b.timestamp - a.timestamp);
+      sorted.forEach((c) => {
+          const card = document.createElement('div');
+          card.className = 'comment-card';
+          card.innerHTML = `<h4>${escapeHTML(c.username)}</h4><p>${escapeHTML(c.commentText)}</p><button class="react-btn" data-id="${c.id}">❤️ ${c.likes || 0}</button>`;
+          container.appendChild(card);
       });
-
       document.querySelectorAll('.react-btn').forEach(btn => {
           btn.addEventListener('click', async (e) => {
               const id = e.target.getAttribute('data-id');
-              const currentLikes = data[id].likes || 0;
-              await update(ref(db, `comments/${id}`), { likes: currentLikes + 1 });
+              await update(ref(db, `comments/${id}`), { likes: (data[id].likes || 0) + 1 });
           });
       });
   });
 
-  // --- ৩. কোড সাবমিট করা ---
+  // --- ৩. কোড সাবমিট করা (Approved: false সহ) ---
   document.getElementById('submitModelBtn').addEventListener('click', async () => {
       const authorName = document.getElementById('authorName');
       const modelName = document.getElementById('modelName');
       const modelCode = document.getElementById('modelCode');
 
       if(authorName.value.trim() && modelName.value.trim() && modelCode.value.trim()) {
-          const submissionsRef = ref(db, 'submissions');
-          const newSubRef = push(submissionsRef);
+          const newSubRef = push(ref(db, 'submissions'));
           await set(newSubRef, {
               authorName: authorName.value.trim(),
               modelName: modelName.value.trim(),
               code: modelCode.value.trim(),
+              approved: false, // ডিফল্টভাবে ফলস থাকবে, মেইন সাইটে দেখাবে না
               timestamp: Date.now()
           });
-          alert("🚀 Model submitted successfully! Admin will review it.");
-          modelName.value = '';
-          modelCode.value = '';
-      } else {
-          alert("Please fill in all fields!");
+          alert("🚀 Model submitted! Admin will review and publish it soon.");
+          modelName.value = ''; modelCode.value = '';
+      } else { alert("Please fill in all fields!"); }
+  });
+
+  // --- ৪. শুধুমাত্র Approved প্রজেক্টগুলো মেইন সাইটে রেন্ডার করা ---
+  onValue(ref(db, 'submissions'), (snapshot) => {
+      const projContainer = document.getElementById('communityProjectsContainer');
+      const sectionTitle = document.getElementById('communityTitle');
+      projContainer.innerHTML = '';
+      
+      if(!snapshot.exists()) {
+          sectionTitle.style.display = 'none';
+          return;
       }
+
+      const data = snapshot.val();
+      let hasApprovedItems = false;
+
+      Object.keys(data).forEach((key) => {
+          const sub = data[key];
+          
+          // যদি এডমিন অ্যাপ্রুভ করে থাকে তবেই মেইন সাইটে কার্ড শো হবে
+          if (sub.approved === true) {
+              hasApprovedItems = true;
+              const card = document.createElement('div');
+              card.className = 'card community-card';
+              card.innerHTML = `
+                  <div class="icon">🛠️</div>
+                  <h2>${escapeHTML(sub.modelName)}</h2>
+                  <p>Click to open and run this community contribution simulation.</p>
+                  <div class="creator-tag">By: ${escapeHTML(sub.authorName)}</div>
+              `;
+              
+              // কার্ডে ক্লিক করলে নতুন ট্যাবে কোড রান করার লজিক
+              card.addEventListener('click', () => {
+                  const blob = new Blob([sub.code], { type: 'text/html' });
+                  const blobUrl = URL.createObjectURL(blob);
+                  window.open(blobUrl, '_blank');
+              });
+              
+              projContainer.appendChild(card);
+          }
+      });
+
+      sectionTitle.style.display = hasApprovedItems ? 'block' : 'none';
   });
 
   function escapeHTML(str) {
