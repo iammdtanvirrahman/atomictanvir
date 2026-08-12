@@ -2,105 +2,37 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>AtomicTanvir • Solar System</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{
-  overflow:hidden;
-  background:radial-gradient(circle at center,#101935,#02040a 60%,#000 100%);
-  color:#fff;
-  font-family:Arial,Helvetica,sans-serif;
-}
-canvas{display:block}
-.panel{
-  position:fixed;
-  top:18px;
-  left:18px;
-  width:min(340px,calc(100vw - 36px));
-  padding:18px;
-  border-radius:18px;
-  background:rgba(7,11,22,.72);
-  border:1px solid rgba(255,255,255,.08);
-  backdrop-filter:blur(14px);
-  z-index:10;
-}
-.panel h1{
-  font-size:1.45rem;
-  margin-bottom:8px;
-  color:#8be9ff;
-}
-.panel p{
-  color:#c8d3e8;
-  line-height:1.5;
-  font-size:.92rem;
-}
-.stats{
-  margin-top:14px;
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:10px;
-}
-.stat{
-  padding:10px 12px;
-  border-radius:12px;
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.06);
-}
-.stat span{
-  display:block;
-  color:#8be9ff;
-  font-size:.72rem;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  margin-bottom:4px;
-}
-.stat strong{font-size:1rem}
-.controls{
-  margin-top:14px;
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-}
-button{
-  border:none;
-  border-radius:999px;
-  padding:10px 16px;
-  background:linear-gradient(135deg,#6ae3ff,#3c7cff);
-  color:#03111f;
-  font-weight:700;
-  cursor:pointer;
-  transition:transform .2s ease,box-shadow .2s ease;
-  box-shadow:0 10px 24px rgba(60,124,255,.28);
-}
-button:hover{
-  transform:translateY(-2px);
-  box-shadow:0 16px 34px rgba(60,124,255,.38);
-}
-.tip{
-  position:fixed;
-  right:18px;
-  bottom:18px;
-  padding:12px 16px;
-  border-radius:14px;
-  background:rgba(7,11,22,.72);
-  border:1px solid rgba(255,255,255,.08);
-  color:#d9e7ff;
-  font-size:.88rem;
-  max-width:min(300px,calc(100vw - 36px));
-  z-index:10;
-}
+body{overflow:hidden;background:#02040a;color:#fff;font-family:Arial,Helvetica,sans-serif}
+canvas{display:block;width:100vw;height:100vh}
+.panel{position:fixed;top:18px;left:18px;width:min(340px,calc(100vw - 36px));padding:18px;border-radius:18px;background:rgba(7,11,22,.78);border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(14px);z-index:10}
+.panel h1{font-size:1.45rem;margin-bottom:8px;color:#8be9ff}.panel p{color:#c8d3e8;line-height:1.5;font-size:.92rem}
+.stats{margin-top:14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat{padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}.stat span{display:block;color:#8be9ff;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}.stat strong{font-size:1rem}
+.controls{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px}button{border:none;border-radius:999px;padding:10px 16px;background:linear-gradient(135deg,#6ae3ff,#3c7cff);color:#03111f;font-weight:700;cursor:pointer;transition:.2s;box-shadow:0 10px 24px rgba(60,124,255,.28)}button:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(60,124,255,.38)}
+.tip{position:fixed;right:18px;bottom:18px;padding:12px 16px;border-radius:14px;background:rgba(7,11,22,.78);border:1px solid rgba(255,255,255,.08);color:#d9e7ff;font-size:.88rem;max-width:min(300px,calc(100vw - 36px));z-index:10}
+.error{position:fixed;inset:auto 18px 18px 18px;max-width:720px;margin:auto;padding:12px 15px;border-radius:12px;background:rgba(255,70,100,.12);border:1px solid rgba(255,100,130,.28);color:#ffd9e1;display:none;z-index:20;font-size:.85rem}
+@media(max-width:650px){.panel{top:10px;left:10px}.tip{right:10px;bottom:10px}.panel p{font-size:.84rem}}
 </style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js"
+  }
+}
+</script>
 </head>
 <body>
 <div class="panel">
   <h1>☀️ Solar System Explorer</h1>
-  <p>Interactive 3D solar system built with Three.js. Drag to orbit around the Sun, zoom with the mouse wheel, and use the focus buttons to jump between planets.</p>
+  <p>Interactive 3D planetary system. Drag to orbit, scroll to zoom, and use the buttons to focus on major objects.</p>
   <div class="stats">
     <div class="stat"><span>Star</span><strong>Sun</strong></div>
     <div class="stat"><span>Planets</span><strong>8</strong></div>
-    <div class="stat"><span>Moons</span><strong>Major moons included</strong></div>
-    <div class="stat"><span>Engine</span><strong>Three.js WebGL</strong></div>
+    <div class="stat"><span>Moons</span><strong>Earth + more</strong></div>
+    <div class="stat"><span>Renderer</span><strong>WebGL</strong></div>
   </div>
   <div class="controls">
     <button id="focusSun">Focus Sun</button>
@@ -108,175 +40,161 @@ button:hover{
     <button id="focusJupiter">Focus Jupiter</button>
   </div>
 </div>
-<div class="tip">Tip: click and drag to rotate the camera. Use the mouse wheel or pinch gesture to zoom in and out of the planetary system.</div>
+<div class="tip">Drag to rotate • wheel/pinch to zoom</div>
+<div class="error" id="errorBox"></div>
+
 <script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js';
+import * as THREE from 'three';
 import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/controls/OrbitControls.js';
 
-const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x02040a,0.0026);
+const errorBox=document.getElementById('errorBox');
+function showError(message){errorBox.textContent=message;errorBox.style.display='block';console.error(message)}
 
-const camera = new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,0.1,4000);
-camera.position.set(0,120,220);
+try{
+  const scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x01030a);
 
-const renderer = new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(window.innerWidth,window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-document.body.appendChild(renderer.domElement);
+  const camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,0.1,5000);
+  camera.position.set(0,105,240);
 
-const controls = new OrbitControls(camera,renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-controls.minDistance = 35;
-controls.maxDistance = 900;
-controls.target.set(0,0,0);
+  const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.setSize(innerWidth,innerHeight);
+  renderer.outputColorSpace=THREE.SRGBColorSpace;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.15;
+  document.body.appendChild(renderer.domElement);
 
-const starGeometry = new THREE.BufferGeometry();
-const starCount = 5000;
-const starPositions = new Float32Array(starCount*3);
-for(let i=0;i<starCount;i++){
-  const radius = 1600 + Math.random()*1200;
-  const theta = Math.random()*Math.PI*2;
-  const phi = Math.acos(2*Math.random()-1);
-  starPositions[i*3] = radius*Math.sin(phi)*Math.cos(theta);
-  starPositions[i*3+1] = radius*Math.cos(phi);
-  starPositions[i*3+2] = radius*Math.sin(phi)*Math.sin(theta);
-}
-starGeometry.setAttribute('position',new THREE.BufferAttribute(starPositions,3));
-const starField = new THREE.Points(starGeometry,new THREE.PointsMaterial({color:0xffffff,size:1.4,sizeAttenuation:true}));
-scene.add(starField);
+  const controls=new OrbitControls(camera,renderer.domElement);
+  controls.enableDamping=true;
+  controls.dampingFactor=.06;
+  controls.minDistance=28;
+  controls.maxDistance=1000;
+  controls.target.set(0,0,0);
 
-const ambient = new THREE.AmbientLight(0x7a8bbd,0.35);
-scene.add(ambient);
+  // Soft fill light + sunlight for visible planetary colors.
+  scene.add(new THREE.HemisphereLight(0x9fc4ff,0x10131c,0.48));
+  const sunLight=new THREE.PointLight(0xfff0c4,4.8,1800,1.8);
+  sunLight.position.set(0,0,0);
+  scene.add(sunLight);
 
-const sunLight = new THREE.PointLight(0xfff1b0,2.8,2000,2);
-sunLight.position.set(0,0,0);
-scene.add(sunLight);
+  // Star field.
+  const starGeo=new THREE.BufferGeometry();
+  const starCount=6500;
+  const starPos=new Float32Array(starCount*3);
+  for(let i=0;i<starCount;i++){
+    const r=900+Math.random()*1800;
+    const u=Math.random()*2-1;
+    const a=Math.random()*Math.PI*2;
+    const s=Math.sqrt(1-u*u);
+    starPos[i*3]=r*s*Math.cos(a);
+    starPos[i*3+1]=r*u;
+    starPos[i*3+2]=r*s*Math.sin(a);
+  }
+  starGeo.setAttribute('position',new THREE.BufferAttribute(starPos,3));
+  const stars=new THREE.Points(starGeo,new THREE.PointsMaterial({color:0xffffff,size:1.6,sizeAttenuation:true,transparent:true,opacity:.9}));
+  scene.add(stars);
 
-const sun = new THREE.Mesh(
-  new THREE.SphereGeometry(16,64,64),
-  new THREE.MeshBasicMaterial({color:0xffc64b})
-);
-scene.add(sun);
-
-const corona = new THREE.Mesh(
-  new THREE.SphereGeometry(20,48,48),
-  new THREE.MeshBasicMaterial({
-    color:0xffd76b,
-    transparent:true,
-    opacity:0.18,
-    side:THREE.BackSide
-  })
-);
-scene.add(corona);
-
-const orbitMaterial = new THREE.LineBasicMaterial({color:0x22304d,transparent:true,opacity:0.55});
-
-const planetDefinitions = [
-  {name:'Mercury',color:0xb7b7b7,size:2.2,distance:28,speed:0.025},
-  {name:'Venus',color:0xd9b38c,size:3.8,distance:42,speed:0.018},
-  {name:'Earth',color:0x3b82ff,size:4.1,distance:58,speed:0.013,moon:true},
-  {name:'Mars',color:0xc45b3c,size:3.2,distance:74,speed:0.010},
-  {name:'Jupiter',color:0xd2a679,size:9.8,distance:104,speed:0.006},
-  {name:'Saturn',color:0xd8c48f,size:8.6,distance:136,speed:0.0045,ring:true},
-  {name:'Uranus',color:0x7de3ff,size:6.4,distance:168,speed:0.0032},
-  {name:'Neptune',color:0x4060ff,size:6.2,distance:198,speed:0.0026}
-];
-
-const planets = {};
-const clock = new THREE.Clock();
-
-planetDefinitions.forEach((definition,index)=>{
-  const orbitGroup = new THREE.Group();
-  scene.add(orbitGroup);
-
-  const orbitCurve = new THREE.EllipseCurve(0,0,definition.distance,definition.distance,0,Math.PI*2,false,0);
-  const orbitPoints = orbitCurve.getPoints(180).map(p=>new THREE.Vector3(p.x,0,p.y));
-  const orbitGeometry = new THREE.BufferGeometry().setFromPoints(orbitPoints);
-  const orbitLine = new THREE.LineLoop(orbitGeometry,orbitMaterial);
-  orbitLine.rotation.x = Math.PI/2;
-  scene.add(orbitLine);
-
-  const mesh = new THREE.Mesh(
-    new THREE.SphereGeometry(definition.size,32,32),
-    new THREE.MeshStandardMaterial({
-      color:definition.color,
-      roughness:0.9,
-      metalness:0.05
-    })
+  // Sun.
+  const sun=new THREE.Mesh(
+    new THREE.SphereGeometry(15.5,64,64),
+    new THREE.MeshBasicMaterial({color:0xffb42d})
   );
-  mesh.position.x = definition.distance;
-  orbitGroup.add(mesh);
+  scene.add(sun);
+  const glow=new THREE.Mesh(
+    new THREE.SphereGeometry(20.5,48,48),
+    new THREE.MeshBasicMaterial({color:0xffb84a,transparent:true,opacity:.16,side:THREE.BackSide,blending:THREE.AdditiveBlending})
+  );
+  scene.add(glow);
 
-  if(definition.ring){
-    const ring = new THREE.Mesh(
-      new THREE.RingGeometry(definition.size*1.35,definition.size*2.1,64),
-      new THREE.MeshBasicMaterial({
-        color:0xe8ddba,
-        side:THREE.DoubleSide,
-        transparent:true,
-        opacity:0.78
-      })
+  const orbitMaterial=new THREE.LineBasicMaterial({color:0x3c506f,transparent:true,opacity:.65});
+  const planets={};
+  const defs=[
+    {name:'Mercury',color:0xa8a8a8,size:2.2,d:28,s:.025},
+    {name:'Venus',color:0xd5a66c,size:3.6,d:42,s:.018},
+    {name:'Earth',color:0x2877ff,size:4,d:58,s:.013,moon:true},
+    {name:'Mars',color:0xd05a3a,size:3.1,d:74,s:.010},
+    {name:'Jupiter',color:0xd2a67c,size:9.5,d:104,s:.006},
+    {name:'Saturn',color:0xd6c08c,size:8.2,d:136,s:.0045,ring:true},
+    {name:'Uranus',color:0x62d9e8,size:6.2,d:168,s:.0032},
+    {name:'Neptune',color:0x4164e8,size:6,size2:6,d:198,s:.0026}
+  ];
+
+  for(let i=0;i<defs.length;i++){
+    const p=defs[i];
+    const orbit=new THREE.Group();
+    scene.add(orbit);
+
+    const curve=new THREE.EllipseCurve(0,0,p.d,p.d,0,Math.PI*2,false,0);
+    const pts=curve.getPoints(192).map(v=>new THREE.Vector3(v.x,0,v.y));
+    const line=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts),orbitMaterial);
+    line.rotation.x=Math.PI/2;
+    scene.add(line);
+
+    const mesh=new THREE.Mesh(
+      new THREE.SphereGeometry(p.size,40,40),
+      new THREE.MeshLambertMaterial({color:p.color})
     );
-    ring.rotation.x = Math.PI/2;
-    mesh.add(ring);
-  }
+    mesh.position.x=p.d;
+    orbit.add(mesh);
 
-  if(definition.moon){
-    const moonOrbit = new THREE.Group();
-    mesh.add(moonOrbit);
-    const moon = new THREE.Mesh(
-      new THREE.SphereGeometry(1.1,16,16),
-      new THREE.MeshStandardMaterial({color:0xdedede,roughness:1})
-    );
-    moon.position.x = 8;
-    moonOrbit.add(moon);
-    definition.moonOrbit = moonOrbit;
-  }
-
-  orbitGroup.rotation.y = index*Math.PI/5;
-  definition.group = orbitGroup;
-  definition.mesh = mesh;
-  planets[definition.name] = mesh;
-});
-
-function focusObject(object,distance){
-  controls.target.copy(object.position);
-  camera.position.set(object.position.x + distance, object.position.y + distance*0.35, object.position.z + distance);
-}
-
-document.getElementById('focusSun').addEventListener('click',()=>focusObject(sun,70));
-document.getElementById('focusEarth').addEventListener('click',()=>focusObject(planets.Earth,26));
-document.getElementById('focusJupiter').addEventListener('click',()=>focusObject(planets.Jupiter,42));
-
-window.addEventListener('resize',()=>{
-  camera.aspect = window.innerWidth/window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth,window.innerHeight);
-});
-
-function animate(){
-  requestAnimationFrame(animate);
-  const elapsed = clock.getElapsedTime();
-
-  sun.rotation.y += 0.0025;
-  corona.rotation.y -= 0.0015;
-  starField.rotation.y += 0.00008;
-
-  planetDefinitions.forEach((definition,index)=>{
-    definition.group.rotation.y += definition.speed;
-    definition.mesh.rotation.y += 0.01 + index*0.0015;
-    if(definition.moonOrbit){
-      definition.moonOrbit.rotation.y = elapsed*1.2;
+    if(p.ring){
+      const ring=new THREE.Mesh(
+        new THREE.RingGeometry(p.size*1.35,p.size*2.05,96),
+        new THREE.MeshBasicMaterial({color:0xe8d9aa,side:THREE.DoubleSide,transparent:true,opacity:.85})
+      );
+      ring.rotation.x=Math.PI/2;
+      mesh.add(ring);
     }
+
+    if(p.moon){
+      const moonOrbit=new THREE.Group();
+      mesh.add(moonOrbit);
+      const moon=new THREE.Mesh(new THREE.SphereGeometry(1.05,24,24),new THREE.MeshLambertMaterial({color:0xcfd3da}));
+      moon.position.x=8;
+      moonOrbit.add(moon);
+      p.moonOrbit=moonOrbit;
+    }
+
+    orbit.rotation.y=i*Math.PI/6;
+    p.orbit=orbit;
+    p.mesh=mesh;
+    planets[p.name]=mesh;
+  }
+
+  function focus(object,distance){
+    controls.target.copy(object.getWorldPosition(new THREE.Vector3()));
+    camera.position.copy(controls.target).add(new THREE.Vector3(distance,distance*.35,distance));
+  }
+  document.getElementById('focusSun').onclick=()=>focus(sun,65);
+  document.getElementById('focusEarth').onclick=()=>focus(planets.Earth,25);
+  document.getElementById('focusJupiter').onclick=()=>focus(planets.Jupiter,42);
+
+  addEventListener('resize',()=>{
+    camera.aspect=innerWidth/innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth,innerHeight);
   });
 
-  controls.update();
-  renderer.render(scene,camera);
+  const clock=new THREE.Clock();
+  function animate(){
+    requestAnimationFrame(animate);
+    const t=clock.getElapsedTime();
+    sun.rotation.y+=.0025;
+    glow.rotation.y-=.0015;
+    stars.rotation.y+=.00005;
+    defs.forEach((p,i)=>{
+      p.orbit.rotation.y+=p.s;
+      p.mesh.rotation.y+=.008+i*.0008;
+      if(p.moonOrbit)p.moonOrbit.rotation.y=t*1.3;
+    });
+    controls.update();
+    renderer.render(scene,camera);
+  }
+  animate();
+}catch(err){
+  showError('Solar System could not start: '+(err?.message||err));
 }
-
-animate();
 </script>
 </body>
 </html>
