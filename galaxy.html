@@ -3,78 +3,132 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#010207">
+<meta name="theme-color" content="#020307">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <title>AtomicTanvir • Galaxy Explorer</title>
 <style>
-:root{--bg:#010207;--panel:rgba(5,8,18,.82);--line:rgba(255,255,255,.1);--text:#f5f8ff;--muted:#aab6ca;--accent:#75eaff;--accent2:#7c89ff}
-*{box-sizing:border-box;margin:0;padding:0}html,body{width:100%;height:100%;overflow:hidden}body{font-family:Inter,Arial,sans-serif;background:#010207;color:var(--text)}canvas{display:block;width:100%;height:100%}
-#loading{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:radial-gradient(circle at center,#0d1734 0,#03050c 52%,#010207 100%);transition:opacity .45s ease}
-#loading.hide{opacity:0;pointer-events:none}.loadbox{width:min(430px,calc(100vw - 34px));padding:27px;border:1px solid var(--line);border-radius:22px;background:rgba(6,9,18,.84);backdrop-filter:blur(18px);box-shadow:0 25px 80px rgba(0,0,0,.5)}
-.brand{font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:#8eeeff;font-weight:800}.title{font-size:1.65rem;font-weight:800;margin-top:8px}.status{font-size:.88rem;color:var(--muted);margin-top:5px;min-height:22px}.progress{height:10px;margin-top:20px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}.bar{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .12s ease}.row{display:flex;justify-content:space-between;margin-top:9px;color:#8793a8;font-size:.77rem}.pct{font-weight:800;color:#e5f2ff}
-.ui{position:fixed;top:18px;left:18px;z-index:10;width:min(350px,calc(100vw - 36px));padding:18px;border:1px solid var(--line);border-radius:20px;background:var(--panel);backdrop-filter:blur(17px);box-shadow:0 18px 55px rgba(0,0,0,.35)}.ui h1{font-size:1.4rem;margin-bottom:7px}.ui p{font-size:.86rem;line-height:1.55;color:var(--muted)}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.controls button{border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:9px 13px;background:rgba(255,255,255,.055);color:#deebff;font-weight:700;cursor:pointer}.controls button:hover{background:linear-gradient(135deg,#6be8ff,#7585ff);color:#06111d}.tip{position:fixed;right:18px;bottom:18px;z-index:10;padding:10px 14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:#bec9da;font-size:.79rem}
+:root{--bg:#020307;--panel:rgba(5,8,17,.82);--line:rgba(255,255,255,.11);--text:#f7f8ff;--muted:#aab5c8;--cyan:#74ebff;--violet:#7e86ff}
+*{box-sizing:border-box;margin:0;padding:0}html,body{width:100%;height:100%;overflow:hidden}body{font-family:Inter,Arial,sans-serif;background:#020307;color:var(--text)}canvas{display:block;width:100%;height:100%}
+#loading{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:radial-gradient(circle at center,#172143 0,#060914 45%,#020307 100%);transition:opacity .45s ease}.loadbox{width:min(430px,calc(100vw - 34px));padding:28px;border:1px solid var(--line);border-radius:22px;background:rgba(5,8,17,.87);backdrop-filter:blur(18px);box-shadow:0 30px 90px rgba(0,0,0,.55)}.brand{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#9cf3ff;font-weight:800}.title{font-size:1.65rem;font-weight:800;margin-top:8px}.status{font-size:.86rem;color:var(--muted);margin-top:5px;min-height:20px}.progress{height:10px;margin-top:20px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.06)}.bar{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--violet));border-radius:999px;transition:width .12s ease}.row{display:flex;justify-content:space-between;margin-top:9px;color:#7f8ba0;font-size:.76rem}.pct{font-weight:800;color:#e9f6ff}
+.ui{position:fixed;top:18px;left:18px;z-index:10;width:min(345px,calc(100vw - 36px));padding:18px;border:1px solid var(--line);border-radius:20px;background:var(--panel);backdrop-filter:blur(17px);box-shadow:0 18px 60px rgba(0,0,0,.36)}.ui h1{font-size:1.38rem;margin-bottom:7px}.ui p{font-size:.84rem;line-height:1.55;color:var(--muted)}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.controls button{border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:9px 13px;background:rgba(255,255,255,.055);color:#e3edff;font-weight:700;cursor:pointer}.controls button:hover{background:linear-gradient(135deg,#6ae9ff,#7784ff);color:#07111b}.tip{position:fixed;right:18px;bottom:18px;z-index:10;padding:10px 14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:#bec9da;font-size:.78rem}
 @media(max-width:650px){.ui{top:10px;left:10px}.tip{display:none}}
 </style>
 <script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
-  }
-}
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"}}
 </script>
 </head>
 <body>
-<div id="loading"><div class="loadbox"><div class="brand">AtomicTanvir</div><div class="title">Building Galaxy</div><div class="status" id="status">Preparing renderer…</div><div class="progress"><div class="bar" id="bar"></div></div><div class="row"><span>Loading particles gradually</span><span class="pct" id="pct">0%</span></div></div></div>
-<div class="ui"><h1>🌌 Galaxy Explorer</h1><p>Procedural barred spiral galaxy with a dense bulge, stellar bar, four spiral arms, dust lanes and halo stars.</p><div class="controls"><button id="pause">Pause</button><button id="reset">Reset View</button><button id="speed">Slow Mode</button></div></div>
-<div class="tip">Drag to rotate • Wheel/pinch to zoom</div>
+<div id="loading"><div class="loadbox"><div class="brand">AtomicTanvir</div><div class="title">Building Galaxy</div><div class="status" id="status">Preparing renderer…</div><div class="progress"><div class="bar" id="bar"></div></div><div class="row"><span>Loading in safe chunks</span><span class="pct" id="pct">0%</span></div></div></div>
+<div class="ui"><h1>🌌 Galaxy Explorer</h1><p>A cinematic face-on barred spiral galaxy with a luminous amber core, layered dusty arms, blue-green outer gas glow, and dense stellar fields.</p><div class="controls"><button id="pause">Pause</button><button id="reset">Reset View</button><button id="speed">Slow Mode</button></div></div>
+<div class="tip">Drag to orbit • Wheel/pinch to zoom • Double-click to reset</div>
 <script type="module">
 const statusEl=document.getElementById('status'),barEl=document.getElementById('bar'),pctEl=document.getElementById('pct'),loading=document.getElementById('loading');
 const setProgress=(v,t)=>{v=Math.max(0,Math.min(100,Math.round(v)));barEl.style.width=v+'%';pctEl.textContent=v+'%';if(t)statusEl.textContent=t};
 const nextFrame=()=>new Promise(r=>requestAnimationFrame(r));
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 try{
-setProgress(1,'Loading 3D engine…');
-const THREE=await import('three');
-const {OrbitControls}=await import('three/addons/controls/OrbitControls.js');
-await nextFrame();
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x010207);
-const camera=new THREE.PerspectiveCamera(58,innerWidth/innerHeight,.1,1400);const defaultPos=new THREE.Vector3(0,30,58);camera.position.copy(defaultPos);
-const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;document.body.appendChild(renderer.domElement);
-const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.045;controls.minDistance=9;controls.maxDistance=180;
-function makeTexture(){const c=document.createElement('canvas');c.width=c.height=32;const x=c.getContext('2d');const g=x.createRadialGradient(16,16,0,16,16,16);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.16,'rgba(255,255,255,.96)');g.addColorStop(.42,'rgba(180,220,255,.28)');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(0,0,32,32);return new THREE.CanvasTexture(c)}
-const starTex=makeTexture();
-function normal(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
-function starColor(){const r=Math.random();return r<.08?[.56,.78,1]:r<.2?[.76,.87,1]:r<.8?[1,.95,.83]:r<.95?[1,.69,.46]:[1,.44,.28]}
-const galaxy=new THREE.Group();galaxy.rotation.x=THREE.MathUtils.degToRad(-10);scene.add(galaxy);
-setProgress(4,'Loading background stars…');
-const BG=3200,bgPos=new Float32Array(BG*3),bgGeo=new THREE.BufferGeometry();bgGeo.setAttribute('position',new THREE.BufferAttribute(bgPos,3));bgGeo.setDrawRange(0,0);const bgPoints=new THREE.Points(bgGeo,new THREE.PointsMaterial({map:starTex,size:.78,color:0xb8d2ff,transparent:true,opacity:.38,depthWrite:false,blending:THREE.AdditiveBlending}));scene.add(bgPoints);
-for(let s=0;s<BG;s+=400){const e=Math.min(s+400,BG);for(let i=s;i<e;i++){const r=260+Math.random()*460,t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1);bgPos[i*3]=r*Math.sin(p)*Math.cos(t);bgPos[i*3+1]=r*Math.cos(p);bgPos[i*3+2]=r*Math.sin(p)*Math.sin(t)}bgGeo.setDrawRange(0,e);bgGeo.attributes.position.needsUpdate=true;setProgress(4+(e/BG)*8,'Loading background stars…');await nextFrame()}
-const N=50000,R=39,ARMS=4,pos=new Float32Array(N*3),col=new Float32Array(N*3);const diskG=new THREE.BufferGeometry();diskG.setAttribute('position',new THREE.BufferAttribute(pos,3));diskG.setAttribute('color',new THREE.BufferAttribute(col,3));diskG.setDrawRange(0,0);const diskPts=new THREE.Points(diskG,new THREE.PointsMaterial({map:starTex,size:.115,vertexColors:true,transparent:true,opacity:.92,depthWrite:false,blending:THREE.AdditiveBlending}));galaxy.add(diskPts);
-const diskR=new Float32Array(N),diskA=new Float32Array(N);
-setProgress(12,'Loading spiral-arm stars…');
-for(let s=0;s<N;s+=1000){const e=Math.min(s+1000,N);for(let i=s;i<e;i++){const r=3+Math.pow(Math.random(),.67)*(R-3),arm=i%ARMS,base=arm*Math.PI*2/ARMS,a=base+r*.118+r*r*.0016+normal()*(.08+.45*r/R),y=normal()*(.18+.68*Math.exp(-r/12));pos[i*3]=Math.cos(a)*r;pos[i*3+1]=y;pos[i*3+2]=Math.sin(a)*r;const c=starColor();col[i*3]=c[0];col[i*3+1]=c[1];col[i*3+2]=c[2];diskR[i]=r;diskA[i]=a}diskG.setDrawRange(0,e);diskG.attributes.position.needsUpdate=true;diskG.attributes.color.needsUpdate=true;setProgress(12+(e/N)*48,'Loading spiral-arm stars…');await nextFrame()}
-const B=11000,bp=new Float32Array(B*3),bc=new Float32Array(B*3),bg=new THREE.BufferGeometry();bg.setAttribute('position',new THREE.BufferAttribute(bp,3));bg.setAttribute('color',new THREE.BufferAttribute(bc,3));bg.setDrawRange(0,0);galaxy.add(new THREE.Points(bg,new THREE.PointsMaterial({map:starTex,size:.15,vertexColors:true,transparent:true,opacity:.92,depthWrite:false,blending:THREE.AdditiveBlending})));
-setProgress(60,'Building central bulge…');
-for(let s=0;s<B;s+=700){const e=Math.min(s+700,B);for(let i=s;i<e;i++){bp[i*3]=normal()*4.1;bp[i*3+1]=normal()*1.5;bp[i*3+2]=normal()*2.25;bc[i*3]=1;bc[i*3+1]=.78+Math.random()*.17;bc[i*3+2]=.5+Math.random()*.23}bg.setDrawRange(0,e);bg.attributes.position.needsUpdate=true;bg.attributes.color.needsUpdate=true;setProgress(60+(e/B)*12,'Building central bulge…');await nextFrame()}
-const barMesh=new THREE.Mesh(new THREE.CapsuleGeometry(1.65,10,10,20),new THREE.MeshBasicMaterial({color:0xffc77f,transparent:true,opacity:.16,blending:THREE.AdditiveBlending}));barMesh.rotation.z=Math.PI/2;galaxy.add(barMesh);await nextFrame();
-setProgress(74,'Tracing dust lanes…');
-const D=6500,dp=new Float32Array(D*3),dc=new Float32Array(D*3),dg=new THREE.BufferGeometry();dg.setAttribute('position',new THREE.BufferAttribute(dp,3));dg.setAttribute('color',new THREE.BufferAttribute(dc,3));dg.setDrawRange(0,0);galaxy.add(new THREE.Points(dg,new THREE.PointsMaterial({map:starTex,size:.46,vertexColors:true,transparent:true,opacity:.15,depthWrite:false})));
-for(let s=0;s<D;s+=650){const e=Math.min(s+650,D);for(let i=s;i<e;i++){const arm=i%ARMS,r=5+Math.random()*32,a=arm*Math.PI*2/ARMS+r*.118+r*r*.0016+.34+normal()*.08,o=normal()*(.25+.4*r/R);dp[i*3]=Math.cos(a)*r+Math.cos(a+Math.PI/2)*o;dp[i*3+1]=normal()*.14;dp[i*3+2]=Math.sin(a)*r+Math.sin(a+Math.PI/2)*o;dc[i*3]=.055;dc[i*3+1]=.034;dc[i*3+2]=.022}dg.setDrawRange(0,e);dg.attributes.position.needsUpdate=true;dg.attributes.color.needsUpdate=true;setProgress(74+(e/D)*16,'Tracing dust lanes…');await nextFrame()}
-setProgress(91,'Finishing core glow and scene…');
-const glow=new THREE.Mesh(new THREE.SphereGeometry(3.7,28,28),new THREE.MeshBasicMaterial({color:0xffbd75,transparent:true,opacity:.12,side:THREE.BackSide,blending:THREE.AdditiveBlending,depthWrite:false}));galaxy.add(glow);await nextFrame();
-setProgress(96,'Preparing controls…');
-let paused=false,slow=false;
-document.getElementById('pause').onclick=e=>{paused=!paused;e.target.textContent=paused?'Resume':'Pause'};
-document.getElementById('speed').onclick=e=>{slow=!slow;e.target.textContent=slow?'Normal Speed':'Slow Mode'};
-document.getElementById('reset').onclick=()=>{camera.position.copy(defaultPos);controls.target.set(0,0,0);controls.update()};
-renderer.domElement.addEventListener('dblclick',()=>{camera.position.copy(defaultPos);controls.target.set(0,0,0);controls.update()});
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
-await nextFrame();setProgress(100,'Galaxy ready');await sleep(250);loading.classList.add('hide');setTimeout(()=>loading.remove(),500);
-let last=performance.now();
-function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-last)/16.67,2);last=now;if(!paused){galaxy.rotation.y+=.00072*dt*(slow?.35:1);glow.scale.setScalar(1+.018*Math.sin(now*.0012))}controls.update();renderer.render(scene,camera)}
-requestAnimationFrame(animate);
-}catch(err){console.error(err);setProgress(100,'Renderer error — refresh to retry');statusEl.textContent='Galaxy initialization failed safely.'}
+  setProgress(1,'Loading 3D engine…');
+  const THREE=await import('three');
+  const {OrbitControls}=await import('three/addons/controls/OrbitControls.js');
+  await nextFrame();
+
+  const scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x020307);
+  const camera=new THREE.PerspectiveCamera(52,innerWidth/innerHeight,.1,1400);
+  const defaultPos=new THREE.Vector3(0,42,52);camera.position.copy(defaultPos);
+  const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+  renderer.setSize(innerWidth,innerHeight);
+  renderer.outputColorSpace=THREE.SRGBColorSpace;
+  document.body.appendChild(renderer.domElement);
+  const controls=new OrbitControls(camera,renderer.domElement);
+  controls.enableDamping=true;controls.dampingFactor=.045;controls.minDistance=10;controls.maxDistance=180;controls.target.set(0,0,0);
+
+  function softTexture(inner,mid,outer){
+    const c=document.createElement('canvas');c.width=c.height=64;const ctx=c.getContext('2d');
+    const g=ctx.createRadialGradient(32,32,0,32,32,32);
+    g.addColorStop(0,inner);g.addColorStop(.18,mid);g.addColorStop(.58,outer);g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g;ctx.fillRect(0,0,64,64);return new THREE.CanvasTexture(c);
+  }
+  const starTex=softTexture('rgba(255,255,255,1)','rgba(220,240,255,.55)','rgba(100,170,255,.08)');
+  const armTex=softTexture('rgba(255,255,255,.20)','rgba(120,220,255,.10)','rgba(0,0,0,0)');
+  const dustTex=softTexture('rgba(28,20,18,.70)','rgba(10,7,10,.35)','rgba(0,0,0,0)');
+
+  function normal(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+  function starColor(){const r=Math.random();if(r<.07)return [0.42,.74,1];if(r<.15)return [.72,.88,1];if(r<.72)return [1,.96,.84];if(r<.92)return [1,.70,.45];return [1,.42,.26]}
+
+  const galaxy=new THREE.Group();galaxy.rotation.x=THREE.MathUtils.degToRad(-4);scene.add(galaxy);
+
+  // Distant background field
+  setProgress(3,'Loading distant stars…');
+  const BG=3500,bgPos=new Float32Array(BG*3),bgGeo=new THREE.BufferGeometry();bgGeo.setAttribute('position',new THREE.BufferAttribute(bgPos,3));bgGeo.setDrawRange(0,0);
+  const bgPoints=new THREE.Points(bgGeo,new THREE.PointsMaterial({map:starTex,size:.78,color:0xaecbff,transparent:true,opacity:.42,depthWrite:false,blending:THREE.AdditiveBlending,sizeAttenuation:true}));scene.add(bgPoints);
+  for(let s=0;s<BG;s+=350){const e=Math.min(s+350,BG);for(let i=s;i<e;i++){const r=240+Math.random()*520,t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1);bgPos[i*3]=r*Math.sin(p)*Math.cos(t);bgPos[i*3+1]=r*Math.cos(p);bgPos[i*3+2]=r*Math.sin(p)*Math.sin(t)}bgGeo.setDrawRange(0,e);bgGeo.attributes.position.needsUpdate=true;setProgress(3+(e/BG)*7,'Loading distant stars…');await nextFrame()}
+
+  // Main stellar disk. More density near center and along curved arms.
+  const N=52000,R=40,ARMS=4,pos=new Float32Array(N*3),col=new Float32Array(N*3),radii=new Float32Array(N),angles=new Float32Array(N);
+  const diskGeo=new THREE.BufferGeometry();diskGeo.setAttribute('position',new THREE.BufferAttribute(pos,3));diskGeo.setAttribute('color',new THREE.BufferAttribute(col,3));diskGeo.setDrawRange(0,0);
+  const disk=new THREE.Points(diskGeo,new THREE.PointsMaterial({map:starTex,size:.12,vertexColors:true,transparent:true,opacity:.92,depthWrite:false,blending:THREE.AdditiveBlending,sizeAttenuation:true}));galaxy.add(disk);
+  setProgress(11,'Loading stellar spiral arms…');
+  for(let s=0;s<N;s+=800){const e=Math.min(s+800,N);for(let i=s;i<e;i++){
+    const r=2.5+Math.pow(Math.random(),.70)*(R-2.5);
+    const arm=i%ARMS;
+    const base=arm*(Math.PI*2/ARMS);
+    const curve=1.18*r+.0009*r*r;
+    const spread=.06+.34*Math.pow(r/R,1.15);
+    const a=base+curve+normal()*spread;
+    const x=Math.cos(a)*r,z=Math.sin(a)*r;
+    const thickness=.12+.62*Math.exp(-r/13);
+    const y=normal()*thickness;
+    pos[i*3]=x;pos[i*3+1]=y;pos[i*3+2]=z;
+    const c=starColor();col[i*3]=c[0];col[i*3+1]=c[1];col[i*3+2]=c[2];
+    radii[i]=r;angles[i]=a;
+  }diskGeo.setDrawRange(0,e);diskGeo.attributes.position.needsUpdate=true;diskGeo.attributes.color.needsUpdate=true;setProgress(11+(e/N)*39,'Loading stellar spiral arms…');await nextFrame()}
+
+  // Warm central bulge.
+  const B=14000,bp=new Float32Array(B*3),bc=new Float32Array(B*3),bulgeGeo=new THREE.BufferGeometry();bulgeGeo.setAttribute('position',new THREE.BufferAttribute(bp,3));bulgeGeo.setAttribute('color',new THREE.BufferAttribute(bc,3));bulgeGeo.setDrawRange(0,0);
+  galaxy.add(new THREE.Points(bulgeGeo,new THREE.PointsMaterial({map:starTex,size:.16,vertexColors:true,transparent:true,opacity:.94,depthWrite:false,blending:THREE.AdditiveBlending,sizeAttenuation:true})));
+  setProgress(50,'Building luminous central bulge…');
+  for(let s=0;s<B;s+=700){const e=Math.min(s+700,B);for(let i=s;i<e;i++){bp[i*3]=normal()*3.7;bp[i*3+1]=normal()*1.35;bp[i*3+2]=normal()*2.25;const warm=Math.random();bc[i*3]=1;bc[i*3+1]=.68+warm*.25;bc[i*3+2]=.38+warm*.32}bulgeGeo.setDrawRange(0,e);bulgeGeo.attributes.position.needsUpdate=true;bulgeGeo.attributes.color.needsUpdate=true;setProgress(50+(e/B)*10,'Building luminous central bulge…');await nextFrame()}
+
+  // Stellar bar crossing the central bulge.
+  const barPts=[];for(let i=0;i<1500;i++){const x=normal()*2.3,z=normal()*.6,y=normal()*.55;barPts.push(x,y,z)}
+  const barGeo=new THREE.BufferGeometry().setFromPoints(barPts.map(p=>new THREE.Vector3(p[0],p[1],p[2])));
+  const barMat=new THREE.PointsMaterial({map:starTex,color:0xffc27d,size:.18,transparent:true,opacity:.92,depthWrite:false,blending:THREE.AdditiveBlending});galaxy.add(new THREE.Points(barGeo,barMat));
+  setProgress(63,'Forming dust lanes…');await nextFrame();
+
+  // Dust lanes slightly offset from the bright arms.
+  const D=9000,dp=new Float32Array(D*3),dg=new THREE.BufferGeometry();dg.setAttribute('position',new THREE.BufferAttribute(dp,3));dg.setDrawRange(0,0);
+  galaxy.add(new THREE.Points(dg,new THREE.PointsMaterial({map:dustTex,size:.62,transparent:true,opacity:.34,depthWrite:false,blending:THREE.NormalBlending,sizeAttenuation:true})));
+  for(let s=0;s<D;s+=600){const e=Math.min(s+600,D);for(let i=s;i<e;i++){const arm=i%ARMS,r=3.5+Math.pow(Math.random(),.72)*34,base=arm*(Math.PI*2/ARMS),a=base+1.18*r+.0009*r*r+.16+normal()*(.055+.25*r/R),offset=normal()*.52;dp[i*3]=Math.cos(a)*r+Math.cos(a+Math.PI/2)*offset;dp[i*3+1]=normal()*(.08+.18*Math.exp(-r/14));dp[i*3+2]=Math.sin(a)*r+Math.sin(a+Math.PI/2)*offset}dg.setDrawRange(0,e);dg.attributes.position.needsUpdate=true;setProgress(63+(e/D)*19,'Forming dust lanes…');await nextFrame()}
+
+  // Gas/nebula glow around arms. These stay static so the animation remains light.
+  setProgress(83,'Adding blue-green outer glow…');
+  for(let arm=0;arm<ARMS;arm++){
+    const points=[];
+    for(let j=0;j<220;j++){const r=5+j*(31/219),a=arm*(Math.PI*2/ARMS)+1.18*r+.0009*r*r;points.push(new THREE.Vector3(Math.cos(a)*r,normal()*.16,Math.sin(a)*r))}
+    const geo=new THREE.BufferGeometry().setFromPoints(points);
+    const mat=new THREE.LineBasicMaterial({color:arm%2?0x65d8d0:0x6ca7ff,transparent:true,opacity:.14,blending:THREE.AdditiveBlending});
+    galaxy.add(new THREE.Line(geo,mat));
+  }
+  const outerGlow=new THREE.Mesh(new THREE.SphereGeometry(38,32,32),new THREE.MeshBasicMaterial({color:0x4da8b2,transparent:true,opacity:.035,side:THREE.BackSide,blending:THREE.AdditiveBlending,depthWrite:false}));galaxy.add(outerGlow);
+  const coreGlow=new THREE.Mesh(new THREE.SphereGeometry(4.8,32,32),new THREE.MeshBasicMaterial({color:0xffb65a,transparent:true,opacity:.22,side:THREE.BackSide,blending:THREE.AdditiveBlending,depthWrite:false}));galaxy.add(coreGlow);
+  setProgress(92,'Finishing cinematic lighting…');
+  const centerLight=new THREE.PointLight(0xffc27a,9,55,2);galaxy.add(centerLight);
+  await nextFrame();
+
+  let paused=false,slow=false;
+  document.getElementById('pause').onclick=e=>{paused=!paused;e.target.textContent=paused?'Resume':'Pause'};
+  document.getElementById('speed').onclick=e=>{slow=!slow;e.target.textContent=slow?'Normal Speed':'Slow Mode'};
+  const reset=()=>{camera.position.copy(defaultPos);controls.target.set(0,0,0);controls.update()};
+  document.getElementById('reset').onclick=reset;renderer.domElement.addEventListener('dblclick',reset);
+  addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+
+  setProgress(100,'Galaxy ready');await sleep(250);loading.style.opacity='0';setTimeout(()=>loading.remove(),500);
+  let last=performance.now();
+  function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-last)/16.67,2);last=now;if(!paused){galaxy.rotation.z+=.00016*dt*(slow?.35:1);coreGlow.scale.setScalar(1+.035*Math.sin(now*.0012));outerGlow.scale.setScalar(1+.012*Math.sin(now*.00055))}controls.update();renderer.render(scene,camera)}
+  requestAnimationFrame(animate);
+}catch(err){console.error(err);setProgress(100,'Renderer error');statusEl.textContent='Galaxy could not initialize. Refresh to retry.'}
 </script>
 </body>
 </html>
