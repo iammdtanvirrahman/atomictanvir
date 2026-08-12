@@ -7,316 +7,169 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <title>Galaxy — Deep Field Simulation</title>
 <style>
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#01010d;color:#b8c8d8;font-family:Inter,Segoe UI,system-ui,sans-serif}
-canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
-canvas.drag{cursor:grabbing}
-#load{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:#01010d;transition:opacity .6s ease}
-#load.hide{opacity:0;pointer-events:none}
-.box{width:min(410px,82vw);text-align:center}.t{font-size:1.4rem;letter-spacing:.32em;color:#e8d5a3}.s{font-size:.68rem;letter-spacing:.18em;color:#5a7080;margin:.5rem 0 2rem}.track{height:3px;background:#11151e}.bar{height:100%;width:0;background:linear-gradient(90deg,#f5c842,#4dd8e0);transition:width .12s}.row{display:flex;justify-content:space-between;margin-top:8px;font-size:.68rem;text-transform:uppercase;letter-spacing:.1em}.pct{color:#4dd8e0}
-#ui,#hud,#controls{position:fixed;z-index:10;opacity:0;transition:opacity .5s ease}.show{opacity:1!important}
-#ui{left:1rem;top:1rem}.title{color:#e8d5a3;letter-spacing:.28em;font-size:.78rem}.sub{color:#5a7080;font-size:.58rem;letter-spacing:.15em;margin-top:4px}
-#hud{right:1rem;top:1rem;text-align:right;color:#5a7080;font-size:.62rem;line-height:1.8;letter-spacing:.1em}
-#controls{left:50%;bottom:1rem;transform:translateX(-50%);display:flex;gap:.5rem}.btn{background:rgba(3,5,18,.9);border:1px solid rgba(77,216,224,.2);color:#c6d4df;padding:.5rem .85rem;border-radius:4px;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}.btn.active,.btn:hover{color:#4dd8e0;border-color:#4dd8e0}
-#error{display:none;color:#ff9b8f;font-size:.7rem;line-height:1.5;margin-top:1rem}.error #error{display:block}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#01010d;color:#b8c8d8;font-family:Inter,Segoe UI,system-ui,sans-serif}canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}canvas.drag{cursor:grabbing}
+#load{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:#01010d;transition:opacity .55s ease}.hide{opacity:0;pointer-events:none}.box{width:min(410px,82vw);text-align:center}.t{font-size:1.4rem;letter-spacing:.32em;color:#e8d5a3}.s{font-size:.68rem;letter-spacing:.18em;color:#5a7080;margin:.5rem 0 2rem}.track{height:3px;background:#11151e}.bar{height:100%;width:0;background:linear-gradient(90deg,#f5c842,#4dd8e0);transition:width .1s}.row{display:flex;justify-content:space-between;margin-top:8px;font-size:.68rem;text-transform:uppercase;letter-spacing:.1em}.pct{color:#4dd8e0}
+#ui,#hud,#controls{position:fixed;z-index:10;opacity:0;transition:.5s}.show{opacity:1!important}#ui{left:1rem;top:1rem}.title{color:#e8d5a3;letter-spacing:.28em;font-size:.78rem}.sub{color:#5a7080;font-size:.58rem;letter-spacing:.15em;margin-top:4px}#hud{right:1rem;top:1rem;text-align:right;color:#5a7080;font-size:.62rem;line-height:1.8;letter-spacing:.1em}#controls{left:50%;bottom:1rem;transform:translateX(-50%);display:flex;gap:.5rem}.btn{background:rgba(3,5,18,.9);border:1px solid rgba(77,216,224,.2);color:#c6d4df;padding:.5rem .85rem;border-radius:4px;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}.btn.active,.btn:hover{color:#4dd8e0;border-color:#4dd8e0}
 @media(max-width:500px){#hud{top:auto;bottom:4rem}.btn{padding:.45rem .65rem}}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
-<div id="load"><div class="box"><div class="t">Deep Field</div><div class="s">Galaxy Simulation</div><div class="track"><div class="bar" id="bar"></div></div><div class="row"><span id="step">Initializing renderer</span><span class="pct" id="pct">0%</span></div><div id="error"></div></div></div>
+<div id="load"><div class="box"><div class="t">Deep Field</div><div class="s">Galaxy Simulation</div><div class="track"><div class="bar" id="bar"></div></div><div class="row"><span id="step">Initializing renderer</span><span class="pct" id="pct">0%</span></div></div></div>
 <div id="ui"><div class="title">MILKY WAY TYPE SB</div><div class="sub">BARRED SPIRAL — REAL-TIME SIMULATION</div></div>
 <div id="hud"><div id="stars">0 stars</div><div id="fps">0 fps</div><div>drag · scroll · pinch</div></div>
 <div id="controls"><button class="btn" id="reset">Reset Camera</button><button class="btn" id="pause">Pause</button><button class="btn" id="slow">Slow Motion</button></div>
 <script>
-(function(){
-  'use strict';
-
+(() => {
   const canvas=document.getElementById('c');
-  const load=document.getElementById('load');
-  const bar=document.getElementById('bar');
-  const pct=document.getElementById('pct');
-  const step=document.getElementById('step');
-  const errorBox=document.getElementById('error');
-  const ui=document.getElementById('ui');
-  const hud=document.getElementById('hud');
-  const controls=document.getElementById('controls');
-  const starsHud=document.getElementById('stars');
-  const fpsHud=document.getElementById('fps');
-
-  let gl=null;
-  try{
-    gl=canvas.getContext('webgl2',{alpha:false,antialias:false,powerPreference:'high-performance'});
-  }catch(err){
-    gl=null;
-  }
-  if(!gl){
-    load.classList.add('error');
-    step.textContent='WebGL2 unavailable';
-    errorBox.textContent='This browser/device cannot start the WebGL2 renderer.';
-    return;
-  }
-
+  const ctx=canvas.getContext('2d',{alpha:false,desynchronized:true});
+  const load=document.getElementById('load'),bar=document.getElementById('bar'),pct=document.getElementById('pct'),step=document.getElementById('step');
+  const ui=document.getElementById('ui'),hud=document.getElementById('hud'),controls=document.getElementById('controls');
+  const starsHud=document.getElementById('stars'),fpsHud=document.getElementById('fps');
   const TAU=Math.PI*2;
-  let W=1,H=1,DPR=1;
-  let seed=123456789;
-  let bgBuf=null,bulgeBuf=null,diskBuf=null,armBuf=null;
-  let camTheta=.2,camPhi=0,camDist=7.4;
-  let simTime=0,lastTime=performance.now();
-  let paused=false,slow=false;
-  let dragging=false,lastX=0,lastY=0;
+  const isMobile=innerWidth<700;
+  const STAR_COUNT=isMobile?7500:14500;
+  const BG_COUNT=isMobile?1000:1800;
+  const ARM_COUNT=4;
+  let W=1,H=1,DPR=1,cx=0,cy=0,scale=1,rot=0,panX=0,panY=0;
+  let paused=false,slow=false,drag=false,lastX=0,lastY=0,last=performance.now(),sim=0;
+  let seed=0x4a3f2b1c;
+  const bg=[],stars=[];
 
-  function resize(){
-    DPR=Math.min(window.devicePixelRatio||1,2);
-    W=Math.max(1,window.innerWidth);
-    H=Math.max(1,window.innerHeight);
-    canvas.width=Math.max(1,Math.floor(W*DPR));
-    canvas.height=Math.max(1,Math.floor(H*DPR));
-    gl.viewport(0,0,canvas.width,canvas.height);
-  }
-  resize();
-  window.addEventListener('resize',resize);
+  function R(){seed^=seed<<13;seed^=seed>>17;seed^=seed<<5;return (seed>>>0)/4294967296;}
+  function N(){const u=Math.max(R(),.0001),v=Math.max(R(),.0001);return Math.sqrt(-2*Math.log(u))*Math.cos(TAU*v)}
+  function C(){const r=R();if(r<.08)return [130,190,255];if(r<.18)return [205,225,255];if(r<.78)return [255,244,213];if(r<.95)return [255,203,135];return [255,145,100]}
+  function resize(){W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,1.5);canvas.width=Math.floor(W*DPR);canvas.height=Math.floor(H*DPR);canvas.style.width=W+'px';canvas.style.height=H+'px';cx=W/2;cy=H/2;}
+  function progress(v,t){bar.style.width=Math.round(v)+'%';pct.textContent=Math.round(v)+'%';step.textContent=t;}
+  const yieldFrame=()=>new Promise(r=>setTimeout(r,0));
 
-  function setProgress(value,label){
-    const v=Math.max(0,Math.min(100,Math.round(value)));
-    bar.style.width=v+'%';
-    pct.textContent=v+'%';
-    step.textContent=label;
-  }
-  function waitFrame(){return new Promise(resolve=>setTimeout(resolve,0));}
-  function R(){
-    seed^=seed<<13;
-    seed^=seed>>17;
-    seed^=seed<<5;
-    return (seed>>>0)/4294967296;
-  }
-  function N(){
-    const u=Math.max(R(),.0001);
-    const v=Math.max(R(),.0001);
-    return Math.sqrt(-2*Math.log(u))*Math.cos(TAU*v);
-  }
-  function color(){
-    const r=R();
-    if(r<.08)return [.5,.75,1];
-    if(r<.18)return [.8,.9,1];
-    if(r<.78)return [1,.96,.84];
-    if(r<.95)return [1,.72,.45];
-    return [1,.43,.28];
-  }
-
-  function shader(type,source){
-    const s=gl.createShader(type);
-    gl.shaderSource(s,source);
-    gl.compileShader(s);
-    if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){
-      const info=gl.getShaderInfoLog(s)||'Unknown shader error';
-      gl.deleteShader(s);
-      throw new Error(info);
-    }
-    return s;
-  }
-
-  function program(vsSource,fsSource){
-    const p=gl.createProgram();
-    gl.attachShader(p,shader(gl.VERTEX_SHADER,vsSource));
-    gl.attachShader(p,shader(gl.FRAGMENT_SHADER,fsSource));
-    gl.linkProgram(p);
-    if(!gl.getProgramParameter(p,gl.LINK_STATUS)){
-      const info=gl.getProgramInfoLog(p)||'Unknown program link error';
-      gl.deleteProgram(p);
-      throw new Error(info);
-    }
-    return p;
-  }
-
-  const VS_STAR=`#version 300 es
-in vec3 aPos;in vec3 aColor;in float aBrightness;in float aSize;in float aAngle;in float aRadius;in float aPhase;
-uniform mat4 uVP;uniform float uTime;uniform float uSpeed;
-out vec3 vColor;out float vBrightness;
-void main(){
-  float ang=aAngle+uTime*uSpeed*(0.72+0.58/(0.28+aRadius));
-  float x=aRadius*cos(ang);float z=aRadius*sin(ang);
-  float y=aPos.y+0.012*aRadius*aRadius*sin(ang*1.7+aPhase);
-  vec4 world=vec4(x,y,z,1.0);
-  gl_Position=uVP*world;
-  float d=max(1.0,length(world.xyz));
-  gl_PointSize=clamp(aSize*(1.3+22.0/d),0.7,7.5);
-  float tw=1.0+0.08*sin(uTime*3.0+aPhase*12.0);
-  vColor=aColor;vBrightness=aBrightness*tw;
-}`;
-
-  const FS_STAR=`#version 300 es
-precision highp float;in vec3 vColor;in float vBrightness;out vec4 outColor;
-void main(){vec2 q=gl_PointCoord-0.5;float d=dot(q,q)*4.0;float core=exp(-d*3.8)*vBrightness;float halo=exp(-d*.75)*vBrightness*.22;float alpha=core+halo*.5;outColor=vec4(vColor*(core+halo),alpha);}`;
-
-  const VS_BG=`#version 300 es
-in vec3 aPos;in vec3 aColor;in float aBrightness;in float aSize;uniform mat4 uVP;out vec3 vColor;out float vBrightness;
-void main(){gl_Position=uVP*vec4(aPos,1.0);gl_PointSize=aSize;vColor=aColor;vBrightness=aBrightness;}`;
-
-  const FS_BG=FS_STAR;
-  let P=null,PB=null;
-  try{
-    P=program(VS_STAR,FS_STAR);
-    PB=program(VS_BG,FS_BG);
-  }catch(err){
-    load.classList.add('error');
-    step.textContent='Shader error';
-    errorBox.textContent=err.message;
-    return;
-  }
-
-  const starLoc={
-    p:gl.getAttribLocation(P,'aPos'),c:gl.getAttribLocation(P,'aColor'),b:gl.getAttribLocation(P,'aBrightness'),
-    s:gl.getAttribLocation(P,'aSize'),a:gl.getAttribLocation(P,'aAngle'),r:gl.getAttribLocation(P,'aRadius'),ph:gl.getAttribLocation(P,'aPhase')
-  };
-  const starUni={vp:gl.getUniformLocation(P,'uVP'),time:gl.getUniformLocation(P,'uTime'),speed:gl.getUniformLocation(P,'uSpeed')};
-  const bgLoc={p:gl.getAttribLocation(PB,'aPos'),c:gl.getAttribLocation(PB,'aColor'),b:gl.getAttribLocation(PB,'aBrightness'),s:gl.getAttribLocation(PB,'aSize')};
-  const bgUni={vp:gl.getUniformLocation(PB,'uVP')};
-
-  function makeBuffer(data){
-    const b=gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER,b);
-    gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);
-    return b;
-  }
-  function bindAttribute(location,buffer,size){
-    if(location<0)return;
-    gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
-    gl.enableVertexAttribArray(location);
-    gl.vertexAttribPointer(location,size,gl.FLOAT,false,0,0);
-  }
-
-  function makeStars(count,type){
-    const pos=new Float32Array(count*3);
-    const col=new Float32Array(count*3);
-    const bri=new Float32Array(count);
-    const size=new Float32Array(count);
-    const angle=new Float32Array(count);
-    const radius=new Float32Array(count);
-    const phase=new Float32Array(count);
-
-    for(let i=0;i<count;i++){
-      let r=0,a=0;
-      if(type===0){
-        const theta=Math.acos(2*R()-1),phi=R()*TAU,rr=36+R()*38;
-        pos[i*3]=rr*Math.sin(theta)*Math.cos(phi);
-        pos[i*3+1]=rr*Math.cos(theta);
-        pos[i*3+2]=rr*Math.sin(theta)*Math.sin(phi);
-        r=rr;a=phi;
-      }else if(type===1){
-        r=Math.pow(R(),.55)*.55;a=R()*TAU;
-        pos[i*3]=N()*.20;pos[i*3+1]=N()*.08;pos[i*3+2]=N()*.20;
-      }else{
-        const arm=i%4,base=arm*TAU/4,q=Math.pow(R(),.7);
-        r=.08+q*2.7;
-        a=base+2.25*q+1.55*q*q+N()*(type===2?.08+.08*q:.38);
-        pos[i*3]=r*Math.cos(a);pos[i*3+1]=N()*(.03+.025*Math.exp(-r));pos[i*3+2]=r*Math.sin(a);
-      }
-      const C=type===1?[1,.82,.58]:color();
-      col[i*3]=C[0];col[i*3+1]=C[1];col[i*3+2]=C[2];
-      bri[i]=type===1?.24+R()*.72:.08+R()*.72;
-      size[i]=type===0?.8+R()*1.5:1+R()*1.8;
-      angle[i]=a;radius[i]=Math.max(.01,r);phase[i]=R()*TAU;
-    }
-
-    return {
-      p:makeBuffer(pos),c:makeBuffer(col),b:makeBuffer(bri),s:makeBuffer(size),a:makeBuffer(angle),r:makeBuffer(radius),ph:makeBuffer(phase),n:count
-    };
+  function project(x,y){
+    const cr=Math.cos(rot),sr=Math.sin(rot);
+    const rx=x*cr-y*sr,ry=x*sr+y*cr;
+    return [cx+panX+rx,cy+panY+ry];
   }
 
   async function build(){
-    try{
-      const mobile=window.innerWidth<700;
-      const counts=[mobile?3500:7000,mobile?5000:10000,mobile?10000:22000,mobile?14000:30000];
-      setProgress(5,'Background stars');
-      bgBuf=makeStars(counts[0],0);
-      await waitFrame();
-      setProgress(28,'Central bulge');
-      bulgeBuf=makeStars(counts[1],1);
-      await waitFrame();
-      setProgress(55,'Galactic disk');
-      diskBuf=makeStars(counts[2],2);
-      await waitFrame();
-      setProgress(84,'Spiral arms');
-      armBuf=makeStars(counts[3],3);
-      await waitFrame();
-      setProgress(100,'Galaxy ready');
-      await new Promise(resolve=>setTimeout(resolve,220));
-      load.classList.add('hide');
-      setTimeout(function(){load.style.display='none';ui.classList.add('show');hud.classList.add('show');controls.classList.add('show');},650);
-      requestAnimationFrame(render);
-    }catch(err){
-      console.error(err);
-      load.classList.add('error');
-      step.textContent='Generation error';
-      errorBox.textContent=err && err.message?err.message:'Unknown generation error';
+    resize();
+    const radius=Math.min(W,H)*.44;
+    progress(3,'Background stars');
+    for(let i=0;i<BG_COUNT;i++){
+      const a=R()*TAU,r=Math.pow(R(),.45)*radius*1.3;
+      bg.push({x:Math.cos(a)*r,y:Math.sin(a)*r,size:.35+R()*1.35,alpha:.15+R()*.7});
+      if(i%150===0){progress(3+(i/BG_COUNT)*8,'Background stars');await yieldFrame();}
+    }
+
+    progress(12,'Generating spiral structure');
+    for(let i=0;i<STAR_COUNT;i++){
+      const rNorm=.018+Math.pow(R(),.57)*.982;
+      const arm=i%ARM_COUNT;
+      const base=arm*TAU/ARM_COUNT;
+      const spread=.018+.11*rNorm;
+      const a=base+2.15*rNorm+1.7*rNorm*rNorm+N()*spread;
+      stars.push({
+        r:rNorm,
+        a,
+        y:N()*(.015+.028*rNorm),
+        size:.35+R()*1.2+(rNorm<.22?R()*.9:0),
+        alpha:.32+R()*.65,
+        color:C(),
+        speed:.00045/(.22+rNorm*.78)*(0.8+R()*.4),
+        phase:R()*TAU,
+        hot:Math.random()<.035
+      });
+      if(i%400===0){progress(12+(i/STAR_COUNT)*53,'Generating spiral structure');await yieldFrame();}
+    }
+
+    progress(67,'Adding dust lanes');await yieldFrame();
+    progress(76,'Adding star-forming regions');await yieldFrame();
+    progress(88,'Lighting central bulge');await yieldFrame();
+    progress(96,'Starting live animation');await yieldFrame();
+    progress(100,'Galaxy ready');
+    await new Promise(r=>setTimeout(r,180));
+    load.classList.add('hide');
+    setTimeout(()=>{load.style.display='none';ui.classList.add('show');hud.classList.add('show');controls.classList.add('show');},650);
+    requestAnimationFrame(frame);
+  }
+
+  function background(){
+    ctx.fillStyle='#01010d';ctx.fillRect(0,0,W,H);
+    const g=ctx.createRadialGradient(cx+panX,cy+panY,0,cx+panX,cy+panY,Math.min(W,H)*.58);
+    g.addColorStop(0,'rgba(250,190,120,.10)');g.addColorStop(.18,'rgba(108,164,148,.11)');g.addColorStop(.48,'rgba(35,91,101,.08)');g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    for(const s of bg){ctx.fillStyle=`rgba(185,220,255,${s.alpha})`;ctx.beginPath();ctx.arc(cx+panX+s.x,cy+panY+s.y,s.size,0,TAU);ctx.fill();}
+  }
+
+  function arms(){
+    const radius=Math.min(W,H)*.42*scale;
+    for(let arm=0;arm<ARM_COUNT;arm++){
+      for(let pass=0;pass<11;pass++){
+        ctx.beginPath();
+        for(let i=0;i<=150;i++){
+          const r=.04+i/150*.96;
+          const a=arm*TAU/ARM_COUNT+2.15*r+1.7*r*r+sim*.00004*(1+r);
+          const rr=r*radius;
+          const [x,y]=project(Math.cos(a)*rr,Math.sin(a)*rr);
+          i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+        }
+        ctx.strokeStyle=pass<6?`rgba(118,157,129,${.008+pass*.002})`:`rgba(63,146,157,${.008+pass*.0017})`;
+        ctx.lineWidth=(11-pass*.55)*scale;ctx.stroke();
+      }
     }
   }
 
-  function perspective(fov,aspect,near,far){
-    const q=1/Math.tan(fov/2),m=new Float32Array(16);
-    m[0]=q/aspect;m[5]=q;m[10]=(far+near)/(near-far);m[11]=-1;m[14]=(2*far*near)/(near-far);
-    return m;
-  }
-  function lookAt(eye){
-    const x=eye[0],y=eye[1],z=eye[2];
-    const len=Math.hypot(x,y,z)||1;const fx=-x/len,fy=-y/len,fz=-z/len;
-    let rx=fy,ry=-fx,rz=0;const rlen=Math.hypot(rx,ry)||1;rx/=rlen;ry/=rlen;
-    const ux=ry*fz,uy=rz*fx-rx*fz,uz=rx*fy;
-    return new Float32Array([rx,ux,-fx,0,ry,uy,-fy,0,rz,uz,-fz,0,-(rx*x+ry*y+rz*z),-(ux*x+uy*y+uz*z),fx*x+fy*y+fz*z,1]);
-  }
-  function multiply(a,b){
-    const out=new Float32Array(16);
-    for(let i=0;i<4;i++)for(let j=0;j<4;j++)for(let k=0;k<4;k++)out[i*4+j]+=a[i*4+k]*b[k*4+j];
-    return out;
+  function dust(){
+    const radius=Math.min(W,H)*.42*scale;
+    ctx.save();ctx.globalCompositeOperation='multiply';
+    for(let arm=0;arm<ARM_COUNT;arm++){
+      for(let j=0;j<18;j++){
+        const r=.10+j*.047;const a=arm*TAU/ARM_COUNT+2.15*r+1.7*r*r+.13;
+        const [x,y]=project(Math.cos(a)*r*radius,Math.sin(a)*r*radius);
+        ctx.strokeStyle='rgba(2,5,8,.065)';ctx.lineWidth=(3+7*r)*scale;ctx.beginPath();ctx.moveTo(x-14,y-4);ctx.lineTo(x+14,y+4);ctx.stroke();
+      }
+    }
+    ctx.restore();
   }
 
-  function drawStarBuffer(buf){
-    if(!buf)return;
-    bindAttribute(starLoc.p,buf.p,3);bindAttribute(starLoc.c,buf.c,3);bindAttribute(starLoc.b,buf.b,1);bindAttribute(starLoc.s,buf.s,1);bindAttribute(starLoc.a,buf.a,1);bindAttribute(starLoc.r,buf.r,1);bindAttribute(starLoc.ph,buf.ph,1);
-    gl.drawArrays(gl.POINTS,0,buf.n);
+  function starsDraw(){
+    const radius=Math.min(W,H)*.42*scale;
+    for(const p of stars){
+      const r=p.r*radius;
+      const a=p.a+p.speed*sim;
+      const x=Math.cos(a)*r*(1-.045*p.r*p.r),y=Math.sin(a)*r+p.y*radius;
+      const [sx,sy]=project(x,y);
+      const tw=.82+.18*Math.sin(sim*.035*p.speed*8000+p.phase);
+      ctx.fillStyle=`rgba(${p.color[0]},${p.color[1]},${p.color[2]},${p.alpha*tw})`;
+      ctx.beginPath();ctx.arc(sx,sy,Math.max(.35,p.size*scale),0,TAU);ctx.fill();
+      if(p.hot){ctx.fillStyle=`rgba(110,220,210,${.06+.04*tw})`;ctx.beginPath();ctx.arc(sx,sy,4+8*p.r,0,TAU);ctx.fill();}
+    }
   }
 
-  function render(now){
-    const dt=Math.min(.05,Math.max(0,(now-lastTime)/1000));
-    lastTime=now;
-    if(!paused)simTime+=dt*(slow?.12:1);
-
-    const aspect=canvas.width/Math.max(1,canvas.height);
-    const eye=[camDist*Math.sin(camTheta)*Math.cos(camPhi),camDist*Math.cos(camTheta),camDist*Math.sin(camTheta)*Math.sin(camPhi)];
-    const vp=multiply(perspective(.68,aspect,.01,180),lookAt(eye));
-
-    gl.clearColor(.003,.003,.02,1);gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE);gl.disable(gl.DEPTH_TEST);
-
-    gl.useProgram(PB);gl.uniformMatrix4fv(bgUni.vp,false,vp);
-    if(bgBuf){bindAttribute(bgLoc.p,bgBuf.p,3);bindAttribute(bgLoc.c,bgBuf.c,3);bindAttribute(bgLoc.b,bgBuf.b,1);bindAttribute(bgLoc.s,bgBuf.s,1);gl.drawArrays(gl.POINTS,0,bgBuf.n)}
-
-    gl.useProgram(P);gl.uniformMatrix4fv(starUni.vp,false,vp);gl.uniform1f(starUni.time,simTime);gl.uniform1f(starUni.speed,.24);
-    drawStarBuffer(bulgeBuf);drawStarBuffer(diskBuf);drawStarBuffer(armBuf);
-
-    const total=(bgBuf?.n||0)+(bulgeBuf?.n||0)+(diskBuf?.n||0)+(armBuf?.n||0);
-    starsHud.textContent=total.toLocaleString()+' stars';
-    fpsHud.textContent=Math.round(1/Math.max(dt,.001))+' fps';
-    requestAnimationFrame(render);
+  function core(){
+    const cx0=cx+panX,cy0=cy+panY,rad=Math.min(W,H)*.18*scale*(1+.025*Math.sin(sim*.01));
+    const g=ctx.createRadialGradient(cx0,cy0,0,cx0,cy0,rad);
+    g.addColorStop(0,'rgba(255,255,248,1)');g.addColorStop(.08,'rgba(255,246,215,.98)');g.addColorStop(.26,'rgba(255,210,143,.68)');g.addColorStop(.5,'rgba(255,160,82,.26)');g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g;ctx.fillRect(cx0-rad,cy0-rad,rad*2,rad*2);
+    const inner=rad*.32;const h=ctx.createRadialGradient(cx0,cy0,0,cx0,cy0,inner);h.addColorStop(0,'rgba(255,255,255,1)');h.addColorStop(.35,'rgba(255,226,178,.95)');h.addColorStop(1,'rgba(255,140,60,0)');ctx.fillStyle=h;ctx.beginPath();ctx.arc(cx0,cy0,inner,0,TAU);ctx.fill();
+    // central bar
+    ctx.save();ctx.translate(cx0,cy0);ctx.rotate(.15+Math.sin(sim*.002)*.01);ctx.scale(1,.42);const b=ctx.createRadialGradient(0,0,0,0,0,rad*.7);b.addColorStop(0,'rgba(255,236,179,.22)');b.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=b;ctx.beginPath();ctx.ellipse(0,0,rad*.72,rad*.18,0,0,TAU);ctx.fill();ctx.restore();
   }
 
-  function reset(){camTheta=.2;camPhi=0;camDist=7.4;}
-  document.getElementById('reset').addEventListener('click',reset);
-  document.getElementById('pause').addEventListener('click',function(e){paused=!paused;e.currentTarget.textContent=paused?'Resume':'Pause';e.currentTarget.classList.toggle('active',paused);});
-  document.getElementById('slow').addEventListener('click',function(e){slow=!slow;e.currentTarget.classList.toggle('active',slow);});
+  function frame(now){
+    const dt=Math.min(.05,(now-last)/1000);last=now;if(!paused)sim+=dt*(slow?.12:1);
+    background();arms();dust();starsDraw();core();
+    starsHud.textContent=String(bg.length+stars.length)+' stars';fpsHud.textContent=Math.round(1/Math.max(dt,.001))+' fps';
+    requestAnimationFrame(frame);
+  }
 
-  canvas.addEventListener('pointerdown',function(e){dragging=true;lastX=e.clientX;lastY=e.clientY;canvas.classList.add('drag');try{canvas.setPointerCapture(e.pointerId);}catch(_){}});
-  canvas.addEventListener('pointermove',function(e){
-    if(!dragging)return;
-    camPhi-=(e.clientX-lastX)*.004;
-    camTheta=Math.max(.05,Math.min(Math.PI*.47,camTheta+(e.clientY-lastY)*.004));
-    lastX=e.clientX;lastY=e.clientY;
-  });
-  function stopPointer(e){dragging=false;canvas.classList.remove('drag');try{canvas.releasePointerCapture(e.pointerId);}catch(_){} }
-  canvas.addEventListener('pointerup',stopPointer);canvas.addEventListener('pointercancel',stopPointer);canvas.addEventListener('dblclick',reset);
-  canvas.addEventListener('wheel',function(e){e.preventDefault();camDist=Math.max(2.7,Math.min(18,camDist+e.deltaY*.008));},{passive:false});
-
+  document.getElementById('reset').onclick=()=>{scale=1;rot=0;panX=0;panY=0;};
+  document.getElementById('pause').onclick=e=>{paused=!paused;e.currentTarget.textContent=paused?'Resume':'Pause';e.currentTarget.classList.toggle('active',paused);};
+  document.getElementById('slow').onclick=e=>{slow=!slow;e.currentTarget.classList.toggle('active',slow);};
+  canvas.addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;lastY=e.clientY;canvas.classList.add('drag');canvas.setPointerCapture(e.pointerId);});
+  canvas.addEventListener('pointermove',e=>{if(!drag)return;rot+=(e.clientX-lastX)*.0025;panX+=(e.clientX-lastX);panY+=(e.clientY-lastY);lastX=e.clientX;lastY=e.clientY;});
+  canvas.addEventListener('pointerup',e=>{drag=false;canvas.classList.remove('drag');try{canvas.releasePointerCapture(e.pointerId);}catch{}});
+  canvas.addEventListener('wheel',e=>{e.preventDefault();scale=Math.max(.42,Math.min(2.25,scale-e.deltaY*.001));},{passive:false});
+  canvas.addEventListener('dblclick',()=>{scale=1;rot=0;panX=0;panY=0;});
+  window.addEventListener('resize',resize);
   build();
 })();
 </script>
