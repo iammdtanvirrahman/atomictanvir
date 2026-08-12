@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#010207">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <title>AtomicTanvir • Galaxy Explorer</title>
 <style>
 :root{--bg:#010207;--panel:rgba(5,8,18,.82);--line:rgba(255,255,255,.1);--text:#f5f8ff;--muted:#aab6ca;--accent:#75eaff;--accent2:#7c89ff}
@@ -13,6 +15,14 @@
 .ui{position:fixed;top:18px;left:18px;z-index:10;width:min(350px,calc(100vw - 36px));padding:18px;border:1px solid var(--line);border-radius:20px;background:var(--panel);backdrop-filter:blur(17px);box-shadow:0 18px 55px rgba(0,0,0,.35)}.ui h1{font-size:1.4rem;margin-bottom:7px}.ui p{font-size:.86rem;line-height:1.55;color:var(--muted)}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.controls button{border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:9px 13px;background:rgba(255,255,255,.055);color:#deebff;font-weight:700;cursor:pointer}.controls button:hover{background:linear-gradient(135deg,#6be8ff,#7585ff);color:#06111d}.tip{position:fixed;right:18px;bottom:18px;z-index:10;padding:10px 14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:#bec9da;font-size:.79rem}
 @media(max-width:650px){.ui{top:10px;left:10px}.tip{display:none}}
 </style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+  }
+}
+</script>
 </head>
 <body>
 <div id="loading"><div class="loadbox"><div class="brand">AtomicTanvir</div><div class="title">Building Galaxy</div><div class="status" id="status">Preparing renderer…</div><div class="progress"><div class="bar" id="bar"></div></div><div class="row"><span>Loading particles gradually</span><span class="pct" id="pct">0%</span></div></div></div>
@@ -25,8 +35,8 @@ const nextFrame=()=>new Promise(r=>requestAnimationFrame(r));
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 try{
 setProgress(1,'Loading 3D engine…');
-const THREE=await import('https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js');
-const {OrbitControls}=await import('https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/controls/OrbitControls.js');
+const THREE=await import('three');
+const {OrbitControls}=await import('three/addons/controls/OrbitControls.js');
 await nextFrame();
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x010207);
 const camera=new THREE.PerspectiveCamera(58,innerWidth/innerHeight,.1,1400);const defaultPos=new THREE.Vector3(0,30,58);camera.position.copy(defaultPos);
@@ -37,23 +47,18 @@ const starTex=makeTexture();
 function normal(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
 function starColor(){const r=Math.random();return r<.08?[.56,.78,1]:r<.2?[.76,.87,1]:r<.8?[1,.95,.83]:r<.95?[1,.69,.46]:[1,.44,.28]}
 const galaxy=new THREE.Group();galaxy.rotation.x=THREE.MathUtils.degToRad(-10);scene.add(galaxy);
-// Background stars
 setProgress(4,'Loading background stars…');
 const BG=3200,bgPos=new Float32Array(BG*3),bgGeo=new THREE.BufferGeometry();bgGeo.setAttribute('position',new THREE.BufferAttribute(bgPos,3));bgGeo.setDrawRange(0,0);const bgPoints=new THREE.Points(bgGeo,new THREE.PointsMaterial({map:starTex,size:.78,color:0xb8d2ff,transparent:true,opacity:.38,depthWrite:false,blending:THREE.AdditiveBlending}));scene.add(bgPoints);
 for(let s=0;s<BG;s+=400){const e=Math.min(s+400,BG);for(let i=s;i<e;i++){const r=260+Math.random()*460,t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1);bgPos[i*3]=r*Math.sin(p)*Math.cos(t);bgPos[i*3+1]=r*Math.cos(p);bgPos[i*3+2]=r*Math.sin(p)*Math.sin(t)}bgGeo.setDrawRange(0,e);bgGeo.attributes.position.needsUpdate=true;setProgress(4+(e/BG)*8,'Loading background stars…');await nextFrame()}
-// Main disk
 const N=50000,R=39,ARMS=4,pos=new Float32Array(N*3),col=new Float32Array(N*3);const diskG=new THREE.BufferGeometry();diskG.setAttribute('position',new THREE.BufferAttribute(pos,3));diskG.setAttribute('color',new THREE.BufferAttribute(col,3));diskG.setDrawRange(0,0);const diskPts=new THREE.Points(diskG,new THREE.PointsMaterial({map:starTex,size:.115,vertexColors:true,transparent:true,opacity:.92,depthWrite:false,blending:THREE.AdditiveBlending}));galaxy.add(diskPts);
 const diskR=new Float32Array(N),diskA=new Float32Array(N);
 setProgress(12,'Loading spiral-arm stars…');
 for(let s=0;s<N;s+=1000){const e=Math.min(s+1000,N);for(let i=s;i<e;i++){const r=3+Math.pow(Math.random(),.67)*(R-3),arm=i%ARMS,base=arm*Math.PI*2/ARMS,a=base+r*.118+r*r*.0016+normal()*(.08+.45*r/R),y=normal()*(.18+.68*Math.exp(-r/12));pos[i*3]=Math.cos(a)*r;pos[i*3+1]=y;pos[i*3+2]=Math.sin(a)*r;const c=starColor();col[i*3]=c[0];col[i*3+1]=c[1];col[i*3+2]=c[2];diskR[i]=r;diskA[i]=a}diskG.setDrawRange(0,e);diskG.attributes.position.needsUpdate=true;diskG.attributes.color.needsUpdate=true;setProgress(12+(e/N)*48,'Loading spiral-arm stars…');await nextFrame()}
-// Bulge
 const B=11000,bp=new Float32Array(B*3),bc=new Float32Array(B*3),bg=new THREE.BufferGeometry();bg.setAttribute('position',new THREE.BufferAttribute(bp,3));bg.setAttribute('color',new THREE.BufferAttribute(bc,3));bg.setDrawRange(0,0);galaxy.add(new THREE.Points(bg,new THREE.PointsMaterial({map:starTex,size:.15,vertexColors:true,transparent:true,opacity:.92,depthWrite:false,blending:THREE.AdditiveBlending})));
 setProgress(60,'Building central bulge…');
 for(let s=0;s<B;s+=700){const e=Math.min(s+700,B);for(let i=s;i<e;i++){bp[i*3]=normal()*4.1;bp[i*3+1]=normal()*1.5;bp[i*3+2]=normal()*2.25;bc[i*3]=1;bc[i*3+1]=.78+Math.random()*.17;bc[i*3+2]=.5+Math.random()*.23}bg.setDrawRange(0,e);bg.attributes.position.needsUpdate=true;bg.attributes.color.needsUpdate=true;setProgress(60+(e/B)*12,'Building central bulge…');await nextFrame()}
-// Stellar bar
 const barMesh=new THREE.Mesh(new THREE.CapsuleGeometry(1.65,10,10,20),new THREE.MeshBasicMaterial({color:0xffc77f,transparent:true,opacity:.16,blending:THREE.AdditiveBlending}));barMesh.rotation.z=Math.PI/2;galaxy.add(barMesh);await nextFrame();
 setProgress(74,'Tracing dust lanes…');
-// Dust lanes
 const D=6500,dp=new Float32Array(D*3),dc=new Float32Array(D*3),dg=new THREE.BufferGeometry();dg.setAttribute('position',new THREE.BufferAttribute(dp,3));dg.setAttribute('color',new THREE.BufferAttribute(dc,3));dg.setDrawRange(0,0);galaxy.add(new THREE.Points(dg,new THREE.PointsMaterial({map:starTex,size:.46,vertexColors:true,transparent:true,opacity:.15,depthWrite:false})));
 for(let s=0;s<D;s+=650){const e=Math.min(s+650,D);for(let i=s;i<e;i++){const arm=i%ARMS,r=5+Math.random()*32,a=arm*Math.PI*2/ARMS+r*.118+r*r*.0016+.34+normal()*.08,o=normal()*(.25+.4*r/R);dp[i*3]=Math.cos(a)*r+Math.cos(a+Math.PI/2)*o;dp[i*3+1]=normal()*.14;dp[i*3+2]=Math.sin(a)*r+Math.sin(a+Math.PI/2)*o;dc[i*3]=.055;dc[i*3+1]=.034;dc[i*3+2]=.022}dg.setDrawRange(0,e);dg.attributes.position.needsUpdate=true;dg.attributes.color.needsUpdate=true;setProgress(74+(e/D)*16,'Tracing dust lanes…');await nextFrame()}
 setProgress(91,'Finishing core glow and scene…');
