@@ -3,51 +3,148 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AtomicTanvir</title>
+<title>AtomicTanvir • Interactive Science Lab</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Inter,Arial,sans-serif;
+}
 body{
   min-height:100vh;
-  font-family:Arial,Helvetica,sans-serif;
-  background:radial-gradient(circle at top,#101a35,#050814 58%,#010204 100%);
+  background:
+    radial-gradient(circle at 20% 20%, rgba(0,255,255,.12), transparent 25%),
+    radial-gradient(circle at 80% 30%, rgba(0,140,255,.12), transparent 28%),
+    radial-gradient(circle at 50% 80%, rgba(180,0,255,.10), transparent 30%),
+    #030712;
   color:#fff;
   overflow-x:hidden;
 }
-.stars{
+body::before{
+  content:"";
   position:fixed;
   inset:0;
-  background-image:radial-gradient(rgba(255,255,255,.9) 1px,transparent 1px);
-  background-size:56px 56px;
-  opacity:.18;
-  animation:stars 80s linear infinite;
+  background-image:
+    radial-gradient(white 1px, transparent 1px),
+    radial-gradient(rgba(0,255,255,.4) 1px, transparent 1px);
+  background-size:80px 80px, 140px 140px;
+  opacity:.22;
+  animation:stars 90s linear infinite;
   pointer-events:none;
 }
-@keyframes stars{from{transform:translateY(0)}to{transform:translateY(560px)}}
-header{
+@keyframes stars{
+  from{transform:translateY(0)}
+  to{transform:translateY(500px)}
+}
+main{
+  position:relative;
+  z-index:1;
+}
+.hero{
+  max-width:1100px;
+  margin:0 auto;
+  padding:90px 24px 56px;
   text-align:center;
-  padding:72px 20px 36px;
 }
-header h1{
-  font-size:clamp(2.5rem,5vw,4.5rem);
-  color:#8eeeff;
-  text-shadow:0 0 22px rgba(110,240,255,.45);
-  margin-bottom:12px;
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 18px;
+  border-radius:999px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  color:#9ee7ff;
+  font-size:.9rem;
+  margin-bottom:24px;
+  backdrop-filter:blur(12px);
 }
-header p{
-  color:#c8d6f0;
+.hero h1{
+  font-size:clamp(3rem,8vw,5.8rem);
+  line-height:.95;
+  margin-bottom:18px;
+  letter-spacing:-.04em;
+  text-shadow:0 0 28px rgba(0,255,255,.25);
+}
+.hero p{
   max-width:760px;
   margin:0 auto;
-  line-height:1.6;
+  color:#c9d5ea;
+  font-size:1.08rem;
+  line-height:1.7;
+}
+.hero-actions{
+  margin-top:34px;
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:14px;
+}
+.hero-actions a{
+  text-decoration:none;
+  padding:14px 22px;
+  border-radius:999px;
+  font-weight:700;
+  transition:transform .25s ease, box-shadow .25s ease, background .25s ease;
+}
+.hero-actions .primary{
+  background:linear-gradient(135deg,#00e0ff,#2f6bff);
+  color:#04111f;
+  box-shadow:0 16px 34px rgba(47,107,255,.35);
+}
+.hero-actions .secondary{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  color:#eef6ff;
+}
+.hero-actions a:hover{
+  transform:translateY(-2px);
+}
+.stats{
+  max-width:960px;
+  margin:24px auto 0;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:16px;
+}
+.stat{
+  padding:18px 20px;
+  border-radius:22px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
+  backdrop-filter:blur(14px);
+}
+.stat strong{
+  display:block;
+  font-size:1.7rem;
+  color:#9ee7ff;
+  margin-bottom:6px;
+}
+.stat span{
+  color:#b7c4db;
+  font-size:.92rem;
 }
 .section{
-  max-width:1240px;
+  max-width:1180px;
   margin:0 auto;
-  padding:18px 24px 40px;
+  padding:28px 24px 72px;
 }
-.section h2{
+.section-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:16px;
+  margin-bottom:26px;
+}
+.section-header h2{
   font-size:2rem;
-  margin-bottom:20px;
-  color:#9de7ff;
+  color:#f4f8ff;
+}
+.section-header p{
+  max-width:520px;
+  color:#b8c5dc;
+  line-height:1.6;
 }
 .grid{
   display:grid;
@@ -55,154 +152,217 @@ header p{
   gap:22px;
 }
 .card{
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:22px;
-  padding:24px;
-  cursor:pointer;
-  transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;
-  backdrop-filter:blur(14px);
+  position:relative;
+  padding:26px;
+  border-radius:26px;
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+  border:1px solid rgba(255,255,255,.09);
+  backdrop-filter:blur(18px);
+  overflow:hidden;
+  transition:transform .28s ease, border-color .28s ease, box-shadow .28s ease;
+}
+.card::before{
+  content:"";
+  position:absolute;
+  inset:-40% auto auto -20%;
+  width:160px;
+  height:160px;
+  background:radial-gradient(circle, rgba(0,255,255,.18), transparent 70%);
+  pointer-events:none;
 }
 .card:hover{
-  transform:translateY(-6px);
-  border-color:rgba(142,238,255,.35);
-  box-shadow:0 22px 48px rgba(0,0,0,.28);
+  transform:translateY(-8px);
+  border-color:rgba(0,224,255,.28);
+  box-shadow:0 22px 46px rgba(0,0,0,.32);
 }
 .icon{
-  width:64px;
-  height:64px;
-  border-radius:16px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:2rem;
-  background:linear-gradient(135deg,rgba(142,238,255,.18),rgba(75,120,255,.18));
-  margin-bottom:16px;
+  width:60px;
+  height:60px;
+  border-radius:18px;
+  display:grid;
+  place-items:center;
+  font-size:1.9rem;
+  margin-bottom:18px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.08);
 }
 .card h3{
-  font-size:1.35rem;
+  font-size:1.28rem;
   margin-bottom:10px;
 }
 .card p{
-  color:#d2ddf5;
-  line-height:1.55;
-  font-size:.95rem;
+  color:#c8d4ea;
+  line-height:1.6;
+  font-size:.96rem;
 }
-.status{
+.card-footer{
+  margin-top:22px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+.tag{
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(0,224,255,.12);
+  color:#9ee7ff;
+  font-size:.78rem;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.card button{
+  border:none;
+  border-radius:999px;
+  padding:11px 18px;
+  background:linear-gradient(135deg,#00e0ff,#2f6bff);
+  color:#04111f;
+  font-weight:700;
+  cursor:pointer;
+  transition:transform .2s ease, box-shadow .2s ease;
+  box-shadow:0 12px 24px rgba(47,107,255,.24);
+}
+.card button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 18px 34px rgba(47,107,255,.32);
+}
+.cta{
+  max-width:980px;
+  margin:0 auto 84px;
+  padding:36px 28px;
+  border-radius:32px;
+  background:linear-gradient(135deg, rgba(0,224,255,.12), rgba(88,72,255,.14));
+  border:1px solid rgba(255,255,255,.10);
+  backdrop-filter:blur(18px);
+  text-align:center;
+}
+.cta h2{
+  font-size:2rem;
+  margin-bottom:12px;
+}
+.cta p{
+  color:#d4e0f2;
+  line-height:1.7;
+  max-width:720px;
+  margin:0 auto 24px;
+}
+.cta a{
   display:inline-flex;
   align-items:center;
-  gap:8px;
-  margin-top:16px;
-  color:#7ef0c8;
-  font-size:.85rem;
-  font-weight:700;
-}
-.status::before{
-  content:"";
-  width:8px;
-  height:8px;
+  justify-content:center;
+  padding:14px 24px;
   border-radius:999px;
-  background:#7ef0c8;
-  box-shadow:0 0 10px #7ef0c8;
+  text-decoration:none;
+  background:#fff;
+  color:#04111f;
+  font-weight:800;
 }
-.notice{
-  max-width:1240px;
-  margin:10px auto 34px;
-  padding:0 24px;
-}
-.notice-box{
-  padding:18px 20px;
-  border-radius:18px;
-  background:rgba(126,240,200,.08);
-  border:1px solid rgba(126,240,200,.18);
-  color:#dafcf0;
-  line-height:1.6;
-}
-.notice-box strong{color:#b8ffe7}
 footer{
+  padding:30px 20px 42px;
   text-align:center;
-  padding:42px 20px;
-  color:#8ea0c2;
+  color:#8fa0bc;
+  font-size:.92rem;
+}
+@media (max-width:640px){
+  .hero{
+    padding-top:72px;
+  }
+  .section-header{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .card{
+    padding:22px;
+  }
 }
 </style>
 </head>
 <body>
-<div class="stars"></div>
+<main>
+  <section class="hero">
+    <div class="badge">✨ AtomicTanvir • Premium Interactive Science Lab</div>
+    <h1>Explore the Universe Through Interactive Simulations</h1>
+    <p>AtomicTanvir is a premium dark-theme science playground featuring atoms, galaxies, black holes, quantum effects, and a fully interactive solar system built with modern WebGL technologies.</p>
+    <div class="hero-actions">
+      <a class="primary" href="#simulations">Launch Simulations</a>
+      <a class="secondary" href="about.html">About Project</a>
+    </div>
+    <div class="stats">
+      <div class="stat"><strong>5+</strong><span>Interactive simulations</span></div>
+      <div class="stat"><strong>3D</strong><span>Real-time WebGL rendering</span></div>
+      <div class="stat"><strong>Dark UI</strong><span>Premium responsive design</span></div>
+      <div class="stat"><strong>Modern</strong><span>Optimized for desktop &amp; mobile</span></div>
+    </div>
+  </section>
 
-<header>
-  <h1>AtomicTanvir</h1>
-  <p>Interactive universe simulations built with HTML, CSS, JavaScript, and WebGL. Explore atoms, galaxies, black holes, planetary systems, and quantum probability clouds in one seamless experience.</p>
-</header>
+  <section class="section" id="simulations">
+    <div class="section-header">
+      <div>
+        <h2>Core Simulations</h2>
+      </div>
+      <p>Open any simulation directly in the same tab for a smooth app-like experience across desktop and mobile devices.</p>
+    </div>
 
-<div class="notice">
-  <div class="notice-box">
-    <strong>Fixed:</strong> all model cards now open in the <strong>same tab</strong> using <code>window.location.href</code> instead of <code>window.open(..., '_blank')</code>. I also checked the homepage structure and removed broken external-tab behavior.
-  </div>
-</div>
+    <div class="grid">
+      <article class="card">
+        <div class="icon">⚛️</div>
+        <h3>Atomic Models</h3>
+        <p>Explore Hydrogen, Helium, Carbon, electron orbitals, and atomic structure visualizations with a clean interactive interface.</p>
+        <div class="card-footer">
+          <span class="tag">Quantum</span>
+          <button onclick="location.href='atom.html'">Open</button>
+        </div>
+      </article>
 
-<section class="section">
-  <h2>Core Simulations</h2>
-  <div class="grid">
-    <article class="card" onclick="window.location.href='atom.html'">
-      <div class="icon">⚛️</div>
-      <h3>Atomic Models</h3>
-      <p>Explore Hydrogen, Helium, Carbon, orbital shells, and realistic quantum-style electron motion.</p>
-      <div class="status">Ready</div>
-    </article>
+      <article class="card">
+        <div class="icon">🕳️</div>
+        <h3>Black Hole</h3>
+        <p>Visualize event horizons, accretion disks, spacetime distortion, and dramatic gravitational effects in real time.</p>
+        <div class="card-footer">
+          <span class="tag">Astrophysics</span>
+          <button onclick="location.href='blackhole.html'">Open</button>
+        </div>
+      </article>
 
-    <article class="card" onclick="window.location.href='blackhole.html'">
-      <div class="icon">🕳️</div>
-      <h3>Black Hole</h3>
-      <p>Visualize event horizons, accretion disks, gravitational lensing, and intense relativistic environments.</p>
-      <div class="status">Ready</div>
-    </article>
+      <article class="card">
+        <div class="icon">☀️</div>
+        <h3>Solar System</h3>
+        <p>Travel through the Sun, planets, and moons with a fully interactive 3D solar system built using Three.js WebGL rendering.</p>
+        <div class="card-footer">
+          <span class="tag">3D Space</span>
+          <button onclick="location.href='solar.html'">Open</button>
+        </div>
+      </article>
 
-    <article class="card" onclick="window.location.href='solar.html'">
-      <div class="icon">☀️</div>
-      <h3>Solar System</h3>
-      <p>Interactive 3D journey through the Sun, planets, Saturn's rings, and Earth's moon with smooth camera controls.</p>
-      <div class="status">New</div>
-    </article>
+      <article class="card">
+        <div class="icon">🌌</div>
+        <h3>Galaxy Explorer</h3>
+        <p>Fly through spiral galaxies, nebulae, distant star fields, and cosmic structures with cinematic dark-space visuals.</p>
+        <div class="card-footer">
+          <span class="tag">Deep Space</span>
+          <button onclick="location.href='galaxy.html'">Open</button>
+        </div>
+      </article>
 
-    <article class="card" onclick="window.location.href='galaxy.html'">
-      <div class="icon">🌌</div>
-      <h3>Galaxy Explorer</h3>
-      <p>Travel through nebulae, stars, spiral galaxies, and deep-space particle fields with cinematic visuals.</p>
-      <div class="status">Ready</div>
-    </article>
+      <article class="card">
+        <div class="icon">🔬</div>
+        <h3>Quantum World</h3>
+        <p>Experiment with wave functions, probability clouds, orbital interference, and animated quantum particle behavior.</p>
+        <div class="card-footer">
+          <span class="tag">Wave Physics</span>
+          <button onclick="location.href='quantum.html'">Open</button>
+        </div>
+      </article>
+    </div>
+  </section>
 
-    <article class="card" onclick="window.location.href='quantum.html'">
-      <div class="icon">🔬</div>
-      <h3>Quantum World</h3>
-      <p>Manipulate probability clouds, wave amplitudes, orbital spread, and dynamic quantum particle interference effects.</p>
-      <div class="status">New</div>
-    </article>
-  </div>
-</section>
+  <section class="cta">
+    <h2>🚀 Build the Next Simulation</h2>
+    <p>AtomicTanvir is designed as a growing science-visualization platform. Add new space, physics, chemistry, or quantum simulations and turn the project into a complete interactive digital laboratory.</p>
+    <a href="admin.html">Open Admin Panel</a>
+  </section>
+</main>
 
-<section class="section">
-  <h2>Model Check Summary</h2>
-  <div class="grid">
-    <article class="card">
-      <div class="icon">🔗</div>
-      <h3>Navigation</h3>
-      <p>Previously every card used <code>window.open(..., '_blank')</code>, which forced a new browser tab. This has been changed to same-tab navigation for a smoother app-like experience.</p>
-    </article>
-
-    <article class="card">
-      <div class="icon">📦</div>
-      <h3>Missing Pages</h3>
-      <p><code>solar.html</code> and <code>quantum.html</code> were referenced from the homepage but were not present in the repository. Both interactive pages have now been added.</p>
-    </article>
-
-    <article class="card">
-      <div class="icon">✨</div>
-      <h3>Layout Stability</h3>
-      <p>The homepage was cleaned up to avoid oversized nested trays and reduce the chance of layout overflow on mobile screens and smaller laptops.</p>
-    </article>
-  </div>
-</section>
-
-<footer>© 2026 AtomicTanvir • Science Visualization Project</footer>
+<footer>© 2026 AtomicTanvir • Interactive Science Visualization Project</footer>
 </body>
 </html>
