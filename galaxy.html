@@ -5,269 +5,82 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>AtomicTanvir • Galaxy Explorer</title>
 <style>
-:root{--bg:#020308;--panel:rgba(7,10,18,.78);--line:rgba(255,255,255,.1);--text:#f6f8ff;--muted:#aab5c8;--accent:#8fdcff}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;overflow:hidden}
-body{font-family:Inter,Arial,sans-serif;background:radial-gradient(circle at 50% 50%,#101526 0,#050711 40%,#010207 100%);color:var(--text)}
-canvas{display:block;width:100%;height:100%}
-.panel{position:fixed;top:18px;left:18px;width:min(360px,calc(100vw - 36px));padding:18px;border:1px solid var(--line);border-radius:18px;background:var(--panel);backdrop-filter:blur(16px);box-shadow:0 16px 50px rgba(0,0,0,.35);z-index:10}
-.panel h1{font-size:1.45rem;margin-bottom:6px}.panel p{font-size:.88rem;line-height:1.55;color:var(--muted)}
-.sub{margin-top:8px;font-size:.74rem;color:#768298}
-.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-button{border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:9px 13px;color:#eef6ff;background:rgba(255,255,255,.05);font-weight:700;cursor:pointer}
-button:hover{background:rgba(143,220,255,.11);border-color:rgba(143,220,255,.25)}
-.badge{position:fixed;right:18px;bottom:18px;padding:10px 14px;border-radius:14px;border:1px solid var(--line);background:var(--panel);color:#c9d5e7;font-size:.78rem;z-index:10}
-#loading{position:fixed;inset:0;display:grid;place-items:center;background:#010207;color:#cfe8ff;font-size:1rem;letter-spacing:.04em;z-index:30;transition:opacity .35s ease}
-#loading.hidden{opacity:0;pointer-events:none}
-@media(max-width:600px){.panel{top:10px;left:10px}.badge{right:10px;bottom:10px}.panel p{font-size:.82rem}}
+*{box-sizing:border-box;margin:0;padding:0}html,body{width:100%;height:100%;overflow:hidden}body{font-family:Inter,Arial,sans-serif;background:#010207;color:#fff}canvas{display:block}
+.ui{position:fixed;top:18px;left:18px;z-index:10;width:min(350px,calc(100vw - 36px));padding:18px;border:1px solid rgba(255,255,255,.1);border-radius:20px;background:rgba(5,8,18,.76);backdrop-filter:blur(18px);box-shadow:0 18px 55px rgba(0,0,0,.35)}
+.ui h1{font-size:1.45rem;margin-bottom:7px}.ui p{color:#aebbd0;font-size:.88rem;line-height:1.55}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.controls button{border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:9px 13px;background:rgba(255,255,255,.06);color:#dfeaff;font-weight:700;cursor:pointer}.controls button:hover{background:linear-gradient(135deg,#68e9ff,#6d7cff);color:#07111b}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.stat{padding:10px 11px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06)}.stat span{display:block;font-size:.68rem;color:#7feaff;text-transform:uppercase}.stat strong{font-size:.88rem}.tip{position:fixed;right:18px;bottom:18px;z-index:10;padding:10px 14px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(5,8,18,.72);color:#b9c5d8;font-size:.8rem}
+#loading{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:#010207}.loadbox{text-align:center;color:#d8e9ff}.spinner{width:34px;height:34px;border:3px solid rgba(255,255,255,.14);border-top-color:#73eaff;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}@keyframes spin{to{transform:rotate(360deg)}}#error{display:none;margin-top:12px;color:#ff9eb7;font-size:.8rem;line-height:1.4}
+@media(max-width:650px){.ui{top:10px;left:10px}.tip{display:none}}
 </style>
 </head>
 <body>
-<div id="loading">Building galaxy…</div>
-<div class="panel">
-  <h1>🌌 Galaxy Explorer</h1>
-  <p>Procedural spiral-galaxy visualization inspired by a barred spiral structure: dense central bulge, elongated stellar bar, curved arms, dust lanes, and a sparse halo.</p>
-  <div class="sub">Drag to orbit • Wheel/pinch to zoom • Double-click to reset view</div>
-  <div class="controls">
-    <button id="reset">Reset view</button>
-    <button id="slow">Normal speed</button>
-    <button id="pause">Pause</button>
-  </div>
+<div id="loading"><div class="loadbox"><div class="spinner"></div><div>Initializing galaxy…</div><div id="error"></div></div></div>
+<div class="ui">
+<h1>🌌 Galaxy Explorer</h1>
+<p>A performance-safe procedural barred spiral galaxy with a dense core, stellar bar, four spiral arms, dust lanes and a faint outer halo.</p>
+<div class="stats"><div class="stat"><span>Structure</span><strong>Barred Spiral</strong></div><div class="stat"><span>Stars</span><strong>45,000+</strong></div><div class="stat"><span>Controls</span><strong>Orbit + Zoom</strong></div><div class="stat"><span>Render</span><strong>WebGL</strong></div></div>
+<div class="controls"><button id="toggle">Pause</button><button id="reset">Reset View</button><button id="speed">Slow Mode</button></div>
 </div>
-<div class="badge">Real-time 3D • WebGL</div>
-
+<div class="tip">Drag to rotate • Wheel to zoom</div>
 <script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js';
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/controls/OrbitControls.js';
+const loading=document.getElementById('loading');
+const errorBox=document.getElementById('error');
+try{
+const THREE=await import('https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js');
+const {OrbitControls}=await import('https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/controls/OrbitControls.js');
 
 const scene=new THREE.Scene();
 scene.background=new THREE.Color(0x010207);
-
-const camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,0.1,1600);
-const DEFAULT_POS=new THREE.Vector3(0,31,57);
-camera.position.copy(DEFAULT_POS);
-
+const camera=new THREE.PerspectiveCamera(58,innerWidth/innerHeight,.1,1200);
+const startPos=new THREE.Vector3(0,30,58);camera.position.copy(startPos);
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));
-renderer.setSize(innerWidth,innerHeight);
-renderer.outputColorSpace=THREE.SRGBColorSpace;
-document.body.appendChild(renderer.domElement);
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;document.body.appendChild(renderer.domElement);
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.045;controls.minDistance=9;controls.maxDistance=180;controls.target.set(0,0,0);
 
-const controls=new OrbitControls(camera,renderer.domElement);
-controls.enableDamping=true;
-controls.dampingFactor=.045;
-controls.minDistance=10;
-controls.maxDistance=180;
-controls.target.set(0,0,0);
+function texture(){const c=document.createElement('canvas');c.width=c.height=32;const x=c.getContext('2d');const g=x.createRadialGradient(16,16,0,16,16,16);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.16,'rgba(255,255,255,.95)');g.addColorStop(.42,'rgba(190,225,255,.3)');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(0,0,32,32);return new THREE.CanvasTexture(c)}
+const starTex=texture();
+function normal(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(Math.PI*2*v)}
+function color(){const r=Math.random();if(r<.08)return [0.56,.78,1];if(r<.18)return [.75,.87,1];if(r<.8)return [1,.94,.82];if(r<.95)return [1,.67,.42];return [1,.42,.25]}
 
-function particleTexture(){
-  const c=document.createElement('canvas');c.width=c.height=64;
-  const ctx=c.getContext('2d');
-  const g=ctx.createRadialGradient(32,32,0,32,32,32);
-  g.addColorStop(0,'rgba(255,255,255,1)');
-  g.addColorStop(.12,'rgba(255,255,255,.98)');
-  g.addColorStop(.35,'rgba(190,225,255,.48)');
-  g.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=g;ctx.fillRect(0,0,64,64);
-  return new THREE.CanvasTexture(c);
+const galaxy=new THREE.Group();galaxy.rotation.x=THREE.MathUtils.degToRad(-10);scene.add(galaxy);
+
+// Background field
+const bgN=3500,bgP=new Float32Array(bgN*3);for(let i=0;i<bgN;i++){const r=260+Math.random()*450,t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1);bgP[i*3]=r*Math.sin(p)*Math.cos(t);bgP[i*3+1]=r*Math.cos(p);bgP[i*3+2]=r*Math.sin(p)*Math.sin(t)}
+const bgG=new THREE.BufferGeometry();bgG.setAttribute('position',new THREE.BufferAttribute(bgP,3));scene.add(new THREE.Points(bgG,new THREE.PointsMaterial({map:starTex,size:.75,color:0xbad4ff,transparent:true,opacity:.38,depthWrite:false,blending:THREE.AdditiveBlending})));
+
+// Main spiral disk. Static particle positions are used for stability; the whole galaxy rotates smoothly.
+const N=45000,R=39,ARMS=4,pos=new Float32Array(N*3),col=new Float32Array(N*3);
+for(let i=0;i<N;i++){
+ const r=3+Math.pow(Math.random(),.67)*(R-3);const arm=i%ARMS;const base=arm*Math.PI*2/ARMS;const a=base+r*.118+r*r*.0016+normal()*(.08+.45*r/R);const x=Math.cos(a)*r;const z=Math.sin(a)*r;const y=normal()*(.18+.68*Math.exp(-r/12));pos[i*3]=x;pos[i*3+1]=y;pos[i*3+2]=z;const c=color();col[i*3]=c[0];col[i*3+1]=c[1];col[i*3+2]=c[2];
 }
-const starTexture=particleTexture();
+const diskG=new THREE.BufferGeometry();diskG.setAttribute('position',new THREE.BufferAttribute(pos,3));diskG.setAttribute('color',new THREE.BufferAttribute(col,3));galaxy.add(new THREE.Points(diskG,new THREE.PointsMaterial({map:starTex,size:.12,vertexColors:true,transparent:true,opacity:.92,depthWrite:false,blending:THREE.AdditiveBlending,sizeAttenuation:true})));
 
-function randNormal(){
-  let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();
-  return Math.sqrt(-2*Math.log(u))*Math.cos(Math.PI*2*v);
-}
-function pickStarColor(){
-  const r=Math.random();
-  if(r<.08)return new THREE.Color(0x8fc7ff);
-  if(r<.19)return new THREE.Color(0xb9d6ff);
-  if(r<.74)return new THREE.Color(0xfff3dd);
-  if(r<.94)return new THREE.Color(0xffd29b);
-  return new THREE.Color(0xff986f);
-}
+// Dense bulge
+const B=12000,bp=new Float32Array(B*3),bc=new Float32Array(B*3);for(let i=0;i<B;i++){bp[i*3]=normal()*4.1;bp[i*3+1]=normal()*1.45;bp[i*3+2]=normal()*2.25;bc[i*3]=1;bc[i*3+1]=.78+Math.random()*.17;bc[i*3+2]=.52+Math.random()*.2}
+const bg2=new THREE.BufferGeometry();bg2.setAttribute('position',new THREE.BufferAttribute(bp,3));bg2.setAttribute('color',new THREE.BufferAttribute(bc,3));galaxy.add(new THREE.Points(bg2,new THREE.PointsMaterial({map:starTex,size:.15,vertexColors:true,transparent:true,opacity:.92,depthWrite:false,blending:THREE.AdditiveBlending})));
 
-const galaxy=new THREE.Group();
-// Slight inclination makes the disk read as a 3D galaxy rather than a flat circle.
-galaxy.rotation.x=THREE.MathUtils.degToRad(-10);
-scene.add(galaxy);
+// Stellar bar
+const bar=new THREE.Mesh(new THREE.CapsuleGeometry(1.65,10,10,20),new THREE.MeshBasicMaterial({color:0xffc77f,transparent:true,opacity:.16,blending:THREE.AdditiveBlending}));bar.rotation.z=Math.PI/2;galaxy.add(bar);
 
-// ---------- Background stars ----------
-const bgCount=7000;
-const bgPos=new Float32Array(bgCount*3);
-for(let i=0;i<bgCount;i++){
-  const r=280+Math.random()*550;
-  const t=Math.random()*Math.PI*2;
-  const p=Math.acos(2*Math.random()-1);
-  bgPos[i*3]=r*Math.sin(p)*Math.cos(t);
-  bgPos[i*3+1]=r*Math.cos(p);
-  bgPos[i*3+2]=r*Math.sin(p)*Math.sin(t);
-}
-const bgGeo=new THREE.BufferGeometry();
-bgGeo.setAttribute('position',new THREE.BufferAttribute(bgPos,3));
-const bgMat=new THREE.PointsMaterial({color:0xa9c4ff,size:.75,map:starTexture,transparent:true,opacity:.38,depthWrite:false,blending:THREE.AdditiveBlending,sizeAttenuation:true});
-scene.add(new THREE.Points(bgGeo,bgMat));
+// Dust bands
+const D=7000,dp=new Float32Array(D*3),dc=new Float32Array(D*3);for(let i=0;i<D;i++){const arm=i%ARMS,r=5+Math.random()*32,a=arm*Math.PI*2/ARMS+r*.118+r*r*.0016+.34+normal()*.08,off=normal()*(.25+.4*r/R);dp[i*3]=Math.cos(a)*r+Math.cos(a+Math.PI/2)*off;dp[i*3+1]=normal()*.14;dp[i*3+2]=Math.sin(a)*r+Math.sin(a+Math.PI/2)*off;dc[i*3]=.055;dc[i*3+1]=.034;dc[i*3+2]=.022}
+const dg=new THREE.BufferGeometry();dg.setAttribute('position',new THREE.BufferAttribute(dp,3));dg.setAttribute('color',new THREE.BufferAttribute(dc,3));galaxy.add(new THREE.Points(dg,new THREE.PointsMaterial({map:starTex,size:.45,vertexColors:true,transparent:true,opacity:.16,depthWrite:false})));
 
-// ---------- Spiral disk ----------
-const DISK=125000;
-const diskPos=new Float32Array(DISK*3);
-const diskCol=new Float32Array(DISK*3);
-const diskR=new Float32Array(DISK);
-const diskA=new Float32Array(DISK);
-const diskSpeed=new Float32Array(DISK);
-const ARM_COUNT=4;
-const MAX_R=40;
-const INNER_R=3.1;
+const glow=new THREE.Mesh(new THREE.SphereGeometry(3.8,32,32),new THREE.MeshBasicMaterial({color:0xffbd75,transparent:true,opacity:.12,side:THREE.BackSide,blending:THREE.AdditiveBlending,depthWrite:false}));galaxy.add(glow);
 
-for(let i=0;i<DISK;i++){
-  const r=INNER_R+Math.pow(Math.random(),.64)*(MAX_R-INNER_R);
-  const arm=i%ARM_COUNT;
-  const armBase=(Math.PI*2/ARM_COUNT)*arm;
-  const turns=0.115;
-  const armAngle=armBase+(r*turns)+(r*r*.00165);
-  const spread=.11+0.55*(r/MAX_R);
-  const angle=armAngle+randNormal()*spread;
-  const x=Math.cos(angle)*r;
-  const z=Math.sin(angle)*r;
-  const thickness=.18+0.75*Math.exp(-r/13);
-  const y=randNormal()*thickness;
+let paused=false,slow=false;
+document.getElementById('toggle').onclick=e=>{paused=!paused;e.target.textContent=paused?'Resume':'Pause'};
+document.getElementById('speed').onclick=e=>{slow=!slow;e.target.textContent=slow?'Normal Speed':'Slow Mode'};
+document.getElementById('reset').onclick=()=>{camera.position.copy(startPos);controls.target.set(0,0,0);controls.update()};
+renderer.domElement.addEventListener('dblclick',()=>{camera.position.copy(startPos);controls.target.set(0,0,0);controls.update()});
+window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 
-  diskPos[i*3]=x;diskPos[i*3+1]=y;diskPos[i*3+2]=z;
-  const c=pickStarColor();
-  diskCol[i*3]=c.r;diskCol[i*3+1]=c.g;diskCol[i*3+2]=c.b;
-  diskR[i]=r;diskA[i]=angle;
-  diskSpeed[i]=.0105/(.85+r*.055);
-}
-const diskGeo=new THREE.BufferGeometry();
-diskGeo.setAttribute('position',new THREE.BufferAttribute(diskPos,3));
-diskGeo.setAttribute('color',new THREE.BufferAttribute(diskCol,3));
-const diskMat=new THREE.PointsMaterial({size:.105,map:starTexture,vertexColors:true,transparent:true,opacity:.92,depthWrite:false,blending:THREE.AdditiveBlending,sizeAttenuation:true});
-const disk=new THREE.Points(diskGeo,diskMat);
-galaxy.add(disk);
-
-// ---------- Central bulge ----------
-const BULGE=36000;
-const bulgePos=new Float32Array(BULGE*3);
-const bulgeCol=new Float32Array(BULGE*3);
-for(let i=0;i<BULGE;i++){
-  const x=randNormal()*4.2;
-  const z=randNormal()*2.3;
-  const y=randNormal()*1.65;
-  bulgePos[i*3]=x;bulgePos[i*3+1]=y;bulgePos[i*3+2]=z;
-  const c=Math.random()<.72?new THREE.Color(0xffddb1):new THREE.Color(0xff9f70);
-  bulgeCol[i*3]=c.r;bulgeCol[i*3+1]=c.g;bulgeCol[i*3+2]=c.b;
-}
-const bulgeGeo=new THREE.BufferGeometry();
-bulgeGeo.setAttribute('position',new THREE.BufferAttribute(bulgePos,3));
-bulgeGeo.setAttribute('color',new THREE.BufferAttribute(bulgeCol,3));
-const bulgeMat=new THREE.PointsMaterial({size:.14,map:starTexture,vertexColors:true,transparent:true,opacity:.9,depthWrite:false,blending:THREE.AdditiveBlending,sizeAttenuation:true});
-galaxy.add(new THREE.Points(bulgeGeo,bulgeMat));
-
-// ---------- Bar ----------
-const BAR=18000;
-const barPos=new Float32Array(BAR*3);
-const barCol=new Float32Array(BAR*3);
-for(let i=0;i<BAR;i++){
-  const x=(Math.random()*2-1)*6.4;
-  const z=randNormal()*.9;
-  const y=randNormal()*.72;
-  const taper=1-Math.abs(x)/6.4;
-  barPos[i*3]=x+randNormal()*.18;
-  barPos[i*3+1]=y;
-  barPos[i*3+2]=z*(.5+.8*taper);
-  const c=Math.random()<.55?new THREE.Color(0xffc889):new THREE.Color(0xffe7c4);
-  barCol[i*3]=c.r;barCol[i*3+1]=c.g;barCol[i*3+2]=c.b;
-}
-const barGeo=new THREE.BufferGeometry();
-barGeo.setAttribute('position',new THREE.BufferAttribute(barPos,3));
-barGeo.setAttribute('color',new THREE.BufferAttribute(barCol,3));
-const barMat=new THREE.PointsMaterial({size:.16,map:starTexture,vertexColors:true,transparent:true,opacity:.95,depthWrite:false,blending:THREE.AdditiveBlending,sizeAttenuation:true});
-galaxy.add(new THREE.Points(barGeo,barMat));
-
-// ---------- Dust lanes ----------
-const DUST=26000;
-const dustPos=new Float32Array(DUST*3);
-const dustCol=new Float32Array(DUST*3);
-for(let i=0;i<DUST;i++){
-  const arm=i%ARM_COUNT;
-  const r=4+Math.pow(Math.random(),.7)*34;
-  const base=(Math.PI*2/ARM_COUNT)*arm+(r*.115)+(r*r*.00165);
-  // offset slightly downstream from the stellar arm
-  const angle=base+.42+randNormal()*(.05+.08*(r/40));
-  const laneOffset=(Math.random()-.5)*1.5;
-  const x=Math.cos(angle)*r+Math.cos(angle+Math.PI/2)*laneOffset;
-  const z=Math.sin(angle)*r+Math.sin(angle+Math.PI/2)*laneOffset;
-  const y=randNormal()*(.1+.22*Math.exp(-r/12));
-  dustPos[i*3]=x;dustPos[i*3+1]=y;dustPos[i*3+2]=z;
-  const warm=.025+Math.random()*.045;
-  dustCol[i*3]=warm;dustCol[i*3+1]=warm*.62;dustCol[i*3+2]=warm*.5;
-}
-const dustGeo=new THREE.BufferGeometry();
-dustGeo.setAttribute('position',new THREE.BufferAttribute(dustPos,3));
-dustGeo.setAttribute('color',new THREE.BufferAttribute(dustCol,3));
-const dustMat=new THREE.PointsMaterial({size:.58,map:starTexture,vertexColors:true,transparent:true,opacity:.16,depthWrite:false,blending:THREE.NormalBlending,sizeAttenuation:true});
-galaxy.add(new THREE.Points(dustGeo,dustMat));
-
-// ---------- Faint halo ----------
-const haloGeo=new THREE.SphereGeometry(41,48,48);
-const haloMat=new THREE.MeshBasicMaterial({color:0x5577aa,transparent:true,opacity:.018,side:THREE.BackSide,depthWrite:false,blending:THREE.AdditiveBlending});
-galaxy.add(new THREE.Mesh(haloGeo,haloMat));
-
-// ---------- Bright galactic center ----------
-const coreGlow=new THREE.Mesh(
-  new THREE.SphereGeometry(2.8,32,32),
-  new THREE.MeshBasicMaterial({color:0xffd8a0,transparent:true,opacity:.16,side:THREE.BackSide,blending:THREE.AdditiveBlending,depthWrite:false})
-);
-galaxy.add(coreGlow);
-const centerLight=new THREE.PointLight(0xffd2a0,12,45,2);
-centerLight.position.set(0,0,0);
-galaxy.add(centerLight);
-
-let speedMultiplier=1;
-let paused=false;
-
-function resetView(){
-  camera.position.copy(DEFAULT_POS);
-  controls.target.set(0,0,0);
-  controls.update();
-}
-
-document.getElementById('reset').addEventListener('click',resetView);
-document.getElementById('slow').addEventListener('click',()=>{speedMultiplier=speedMultiplier===1?.35:1});
-document.getElementById('pause').addEventListener('click',e=>{paused=!paused;e.currentTarget.textContent=paused?'Resume':'Pause'});
-renderer.domElement.addEventListener('dblclick',resetView);
-
+// Remove the loading screen only after the renderer and scene are successfully initialized.
+loading.style.opacity='0';setTimeout(()=>loading.remove(),350);
 let last=performance.now();
-function animate(now){
-  requestAnimationFrame(animate);
-  const dt=Math.min((now-last)/16.67,2);last=now;
-
-  if(!paused){
-    const step=speedMultiplier*dt;
-    // Differential rotation: inner regions orbit faster than outer regions.
-    for(let i=0;i<DISK;i++){
-      diskA[i]+=diskSpeed[i]*step;
-      const r=diskR[i];
-      diskPos[i*3]=Math.cos(diskA[i])*r;
-      diskPos[i*3+2]=Math.sin(diskA[i])*r;
-      diskPos[i*3+1]=diskPos[i*3+1];
-    }
-    diskGeo.attributes.position.needsUpdate=true;
-    galaxy.rotation.z+=0.000035*step;
-    coreGlow.scale.setScalar(1+0.015*Math.sin(now*.0012));
-  }
-
-  controls.update();
-  renderer.render(scene,camera);
-}
-
-window.addEventListener('resize',()=>{
-  camera.aspect=innerWidth/innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth,innerHeight);
-});
-
-document.getElementById('loading').classList.add('hidden');
-requestAnimationFrame(animate);
+function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-last)/16.67,2);last=now;if(!paused){galaxy.rotation.y+=0.00075*dt*(slow?.35:1);glow.scale.setScalar(1+.02*Math.sin(now*.0012))}controls.update();renderer.render(scene,camera)}
+animate(performance.now());
+}catch(err){console.error(err);document.querySelector('.spinner')?.remove();errorBox.style.display='block';errorBox.textContent='Galaxy renderer failed to initialize. Refresh once to retry.';}
 </script>
 </body>
 </html>
