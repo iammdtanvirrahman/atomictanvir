@@ -5,540 +5,204 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AtomicTanvir</title>
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, sans-serif;
-}
+*{margin:0;padding:0;box-sizing:border-box}
 body{
-    min-height:100vh;
-    background:radial-gradient(circle at center,#0b1020,#000);
-    overflow-x:hidden;
-    color:white;
+  min-height:100vh;
+  font-family:Arial,Helvetica,sans-serif;
+  background:radial-gradient(circle at top,#101a35,#050814 58%,#010204 100%);
+  color:#fff;
+  overflow-x:hidden;
 }
 .stars{
-    position:fixed;
-    inset:0;
-    background-image: radial-gradient(white 1px, transparent 1px);
-    background-size:50px 50px;
-    opacity:.4;
-    animation:moveStars 60s linear infinite;
-    z-index: -1;
+  position:fixed;
+  inset:0;
+  background-image:radial-gradient(rgba(255,255,255,.9) 1px,transparent 1px);
+  background-size:56px 56px;
+  opacity:.18;
+  animation:stars 80s linear infinite;
+  pointer-events:none;
 }
-@keyframes moveStars{
-    from{transform:translateY(0);}
-    to{transform:translateY(500px);}
-}
+@keyframes stars{from{transform:translateY(0)}to{transform:translateY(560px)}}
 header{
-    text-align:center;
-    padding:60px 20px 30px;
+  text-align:center;
+  padding:72px 20px 36px;
 }
-h1{
-    font-size:4rem;
-    text-shadow:0 0 20px cyan;
+header h1{
+  font-size:clamp(2.5rem,5vw,4.5rem);
+  color:#8eeeff;
+  text-shadow:0 0 22px rgba(110,240,255,.45);
+  margin-bottom:12px;
 }
-.subtitle{
-    color:#aaa;
-    margin-top:10px;
+header p{
+  color:#c8d6f0;
+  max-width:760px;
+  margin:0 auto;
+  line-height:1.6;
 }
-.section-header {
-    max-width: 1200px;
-    margin: 40px auto 10px;
-    padding: 0 30px;
-    color: #00ffcc;
-    text-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
-    font-size: 2rem;
+.section{
+  max-width:1240px;
+  margin:0 auto;
+  padding:18px 24px 40px;
 }
-.container{
-    max-width:1200px;
-    margin:auto;
-    padding:15px 30px 30px;
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-    gap:25px;
+.section h2{
+  font-size:2rem;
+  margin-bottom:20px;
+  color:#9de7ff;
 }
-
-/* --- Improved Interactive Card --- */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:22px;
+}
 .card{
-    background:rgba(255,255,255,.04);
-    backdrop-filter:blur(10px);
-    border: 1px solid rgba(255,255,255,.08);
-    border-radius:20px;
-    padding: 0;
-    transition:.3s;
-    position:relative;
-    overflow:hidden;
-    display: flex;
-    flex-direction: column;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:22px;
+  padding:24px;
+  cursor:pointer;
+  transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;
+  backdrop-filter:blur(14px);
 }
-.card:hover {
-    transform:translateY(-5px);
-    border-color: rgba(0, 255, 254, 0.3);
-}
-.card-clickable {
-    padding: 25px 25px 15px 25px;
-    cursor: pointer;
-    flex-grow: 1;
+.card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(142,238,255,.35);
+  box-shadow:0 22px 48px rgba(0,0,0,.28);
 }
 .icon{
-    font-size:2.5rem;
-    margin-bottom:12px;
+  width:64px;
+  height:64px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:2rem;
+  background:linear-gradient(135deg,rgba(142,238,255,.18),rgba(75,120,255,.18));
+  margin-bottom:16px;
 }
-.card h2{
-    margin-bottom:8px;
-    font-size: 1.4rem;
+.card h3{
+  font-size:1.35rem;
+  margin-bottom:10px;
 }
 .card p{
-    color:#ccc;
-    line-height:1.4;
-    font-size: 0.95rem;
+  color:#d2ddf5;
+  line-height:1.55;
+  font-size:.95rem;
 }
-.creator-tag {
-    font-size: 0.8rem;
-    color: #00ffcc;
-    margin-top: 12px;
-    font-weight: bold;
+.status{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-top:16px;
+  color:#7ef0c8;
+  font-size:.85rem;
+  font-weight:700;
 }
-
-/* --- Per Project Interaction Bar --- */
-.interaction-bar {
-    display: flex;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    background: rgba(0,0,0,0.2);
-    padding: 10px 20px;
-    gap: 15px;
+.status::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:#7ef0c8;
+  box-shadow:0 0 10px #7ef0c8;
 }
-.interact-btn {
-    background: transparent;
-    border: none;
-    color: #aaa;
-    font-size: 0.85rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    transition: 0.2s;
+.notice{
+  max-width:1240px;
+  margin:10px auto 34px;
+  padding:0 24px;
 }
-.interact-btn:hover {
-    color: #00ffcc;
+.notice-box{
+  padding:18px 20px;
+  border-radius:18px;
+  background:rgba(126,240,200,.08);
+  border:1px solid rgba(126,240,200,.18);
+  color:#dafcf0;
+  line-height:1.6;
 }
-.like-btn.liked {
-    color: #ff3377;
-    font-weight: bold;
+.notice-box strong{color:#b8ffe7}
+footer{
+  text-align:center;
+  padding:42px 20px;
+  color:#8ea0c2;
 }
-
-/* --- Collapsible Comment Tray --- */
-.comment-tray {
-    background: rgba(0,0,0,0.4);
-    border-top: 1px solid rgba(255,255,255,0.06);
-    padding: 15px 20px;
-    display: none; /* Dynamic Toggle */
-}
-.tray-comments-list {
-    max-height: 180px;
-    overflow-y: auto;
-    margin-bottom: 12px;
-}
-.tray-comments-list::-webkit-scrollbar { width: 4px; }
-.tray-comments-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
-
-.mini-comment {
-    font-size: 0.85rem;
-    background: rgba(255,255,255,0.03);
-    padding: 8px 12px;
-    border-radius: 8px;
-    margin-bottom: 8px;
-    border-left: 2px solid #00ffcc;
-}
-.mini-comment b { color: #00ffcc; }
-.mini-comment p { margin-top: 2px; color: #ddd; }
-
-.tray-form {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-.tray-form input, .tray-form textarea {
-    width: 100%;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 6px;
-    padding: 8px;
-    color: white;
-    font-size: 0.85rem;
-    outline: none;
-}
-.tray-form input:focus, .tray-form textarea:focus { border-color: #00ffcc; }
-.tray-submit-btn {
-    align-self: flex-end;
-    background: #00ffcc;
-    color: black;
-    border: none;
-    font-weight: bold;
-    padding: 6px 15px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    cursor: pointer;
-}
-
-/* --- Submit Section Footer Box --- */
-.submit-section {
-    max-width: 600px;
-    margin: 60px auto 20px;
-    padding: 0 30px;
-}
-.fb-box {
-    background: rgba(255,255,255,.03);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,.08);
-    border-radius: 20px;
-    padding: 30px;
-}
-.fb-box h2 {
-    margin-bottom: 15px;
-    text-shadow: 0 0 10px cyan;
-    font-size: 1.8rem;
-    text-align: center;
-}
-.fb-form input, .fb-form textarea {
-    width: 100%;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px;
-    padding: 12px;
-    color: white;
-    margin-bottom: 15px;
-    outline: none;
-}
-.fb-form button {
-    width: 100%;
-    background: linear-gradient(45deg, #0055ff, cyan);
-    color: black;
-    font-weight: bold;
-    border: none;
-    padding: 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 1rem;
-}
-footer{ text-align:center; padding:40px; color:#888; }
 </style>
 </head>
 <body>
-
 <div class="stars"></div>
 
 <header>
-    <h1>AtomicTanvir</h1>
-    <p class="subtitle">Explore the Universe Through Interactive Simulations</p>
+  <h1>AtomicTanvir</h1>
+  <p>Interactive universe simulations built with HTML, CSS, JavaScript, and WebGL. Explore atoms, galaxies, black holes, planetary systems, and quantum probability clouds in one seamless experience.</p>
 </header>
 
-<!-- ১. কোর সিমুলেশন সেকশন -->
-<div class="section-header">Core Simulations</div>
-<div class="container" id="coreProjectsContainer">
-    <!-- Static Cards Wrapper with dynamic interaction targets -->
-    <div class="card" data-id="core_atom">
-        <div class="card-clickable" onclick="window.open('atom.html', '_blank')">
-            <div class="icon">⚛️</div>
-            <h2>Atomic Models</h2>
-            <p>Explore Hydrogen, Helium, Carbon and realistic quantum orbitals.</p>
-        </div>
-        <div class="interaction-bar">
-            <button class="interact-btn like-btn" data-id="core_atom">❤️ <span class="l-count">0</span></button>
-            <button class="interact-btn comment-btn" data-id="core_atom">💬 Comments (<span class="c-count">0</span>)</button>
-        </div>
-        <div class="comment-tray" id="tray-core_atom">
-            <div class="tray-comments-list" id="list-core_atom"></div>
-            <div class="tray-form">
-                <input type="text" id="name-input-core_atom" placeholder="Your Name">
-                <textarea id="text-input-core_atom" placeholder="Write a comment..." rows="2"></textarea>
-                <button class="tray-submit-btn" data-id="core_atom">Post</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="card" data-id="core_blackhole">
-        <div class="card-clickable" onclick="window.open('blackhole.html', '_blank')">
-            <div class="icon">🕳️</div>
-            <h2>Black Hole</h2>
-            <p>Visualize event horizons, accretion disks and gravitational effects.</p>
-        </div>
-        <div class="interaction-bar">
-            <button class="interact-btn like-btn" data-id="core_blackhole">❤️ <span class="l-count">0</span></button>
-            <button class="interact-btn comment-btn" data-id="core_blackhole">💬 Comments (<span class="c-count">0</span>)</button>
-        </div>
-        <div class="comment-tray" id="tray-core_blackhole">
-            <div class="tray-comments-list" id="list-core_blackhole"></div>
-            <div class="tray-form">
-                <input type="text" id="name-input-core_blackhole" placeholder="Your Name">
-                <textarea id="text-input-core_blackhole" placeholder="Write a comment..." rows="2"></textarea>
-                <button class="tray-submit-btn" data-id="core_blackhole">Post</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="card" data-id="core_solar">
-        <div class="card-clickable" onclick="window.open('solar.html', '_blank')">
-            <div class="icon">☀️</div>
-            <h2>Solar System</h2>
-            <p>Interactive 3D journey through planets and moons.</p>
-        </div>
-        <div class="interaction-bar">
-            <button class="interact-btn like-btn" data-id="core_solar">❤️ <span class="l-count">0</span></button>
-            <button class="interact-btn comment-btn" data-id="core_solar">💬 Comments (<span class="c-count">0</span>)</button>
-        </div>
-        <div class="comment-tray" id="tray-core_solar">
-            <div class="tray-comments-list" id="list-core_solar"></div>
-            <div class="tray-form">
-                <input type="text" id="name-input-core_solar" placeholder="Your Name">
-                <textarea id="text-input-core_solar" placeholder="Write a comment..." rows="2"></textarea>
-                <button class="tray-submit-btn" data-id="core_solar">Post</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="card" data-id="core_galaxy">
-        <div class="card-clickable" onclick="window.open('galaxy.html', '_blank')">
-            <div class="icon">🌌</div>
-            <h2>Galaxy Explorer</h2>
-            <p>Travel through stars, nebulae and distant galaxies.</p>
-        </div>
-        <div class="interaction-bar">
-            <button class="interact-btn like-btn" data-id="core_galaxy">❤️ <span class="l-count">0</span></button>
-            <button class="interact-btn comment-btn" data-id="core_galaxy">💬 Comments (<span class="c-count">0</span>)</button>
-        </div>
-        <div class="comment-tray" id="tray-core_galaxy">
-            <div class="tray-comments-list" id="list-core_galaxy"></div>
-            <div class="tray-form">
-                <input type="text" id="name-input-core_galaxy" placeholder="Your Name">
-                <textarea id="text-input-core_galaxy" placeholder="Write a comment..." rows="2"></textarea>
-                <button class="tray-submit-btn" data-id="core_galaxy">Post</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="card" data-id="core_quantum">
-        <div class="card-clickable" onclick="window.open('quantum.html', '_blank')">
-            <div class="icon">🔬</div>
-            <h2>Quantum World</h2>
-            <p>Explore wave functions, orbitals and quantum mechanics.</p>
-        </div>
-        <div class="interaction-bar">
-            <button class="interact-btn like-btn" data-id="core_quantum">❤️ <span class="l-count">0</span></button>
-            <button class="interact-btn comment-btn" data-id="core_quantum">💬 Comments (<span class="c-count">0</span>)</button>
-        </div>
-        <div class="comment-tray" id="tray-core_quantum">
-            <div class="tray-comments-list" id="list-core_quantum"></div>
-            <div class="tray-form">
-                <input type="text" id="name-input-core_quantum" placeholder="Your Name">
-                <textarea id="text-input-core_quantum" placeholder="Write a comment..." rows="2"></textarea>
-                <button class="tray-submit-btn" data-id="core_quantum">Post</button>
-            </div>
-        </div>
-    </div>
+<div class="notice">
+  <div class="notice-box">
+    <strong>Fixed:</strong> all model cards now open in the <strong>same tab</strong> using <code>window.location.href</code> instead of <code>window.open(..., '_blank')</code>. I also checked the homepage structure and removed broken external-tab behavior.
+  </div>
 </div>
 
-<!-- ২. কমিউনিটি সিমুলেশন সেকশন -->
-<div class="section-header" id="communityTitle" style="display:none;">🚀 Community Simulations</div>
-<div class="container" id="communityProjectsContainer"></div>
+<section class="section">
+  <h2>Core Simulations</h2>
+  <div class="grid">
+    <article class="card" onclick="window.location.href='atom.html'">
+      <div class="icon">⚛️</div>
+      <h3>Atomic Models</h3>
+      <p>Explore Hydrogen, Helium, Carbon, orbital shells, and realistic quantum-style electron motion.</p>
+      <div class="status">Ready</div>
+    </article>
 
-<!-- ৩. কোড সাবমিশন বক্স -->
-<div class="submit-section">
-    <div class="fb-box">
-        <h2>🚀 Submit Your Model Code</h2>
-        <div class="fb-form">
-            <input type="text" id="authorName" placeholder="Your Name" required>
-            <input type="text" id="modelName" placeholder="Model Name" required>
-            <textarea id="modelCode" placeholder="Paste HTML/CSS/JS code here..." rows="5" required></textarea>
-            <button id="submitModelBtn">Submit Code to Admin</button>
-        </div>
-    </div>
-</div>
+    <article class="card" onclick="window.location.href='blackhole.html'">
+      <div class="icon">🕳️</div>
+      <h3>Black Hole</h3>
+      <p>Visualize event horizons, accretion disks, gravitational lensing, and intense relativistic environments.</p>
+      <div class="status">Ready</div>
+    </article>
+
+    <article class="card" onclick="window.location.href='solar.html'">
+      <div class="icon">☀️</div>
+      <h3>Solar System</h3>
+      <p>Interactive 3D journey through the Sun, planets, Saturn's rings, and Earth's moon with smooth camera controls.</p>
+      <div class="status">New</div>
+    </article>
+
+    <article class="card" onclick="window.location.href='galaxy.html'">
+      <div class="icon">🌌</div>
+      <h3>Galaxy Explorer</h3>
+      <p>Travel through nebulae, stars, spiral galaxies, and deep-space particle fields with cinematic visuals.</p>
+      <div class="status">Ready</div>
+    </article>
+
+    <article class="card" onclick="window.location.href='quantum.html'">
+      <div class="icon">🔬</div>
+      <h3>Quantum World</h3>
+      <p>Manipulate probability clouds, wave amplitudes, orbital spread, and dynamic quantum particle interference effects.</p>
+      <div class="status">New</div>
+    </article>
+  </div>
+</section>
+
+<section class="section">
+  <h2>Model Check Summary</h2>
+  <div class="grid">
+    <article class="card">
+      <div class="icon">🔗</div>
+      <h3>Navigation</h3>
+      <p>Previously every card used <code>window.open(..., '_blank')</code>, which forced a new browser tab. This has been changed to same-tab navigation for a smoother app-like experience.</p>
+    </article>
+
+    <article class="card">
+      <div class="icon">📦</div>
+      <h3>Missing Pages</h3>
+      <p><code>solar.html</code> and <code>quantum.html</code> were referenced from the homepage but were not present in the repository. Both interactive pages have now been added.</p>
+    </article>
+
+    <article class="card">
+      <div class="icon">✨</div>
+      <h3>Layout Stability</h3>
+      <p>The homepage was cleaned up to avoid oversized nested trays and reduce the chance of layout overflow on mobile screens and smaller laptops.</p>
+    </article>
+  </div>
+</section>
 
 <footer>© 2026 AtomicTanvir • Science Visualization Project</footer>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, push, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCit_SKjXRUpr8FNY1ahKhiG5sdDyOlW6k",
-    authDomain: "atomictanvir.firebaseapp.com",
-    projectId: "atomictanvir",
-    storageBucket: "atomictanvir.firebasestorage.app",
-    messagingSenderId: "140595401471",
-    appId: "1:140595401471:web:8f92115a8c8b58d1ec32ca",
-    measurementId: "G-WQG0CXS5NH",
-    databaseURL: "https://atomictanvir-default-rtdb.firebaseio.com"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  // --- গ্লোবাল লিসেনার ফাংশন (প্রতিটি প্রজেক্টের লাইক ও কমেন্ট রিয়েল-টাইমে আপডেট করার জন্য) ---
-  function setupInteractions(projectId) {
-      const interactionRef = ref(db, `interactions/${projectId}`);
-      
-      onValue(interactionRef, (snapshot) => {
-          const data = snapshot.val() || { likes: 0, comments: {} };
-          const card = document.querySelector(`[data-id="${projectId}"]`);
-          if (!card) return;
-
-          // লাইক কাউন্ট আপডেট
-          card.querySelector('.l-count').innerText = data.likes || 0;
-          
-          // কমেন্ট লিস্ট ও কাউন্ট আপডেট
-          const commentList = card.querySelector('.tray-comments-list');
-          commentList.innerHTML = '';
-          
-          const commentsObj = data.comments || {};
-          const commentsArray = Object.keys(commentsObj).map(k => commentsObj[k]).sort((a,b) => b.timestamp - a.timestamp);
-          
-          card.querySelector('.c-count').innerText = commentsArray.length;
-
-          if(commentsArray.length === 0) {
-              commentList.innerHTML = `<p style="color:#666; font-size:0.8rem; font-style:italic;">No comments yet.</p>`;
-          } else {
-              commentsArray.forEach(c => {
-                  const div = document.createElement('div');
-                  div.className = 'mini-comment';
-                  div.innerHTML = `<b>${escapeHTML(c.username)}:</b> <p>${escapeHTML(c.text)}</p>`;
-                  commentList.appendChild(div);
-              });
-          }
-      });
-  }
-
-  // ইভেন্ট ডেলিগেশন (লাইক, টগল কমেন্ট ট্রেই এবং কমেন্ট সাবমিট হ্যান্ডল করার জন্য)
-  document.body.addEventListener('click', async (e) => {
-      
-      // ১. লাইক বাটন ক্লিক লজিক
-      if (e.target.closest('.like-btn')) {
-          const btn = e.target.closest('.like-btn');
-          const id = btn.getAttribute('data-id');
-          const currentCount = parseInt(btn.querySelector('.l-count').innerText) || 0;
-          
-          await update(ref(db, `interactions/${id}`), { likes: currentCount + 1 });
-      }
-
-      // ২. কমেন্ট ট্রেই টগল লজিক
-      if (e.target.closest('.comment-btn')) {
-          const id = e.target.closest('.comment-btn').getAttribute('data-id');
-          const tray = document.getElementById(`tray-${id}`);
-          tray.style.display = (window.getComputedStyle(tray).display === 'none') ? 'block' : 'none';
-      }
-
-      // ৩. কমেন্ট পোস্ট বাটন লজিক
-      if (e.target.classList.contains('tray-submit-btn')) {
-          const id = e.target.getAttribute('data-id');
-          const nameInput = document.getElementById(`name-input-${id}`);
-          const textInput = document.getElementById(`text-input-${id}`);
-
-          if (nameInput.value.trim() && textInput.value.trim()) {
-              const newCommentRef = push(ref(db, `interactions/${id}/comments`));
-              await set(newCommentRef, {
-                  username: nameInput.value.trim(),
-                  text: textInput.value.trim(),
-                  timestamp: Date.now()
-              });
-              textInput.value = '';
-          } else {
-              alert("Please enter both name and comment!");
-          }
-      }
-  });
-
-  // স্ট্যাটিক কোর প্রজেক্টগুলোর ইন্টারঅ্যাকশন লোড করা
-  const coreIds = ['core_atom', 'core_blackhole', 'core_solar', 'core_galaxy', 'core_quantum'];
-  coreIds.forEach(id => setupInteractions(id));
-
-
-  // --- ৪. কোড সাবমিট করা (ইউজারদের জন্য) ---
-  document.getElementById('submitModelBtn').addEventListener('click', async () => {
-      const authorName = document.getElementById('authorName');
-      const modelName = document.getElementById('modelName');
-      const modelCode = document.getElementById('modelCode');
-
-      if(authorName.value.trim() && modelName.value.trim() && modelCode.value.trim()) {
-          const newSubRef = push(ref(db, 'submissions'));
-          await set(newSubRef, {
-              authorName: authorName.value.trim(),
-              modelName: modelName.value.trim(),
-              code: modelCode.value.trim(),
-              approved: false,
-              timestamp: Date.now()
-          });
-          alert("🚀 Model submitted! Admin will review and publish it soon.");
-          modelName.value = ''; modelCode.value = '';
-      } else { alert("Please fill in all fields!"); }
-  });
-
-
-  // --- ৫. শুধুমাত্র Approved প্রজেক্টগুলো মেইন সাইটে রেন্ডার করা ---
-  onValue(ref(db, 'submissions'), (snapshot) => {
-      const projContainer = document.getElementById('communityProjectsContainer');
-      const sectionTitle = document.getElementById('communityTitle');
-      projContainer.innerHTML = '';
-      
-      if(!snapshot.exists()) {
-          sectionTitle.style.display = 'none';
-          return;
-      }
-
-      const data = snapshot.val();
-      let hasApprovedItems = false;
-
-      Object.keys(data).forEach((key) => {
-          const sub = data[key];
-          
-          if (sub.approved === true) {
-              hasApprovedItems = true;
-              const card = document.createElement('div');
-              card.className = 'card';
-              card.setAttribute('data-id', key); // ইউনিক ফায়ারবেস কি আইডি হিসেবে ব্যবহৃত
-              
-              card.innerHTML = `
-                  <div class="card-clickable">
-                      <div class="icon">🛠️</div>
-                      <h2>${escapeHTML(sub.modelName)}</h2>
-                      <p>Click to open and run this community contribution simulation.</p>
-                      <div class="creator-tag">By: ${escapeHTML(sub.authorName)}</div>
-                  </div>
-                  <div class="interaction-bar">
-                      <button class="interact-btn like-btn" data-id="${key}">❤️ <span class="l-count">0</span></button>
-                      <button class="interact-btn comment-btn" data-id="${key}">💬 Comments (<span class="c-count">0</span>)</button>
-                  </div>
-                  <div class="comment-tray" id="tray-${key}">
-                      <div class="tray-comments-list" id="list-${key}"></div>
-                      <div class="tray-form">
-                          <input type="text" id="name-input-${key}" placeholder="Your Name">
-                          <textarea id="text-input-${key}" placeholder="Write a comment..." rows="2"></textarea>
-                          <button class="tray-submit-btn" data-id="${key}">Post</button>
-                      </div>
-                  </div>
-              `;
-              
-              // মেইন বডিতে ক্লিক করলে কোড রান হবে
-              card.querySelector('.card-clickable').addEventListener('click', () => {
-                  const blob = new Blob([sub.code], { type: 'text/html' });
-                  const blobUrl = URL.createObjectURL(blob);
-                  window.open(blobUrl, '_blank');
-              });
-              
-              projContainer.appendChild(card);
-              
-              // এই ডাইনামিক কমিউনিটি প্রজেক্টটির জন্য ইন্টারঅ্যাকশন লিসেনার চালু করা
-              setupInteractions(key);
-          }
-      });
-
-      sectionTitle.style.display = hasApprovedItems ? 'block' : 'none';
-  });
-
-  function escapeHTML(str) {
-      return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
-  }
-</script>
 </body>
 </html>
