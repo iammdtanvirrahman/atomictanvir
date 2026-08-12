@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AtomicTanvir • Quantum World</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  overflow:hidden;
+  background:radial-gradient(circle at top,#111b3a,#050816 58%,#010204 100%);
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+}
+canvas{display:block}
+.panel{
+  position:fixed;
+  top:18px;
+  left:18px;
+  width:min(360px,calc(100vw - 36px));
+  padding:18px;
+  border-radius:18px;
+  background:rgba(5,10,22,.76);
+  border:1px solid rgba(255,255,255,.08);
+  backdrop-filter:blur(16px);
+  z-index:10;
+}
+.panel h1{
+  font-size:1.5rem;
+  margin-bottom:8px;
+  color:#9ee7ff;
+}
+.panel p{
+  color:#d5def2;
+  line-height:1.5;
+  font-size:.92rem;
+}
+.controls{
+  margin-top:16px;
+  display:grid;
+  gap:12px;
+}
+label{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:.9rem;
+  color:#e6efff;
+}
+input[type=range]{width:100%}
+.stats{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.stat{
+  padding:10px 12px;
+  border-radius:12px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.06);
+}
+.stat span{
+  display:block;
+  color:#9ee7ff;
+  font-size:.72rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin-bottom:4px;
+}
+.stat strong{font-size:1rem}
+.tip{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  padding:12px 16px;
+  border-radius:14px;
+  background:rgba(5,10,22,.76);
+  border:1px solid rgba(255,255,255,.08);
+  color:#d9e7ff;
+  font-size:.88rem;
+  max-width:min(320px,calc(100vw - 36px));
+  z-index:10;
+}
+</style>
+</head>
+<body>
+<div class="panel">
+  <h1>🔬 Quantum World</h1>
+  <p>Visualize probability clouds, wave amplitudes, and electron interference patterns in a dynamic 3D quantum playground built with Three.js.</p>
+  <div class="stats">
+    <div class="stat"><span>Particles</span><strong>1,800</strong></div>
+    <div class="stat"><span>Modes</span><strong>Wave + Orbital</strong></div>
+    <div class="stat"><span>Dimension</span><strong>3D Probability Field</strong></div>
+    <div class="stat"><span>Renderer</span><strong>WebGL / Three.js</strong></div>
+  </div>
+  <div class="controls">
+    <label>Wave amplitude <span id="ampValue">1.0</span></label>
+    <input id="amplitude" type="range" min="0.4" max="2.4" step="0.1" value="1.0">
+    <label>Orbital spread <span id="spreadValue">28</span></label>
+    <input id="spread" type="range" min="12" max="48" step="1" value="28">
+  </div>
+</div>
+<div class="tip">Tip: drag to rotate the quantum cloud, zoom to inspect probability regions, and adjust the sliders to morph the orbital field in real time.</div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/controls/OrbitControls.js';
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x02040c,0.0032);
+
+const camera = new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,0.1,1200);
+camera.position.set(0,30,90);
+
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(window.innerWidth,window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+document.body.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera,renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.minDistance = 24;
+controls.maxDistance = 260;
+controls.target.set(0,0,0);
+
+scene.add(new THREE.AmbientLight(0x88aaff,0.4));
+const keyLight = new THREE.PointLight(0x7be7ff,2.4,600);
+keyLight.position.set(40,50,30);
+scene.add(keyLight);
+const rimLight = new THREE.PointLight(0xff77dd,1.6,600);
+rimLight.position.set(-50,-30,-20);
+scene.add(rimLight);
+
+const particleCount = 1800;
+const positions = new Float32Array(particleCount*3);
+const seeds = Array.from({length:particleCount},()=>({
+  theta:Math.random()*Math.PI*2,
+  phi:Math.random()*Math.PI,
+  radius:Math.random()
+}));
+
+const geometry = new THREE.BufferGeometry();
+geometry.setAttribute('position',new THREE.BufferAttribute(positions,3));
+
+const material = new THREE.PointsMaterial({
+  color:0x8eeeff,
+  size:0.55,
+  transparent:true,
+  opacity:0.95,
+  blending:THREE.AdditiveBlending,
+  depthWrite:false,
+  sizeAttenuation:true
+});
+
+const cloud = new THREE.Points(geometry,material);
+scene.add(cloud);
+
+const core = new THREE.Mesh(
+  new THREE.SphereGeometry(5,48,48),
+  new THREE.MeshStandardMaterial({
+    color:0x7be7ff,
+    emissive:0x1d6b88,
+    emissiveIntensity:1.2,
+    roughness:0.25,
+    metalness:0.1
+  })
+);
+scene.add(core);
+
+const halo = new THREE.Mesh(
+  new THREE.SphereGeometry(8,32,32),
+  new THREE.MeshBasicMaterial({
+    color:0x8be9ff,
+    transparent:true,
+    opacity:0.12,
+    side:THREE.BackSide
+  })
+);
+scene.add(halo);
+
+const waveRing = new THREE.Mesh(
+  new THREE.TorusGeometry(18,0.28,16,180),
+  new THREE.MeshBasicMaterial({
+    color:0xff99ee,
+    transparent:true,
+    opacity:0.65
+  })
+);
+waveRing.rotation.x = Math.PI/2;
+scene.add(waveRing);
+
+const amplitudeInput = document.getElementById('amplitude');
+const spreadInput = document.getElementById('spread');
+const ampValue = document.getElementById('ampValue');
+const spreadValue = document.getElementById('spreadValue');
+
+let amplitude = parseFloat(amplitudeInput.value);
+let spread = parseFloat(spreadInput.value);
+
+function updateField(time){
+  for(let i=0;i<particleCount;i++){
+    const seed = seeds[i];
+    const orbital = Math.sin(seed.theta*3 + time*0.7) * Math.cos(seed.phi*2 - time*0.45);
+    const radial = spread * (0.18 + seed.radius*0.82) * (0.72 + Math.abs(orbital)*0.6) * amplitude;
+    const x = radial * Math.sin(seed.phi) * Math.cos(seed.theta + time*0.08*seed.radius);
+    const y = radial * Math.cos(seed.phi) * (0.45 + orbital*0.55);
+    const z = radial * Math.sin(seed.phi) * Math.sin(seed.theta - time*0.06*seed.radius);
+    positions[i*3] = x;
+    positions[i*3+1] = y;
+    positions[i*3+2] = z;
+  }
+  geometry.attributes.position.needsUpdate = true;
+}
+
+amplitudeInput.addEventListener('input',e=>{
+  amplitude = parseFloat(e.target.value);
+  ampValue.textContent = amplitude.toFixed(1);
+});
+
+spreadInput.addEventListener('input',e=>{
+  spread = parseFloat(e.target.value);
+  spreadValue.textContent = String(Math.round(spread));
+});
+
+window.addEventListener('resize',()=>{
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth,window.innerHeight);
+});
+
+const clock = new THREE.Clock();
+
+function animate(){
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+
+  updateField(t);
+
+  cloud.rotation.y += 0.0015;
+  cloud.rotation.x = Math.sin(t*0.2)*0.12;
+  core.rotation.y += 0.01;
+  halo.rotation.y -= 0.004;
+  waveRing.rotation.z += 0.01;
+  waveRing.scale.setScalar(1 + Math.sin(t*1.4)*0.05*amplitude);
+
+  controls.update();
+  renderer.render(scene,camera);
+}
+
+animate();
+</script>
+</body>
+</html>
