@@ -2,367 +2,105 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AtomicTanvir • Interactive Science Lab</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AtomicTanvir</title>
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:Inter,Arial,sans-serif;
-}
-body{
-  min-height:100vh;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(0,255,255,.12), transparent 25%),
-    radial-gradient(circle at 80% 30%, rgba(0,140,255,.12), transparent 28%),
-    radial-gradient(circle at 50% 80%, rgba(180,0,255,.10), transparent 30%),
-    #030712;
-  color:#fff;
-  overflow-x:hidden;
-}
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  background-image:
-    radial-gradient(white 1px, transparent 1px),
-    radial-gradient(rgba(0,255,255,.4) 1px, transparent 1px);
-  background-size:80px 80px, 140px 140px;
-  opacity:.22;
-  animation:stars 90s linear infinite;
-  pointer-events:none;
-}
-@keyframes stars{
-  from{transform:translateY(0)}
-  to{transform:translateY(500px)}
-}
-main{
-  position:relative;
-  z-index:1;
-}
-.hero{
-  max-width:1100px;
-  margin:0 auto;
-  padding:90px 24px 56px;
-  text-align:center;
-}
-.badge{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 18px;
-  border-radius:999px;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.12);
-  color:#9ee7ff;
-  font-size:.9rem;
-  margin-bottom:24px;
-  backdrop-filter:blur(12px);
-}
-.hero h1{
-  font-size:clamp(3rem,8vw,5.8rem);
-  line-height:.95;
-  margin-bottom:18px;
-  letter-spacing:-.04em;
-  text-shadow:0 0 28px rgba(0,255,255,.25);
-}
-.hero p{
-  max-width:760px;
-  margin:0 auto;
-  color:#c9d5ea;
-  font-size:1.08rem;
-  line-height:1.7;
-}
-.hero-actions{
-  margin-top:34px;
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:14px;
-}
-.hero-actions a{
-  text-decoration:none;
-  padding:14px 22px;
-  border-radius:999px;
-  font-weight:700;
-  transition:transform .25s ease, box-shadow .25s ease, background .25s ease;
-}
-.hero-actions .primary{
-  background:linear-gradient(135deg,#00e0ff,#2f6bff);
-  color:#04111f;
-  box-shadow:0 16px 34px rgba(47,107,255,.35);
-}
-.hero-actions .secondary{
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.12);
-  color:#eef6ff;
-}
-.hero-actions a:hover{
-  transform:translateY(-2px);
-}
-.stats{
-  max-width:960px;
-  margin:24px auto 0;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:16px;
-}
-.stat{
-  padding:18px 20px;
-  border-radius:22px;
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.08);
-  backdrop-filter:blur(14px);
-}
-.stat strong{
-  display:block;
-  font-size:1.7rem;
-  color:#9ee7ff;
-  margin-bottom:6px;
-}
-.stat span{
-  color:#b7c4db;
-  font-size:.92rem;
-}
-.section{
-  max-width:1180px;
-  margin:0 auto;
-  padding:28px 24px 72px;
-}
-.section-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-end;
-  gap:16px;
-  margin-bottom:26px;
-}
-.section-header h2{
-  font-size:2rem;
-  color:#f4f8ff;
-}
-.section-header p{
-  max-width:520px;
-  color:#b8c5dc;
-  line-height:1.6;
-}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:22px;
-}
-.card{
-  position:relative;
-  padding:26px;
-  border-radius:26px;
-  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-  border:1px solid rgba(255,255,255,.09);
-  backdrop-filter:blur(18px);
-  overflow:hidden;
-  transition:transform .28s ease, border-color .28s ease, box-shadow .28s ease;
-}
-.card::before{
-  content:"";
-  position:absolute;
-  inset:-40% auto auto -20%;
-  width:160px;
-  height:160px;
-  background:radial-gradient(circle, rgba(0,255,255,.18), transparent 70%);
-  pointer-events:none;
-}
-.card:hover{
-  transform:translateY(-8px);
-  border-color:rgba(0,224,255,.28);
-  box-shadow:0 22px 46px rgba(0,0,0,.32);
-}
-.icon{
-  width:60px;
-  height:60px;
-  border-radius:18px;
-  display:grid;
-  place-items:center;
-  font-size:1.9rem;
-  margin-bottom:18px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.08);
-}
-.card h3{
-  font-size:1.28rem;
-  margin-bottom:10px;
-}
-.card p{
-  color:#c8d4ea;
-  line-height:1.6;
-  font-size:.96rem;
-}
-.card-footer{
-  margin-top:22px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-}
-.tag{
-  padding:8px 12px;
-  border-radius:999px;
-  background:rgba(0,224,255,.12);
-  color:#9ee7ff;
-  font-size:.78rem;
-  letter-spacing:.04em;
-  text-transform:uppercase;
-}
-.card button{
-  border:none;
-  border-radius:999px;
-  padding:11px 18px;
-  background:linear-gradient(135deg,#00e0ff,#2f6bff);
-  color:#04111f;
-  font-weight:700;
-  cursor:pointer;
-  transition:transform .2s ease, box-shadow .2s ease;
-  box-shadow:0 12px 24px rgba(47,107,255,.24);
-}
-.card button:hover{
-  transform:translateY(-2px);
-  box-shadow:0 18px 34px rgba(47,107,255,.32);
-}
-.cta{
-  max-width:980px;
-  margin:0 auto 84px;
-  padding:36px 28px;
-  border-radius:32px;
-  background:linear-gradient(135deg, rgba(0,224,255,.12), rgba(88,72,255,.14));
-  border:1px solid rgba(255,255,255,.10);
-  backdrop-filter:blur(18px);
-  text-align:center;
-}
-.cta h2{
-  font-size:2rem;
-  margin-bottom:12px;
-}
-.cta p{
-  color:#d4e0f2;
-  line-height:1.7;
-  max-width:720px;
-  margin:0 auto 24px;
-}
-.cta a{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:14px 24px;
-  border-radius:999px;
-  text-decoration:none;
-  background:#fff;
-  color:#04111f;
-  font-weight:800;
-}
-footer{
-  padding:30px 20px 42px;
-  text-align:center;
-  color:#8fa0bc;
-  font-size:.92rem;
-}
-@media (max-width:640px){
-  .hero{
-    padding-top:72px;
-  }
-  .section-header{
-    flex-direction:column;
-    align-items:flex-start;
-  }
-  .card{
-    padding:22px;
-  }
-}
+:root{--bg:#05070d;--panel:rgba(14,18,30,.72);--line:rgba(255,255,255,.09);--muted:#9ba7bb;--text:#f6f8ff;--accent:#72e9ff;--accent2:#6d7cff;--good:#6ff0c6;--danger:#ff6b93}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 50% -10%,#18264d 0,#0b1020 30%,#05070d 68%,#020307 100%);color:var(--text);overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;background-image:radial-gradient(rgba(255,255,255,.8) 1px,transparent 1px),radial-gradient(rgba(114,233,255,.35) 1px,transparent 1px);background-size:78px 78px,143px 143px;opacity:.13;pointer-events:none;animation:drift 90s linear infinite}
+@keyframes drift{to{transform:translateY(420px)}}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.shell{position:relative;z-index:1;max-width:1180px;margin:auto;padding:0 24px}
+.topbar{position:sticky;top:14px;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:12px 16px;margin:14px auto 0;border:1px solid var(--line);border-radius:18px;background:rgba(7,10,18,.72);backdrop-filter:blur(20px);box-shadow:0 12px 42px rgba(0,0,0,.24)}
+.brand{font-weight:800;letter-spacing:.02em;color:#fff;text-decoration:none}.brand span{color:var(--accent)}
+.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a{color:#b9c4d8;text-decoration:none;padding:8px 11px;border-radius:10px;font-size:.9rem}.nav a:hover{color:#fff;background:rgba(255,255,255,.06)}
+.hero{padding:92px 0 58px;text-align:center}.eyebrow{display:inline-flex;padding:8px 13px;border:1px solid rgba(114,233,255,.2);border-radius:999px;background:rgba(114,233,255,.06);color:#9cefff;font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.hero h1{font-size:clamp(3rem,8vw,6rem);line-height:.95;letter-spacing:-.055em;margin:22px 0 18px;text-shadow:0 0 34px rgba(114,233,255,.2)}.hero p{max-width:700px;margin:auto;color:#b8c3d6;line-height:1.7;font-size:1rem}
+.hero-actions{margin-top:28px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.hero-actions a{padding:11px 17px;border-radius:999px;text-decoration:none;font-weight:750;font-size:.9rem}.primary{background:linear-gradient(135deg,var(--accent),#8390ff);color:#06101b;box-shadow:0 14px 30px rgba(88,125,255,.2)}.secondary{border:1px solid var(--line);color:#eef4ff;background:rgba(255,255,255,.04)}
+.section{padding:16px 0 56px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:18px}.section-head h2{font-size:1.35rem;letter-spacing:-.02em}.section-head p{color:var(--muted);font-size:.88rem}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.card{position:relative;min-width:0;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.028));backdrop-filter:blur(14px);overflow:hidden;transition:.25s ease;box-shadow:0 10px 35px rgba(0,0,0,.12)}.card:hover{transform:translateY(-4px);border-color:rgba(114,233,255,.22);box-shadow:0 22px 44px rgba(0,0,0,.2)}
+.card-main{padding:22px;cursor:pointer}.icon{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:1.55rem;background:linear-gradient(135deg,rgba(114,233,255,.12),rgba(109,124,255,.14));border:1px solid rgba(255,255,255,.06);margin-bottom:16px}.card h3{font-size:1.12rem;margin-bottom:8px}.card-main p{font-size:.89rem;color:#b8c4d7;line-height:1.55}.meta{margin-top:14px;font-size:.75rem;color:#7ff0c9;font-weight:700}
+.interaction-bar{display:flex;align-items:center;gap:4px;border-top:1px solid rgba(255,255,255,.065);padding:8px 12px;background:rgba(0,0,0,.14)}.interact-btn{border:0;background:transparent;color:#8995a9;padding:8px 9px;border-radius:10px;font-size:.8rem}.interact-btn:hover{background:rgba(255,255,255,.05);color:#fff}.like-btn.liked{color:var(--danger)}
+.comment-tray{display:none;border-top:1px solid rgba(255,255,255,.06);padding:12px;background:rgba(0,0,0,.18)}.tray-comments-list{max-height:180px;overflow:auto;margin-bottom:10px}.tray-comments-list::-webkit-scrollbar{width:4px}.tray-comments-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:10px}.mini-comment{padding:9px 10px;margin-bottom:7px;border-radius:10px;background:rgba(255,255,255,.035);border-left:2px solid var(--accent);font-size:.78rem}.mini-comment b{color:#9cefff}.mini-comment p{color:#d6ddec;line-height:1.45;margin-top:3px}.tray-form{display:grid;gap:8px}.tray-form input,.tray-form textarea,.form input,.form textarea{width:100%;border:1px solid var(--line);outline:0;background:rgba(255,255,255,.045);color:#fff;border-radius:10px;padding:9px 10px}.tray-form input:focus,.tray-form textarea:focus,.form input:focus,.form textarea:focus{border-color:rgba(114,233,255,.4)}.tray-submit-btn,.submit-btn{border:0;border-radius:10px;padding:9px 12px;background:linear-gradient(135deg,var(--accent),#8290ff);color:#06101b;font-weight:800;justify-self:end}
+.community{display:none}.community .card-main{cursor:pointer}.creator-tag{font-size:.75rem;color:#8deccf;margin-top:12px;font-weight:700}
+.submit-panel{max-width:760px;margin:10px auto 68px;padding:22px;border:1px solid var(--line);border-radius:22px;background:rgba(255,255,255,.035);backdrop-filter:blur(14px)}.submit-panel h2{font-size:1.2rem;margin-bottom:6px}.submit-panel>p{color:var(--muted);font-size:.86rem;margin-bottom:18px}.form{display:grid;gap:10px}.form textarea{min-height:150px;resize:vertical}.form .submit-btn{width:100%;justify-self:stretch}
+footer{padding:30px 20px 45px;text-align:center;color:#6f7b91;font-size:.8rem}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.shell{padding:0 14px}.topbar{top:8px}.nav a:nth-child(n+3){display:none}.hero{padding:72px 0 46px}.grid{grid-template-columns:1fr}.section-head{align-items:start;flex-direction:column;gap:6px}.hero h1{font-size:clamp(3rem,17vw,4.2rem)}}
 </style>
 </head>
 <body>
-<main>
-  <section class="hero">
-    <div class="badge">✨ AtomicTanvir • Premium Interactive Science Lab</div>
-    <h1>Explore the Universe Through Interactive Simulations</h1>
-    <p>AtomicTanvir is a premium dark-theme science playground featuring atoms, galaxies, black holes, quantum effects, and a fully interactive solar system built with modern WebGL technologies.</p>
-    <div class="hero-actions">
-      <a class="primary" href="#simulations">Launch Simulations</a>
-      <a class="secondary" href="about.html">About Project</a>
-    </div>
-    <div class="stats">
-      <div class="stat"><strong>5+</strong><span>Interactive simulations</span></div>
-      <div class="stat"><strong>3D</strong><span>Real-time WebGL rendering</span></div>
-      <div class="stat"><strong>Dark UI</strong><span>Premium responsive design</span></div>
-      <div class="stat"><strong>Modern</strong><span>Optimized for desktop &amp; mobile</span></div>
-    </div>
-  </section>
+<div class="shell">
+  <nav class="topbar">
+    <a class="brand" href="index.html">Atomic<span>Tanvir</span></a>
+    <div class="nav"><a href="#models">Models</a><a href="#community">Community</a><a href="about.html">About</a></div>
+  </nav>
 
-  <section class="section" id="simulations">
-    <div class="section-header">
-      <div>
-        <h2>Core Simulations</h2>
-      </div>
-      <p>Open any simulation directly in the same tab for a smooth app-like experience across desktop and mobile devices.</p>
-    </div>
+  <header class="hero">
+    <div class="eyebrow">Interactive Science</div>
+    <h1>AtomicTanvir</h1>
+    <p>Explore interactive simulations across atomic physics, astrophysics, quantum systems, galaxies, and planetary science.</p>
+    <div class="hero-actions"><a class="primary" href="#models">Explore models</a><a class="secondary" href="about.html">About</a></div>
+  </header>
 
-    <div class="grid">
-      <article class="card">
-        <div class="icon">⚛️</div>
-        <h3>Atomic Models</h3>
-        <p>Explore Hydrogen, Helium, Carbon, electron orbitals, and atomic structure visualizations with a clean interactive interface.</p>
-        <div class="card-footer">
-          <span class="tag">Quantum</span>
-          <button onclick="location.href='atom.html'">Open</button>
-        </div>
+  <section class="section" id="models">
+    <div class="section-head"><div><h2>Core Models</h2><p>Interactive simulations</p></div></div>
+    <div class="grid" id="coreProjectsContainer">
+      <article class="card" data-id="core_atom">
+        <div class="card-main" data-open="atom.html"><div class="icon">⚛️</div><h3>Atomic Models</h3><p>Explore hydrogen, helium, carbon, orbital shells, and quantum-style electron motion.</p><div class="meta">READY</div></div>
+        <div class="interaction-bar"><button class="interact-btn like-btn" data-id="core_atom">♥ <span class="l-count">0</span></button><button class="interact-btn comment-btn" data-id="core_atom">Comments <span class="c-count">0</span></button></div>
+        <div class="comment-tray" id="tray-core_atom"><div class="tray-comments-list" id="list-core_atom"></div><div class="tray-form"><input id="name-input-core_atom" placeholder="Your name"><textarea id="text-input-core_atom" placeholder="Write a comment..." rows="2"></textarea><button class="tray-submit-btn" data-id="core_atom">Post</button></div></div>
       </article>
-
-      <article class="card">
-        <div class="icon">🕳️</div>
-        <h3>Black Hole</h3>
-        <p>Visualize event horizons, accretion disks, spacetime distortion, and dramatic gravitational effects in real time.</p>
-        <div class="card-footer">
-          <span class="tag">Astrophysics</span>
-          <button onclick="location.href='blackhole.html'">Open</button>
-        </div>
+      <article class="card" data-id="core_blackhole">
+        <div class="card-main" data-open="blackhole.html"><div class="icon">🕳️</div><h3>Black Hole</h3><p>Visualize event horizons, accretion disks, lensing, and extreme gravitational environments.</p><div class="meta">READY</div></div>
+        <div class="interaction-bar"><button class="interact-btn like-btn" data-id="core_blackhole">♥ <span class="l-count">0</span></button><button class="interact-btn comment-btn" data-id="core_blackhole">Comments <span class="c-count">0</span></button></div>
+        <div class="comment-tray" id="tray-core_blackhole"><div class="tray-comments-list" id="list-core_blackhole"></div><div class="tray-form"><input id="name-input-core_blackhole" placeholder="Your name"><textarea id="text-input-core_blackhole" placeholder="Write a comment..." rows="2"></textarea><button class="tray-submit-btn" data-id="core_blackhole">Post</button></div></div>
       </article>
-
-      <article class="card">
-        <div class="icon">☀️</div>
-        <h3>Solar System</h3>
-        <p>Travel through the Sun, planets, and moons with a fully interactive 3D solar system built using Three.js WebGL rendering.</p>
-        <div class="card-footer">
-          <span class="tag">3D Space</span>
-          <button onclick="location.href='solar.html'">Open</button>
-        </div>
+      <article class="card" data-id="core_solar">
+        <div class="card-main" data-open="solar.html"><div class="icon">☀️</div><h3>Solar System</h3><p>Explore the Sun, planets, Saturn's rings, and Earth's moon in interactive 3D.</p><div class="meta">3D</div></div>
+        <div class="interaction-bar"><button class="interact-btn like-btn" data-id="core_solar">♥ <span class="l-count">0</span></button><button class="interact-btn comment-btn" data-id="core_solar">Comments <span class="c-count">0</span></button></div>
+        <div class="comment-tray" id="tray-core_solar"><div class="tray-comments-list" id="list-core_solar"></div><div class="tray-form"><input id="name-input-core_solar" placeholder="Your name"><textarea id="text-input-core_solar" placeholder="Write a comment..." rows="2"></textarea><button class="tray-submit-btn" data-id="core_solar">Post</button></div></div>
       </article>
-
-      <article class="card">
-        <div class="icon">🌌</div>
-        <h3>Galaxy Explorer</h3>
-        <p>Fly through spiral galaxies, nebulae, distant star fields, and cosmic structures with cinematic dark-space visuals.</p>
-        <div class="card-footer">
-          <span class="tag">Deep Space</span>
-          <button onclick="location.href='galaxy.html'">Open</button>
-        </div>
+      <article class="card" data-id="core_galaxy">
+        <div class="card-main" data-open="galaxy.html"><div class="icon">🌌</div><h3>Galaxy Explorer</h3><p>Travel through stars, nebulae, spiral structures, and deep-space particle fields.</p><div class="meta">READY</div></div>
+        <div class="interaction-bar"><button class="interact-btn like-btn" data-id="core_galaxy">♥ <span class="l-count">0</span></button><button class="interact-btn comment-btn" data-id="core_galaxy">Comments <span class="c-count">0</span></button></div>
+        <div class="comment-tray" id="tray-core_galaxy"><div class="tray-comments-list" id="list-core_galaxy"></div><div class="tray-form"><input id="name-input-core_galaxy" placeholder="Your name"><textarea id="text-input-core_galaxy" placeholder="Write a comment..." rows="2"></textarea><button class="tray-submit-btn" data-id="core_galaxy">Post</button></div></div>
       </article>
-
-      <article class="card">
-        <div class="icon">🔬</div>
-        <h3>Quantum World</h3>
-        <p>Experiment with wave functions, probability clouds, orbital interference, and animated quantum particle behavior.</p>
-        <div class="card-footer">
-          <span class="tag">Wave Physics</span>
-          <button onclick="location.href='quantum.html'">Open</button>
-        </div>
+      <article class="card" data-id="core_quantum">
+        <div class="card-main" data-open="quantum.html"><div class="icon">🔬</div><h3>Quantum World</h3><p>Explore probability clouds, wave amplitudes, orbital spread, and particle behavior.</p><div class="meta">LIVE</div></div>
+        <div class="interaction-bar"><button class="interact-btn like-btn" data-id="core_quantum">♥ <span class="l-count">0</span></button><button class="interact-btn comment-btn" data-id="core_quantum">Comments <span class="c-count">0</span></button></div>
+        <div class="comment-tray" id="tray-core_quantum"><div class="tray-comments-list" id="list-core_quantum"></div><div class="tray-form"><input id="name-input-core_quantum" placeholder="Your name"><textarea id="text-input-core_quantum" placeholder="Write a comment..." rows="2"></textarea><button class="tray-submit-btn" data-id="core_quantum">Post</button></div></div>
       </article>
     </div>
   </section>
 
-  <section class="cta">
-    <h2>🚀 Build the Next Simulation</h2>
-    <p>AtomicTanvir is designed as a growing science-visualization platform. Add new space, physics, chemistry, or quantum simulations and turn the project into a complete interactive digital laboratory.</p>
-    <a href="admin.html">Open Admin Panel</a>
+  <section class="section community" id="community">
+    <div class="section-head"><div><h2>Community Models</h2><p>Approved community simulations</p></div></div>
+    <div class="grid" id="communityProjectsContainer"></div>
   </section>
-</main>
 
-<footer>© 2026 AtomicTanvir • Interactive Science Visualization Project</footer>
+  <section class="submit-panel">
+    <h2>Submit a model</h2>
+    <p>Send an HTML/CSS/JavaScript simulation for review.</p>
+    <div class="form"><input id="authorName" placeholder="Your name"><input id="modelName" placeholder="Model name"><textarea id="modelCode" placeholder="Paste model code here..."></textarea><button class="submit-btn" id="submitModelBtn">Submit for review</button></div>
+  </section>
+
+  <footer>© 2026 AtomicTanvir</footer>
+</div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getDatabase,ref,push,set,onValue,update}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+const firebaseConfig={apiKey:"AIzaSyCit_SKjXRUpr8FNY1ahKhiG5sdDyOlW6k",authDomain:"atomictanvir.firebaseapp.com",projectId:"atomictanvir",storageBucket:"atomictanvir.firebasestorage.app",messagingSenderId:"140595401471",appId:"1:140595401471:web:8f92115a8c8b58d1ec32ca",measurementId:"G-WQG0CXS5NH",databaseURL:"https://atomictanvir-default-rtdb.firebaseio.com"};
+const app=initializeApp(firebaseConfig);const db=getDatabase(app);
+function escapeHTML(str){return String(str).replace(/[&<>\'"]/g,tag=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;',"\"":'&quot;'}[tag]||tag))}
+function setupInteractions(projectId){const interactionRef=ref(db,`interactions/${projectId}`);onValue(interactionRef,snapshot=>{const data=snapshot.val()||{likes:0,comments:{}};const card=document.querySelector(`[data-id="${projectId}"]`);if(!card)return;card.querySelector('.l-count').textContent=data.likes||0;const list=card.querySelector('.tray-comments-list');list.innerHTML='';const obj=data.comments||{};const arr=Object.keys(obj).map(k=>obj[k]).sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));card.querySelector('.c-count').textContent=arr.length;if(!arr.length){list.innerHTML='<p style="color:#69758a;font-size:.78rem;font-style:italic">No comments yet.</p>'}else arr.forEach(c=>{const div=document.createElement('div');div.className='mini-comment';div.innerHTML=`<b>${escapeHTML(c.username||'Anonymous')}</b><p>${escapeHTML(c.text||'')}</p>`;list.appendChild(div)})})}
+const coreIds=['core_atom','core_blackhole','core_solar','core_galaxy','core_quantum'];coreIds.forEach(setupInteractions);
+document.body.addEventListener('click',async e=>{const like=e.target.closest('.like-btn');if(like){const id=like.dataset.id;const current=parseInt(like.querySelector('.l-count').textContent)||0;await update(ref(db,`interactions/${id}`),{likes:current+1});return}const comment=e.target.closest('.comment-btn');if(comment){const id=comment.dataset.id;const tray=document.getElementById(`tray-${id}`);tray.style.display=getComputedStyle(tray).display==='none'?'block':'none';return}const post=e.target.closest('.tray-submit-btn');if(post){const id=post.dataset.id;const name=document.getElementById(`name-input-${id}`);const text=document.getElementById(`text-input-${id}`);if(!name.value.trim()||!text.value.trim()){alert('Please enter both your name and comment.');return}const newRef=push(ref(db,`interactions/${id}/comments`));await set(newRef,{username:name.value.trim(),text:text.value.trim(),timestamp:Date.now()});text.value='';return}const open=e.target.closest('[data-open]');if(open&&!e.target.closest('button'))location.href=open.dataset.open});
+document.getElementById('submitModelBtn').addEventListener('click',async()=>{const authorName=document.getElementById('authorName');const modelName=document.getElementById('modelName');const modelCode=document.getElementById('modelCode');if(!authorName.value.trim()||!modelName.value.trim()||!modelCode.value.trim()){alert('Please complete all fields.');return}const newRef=push(ref(db,'submissions'));await set(newRef,{authorName:authorName.value.trim(),modelName:modelName.value.trim(),code:modelCode.value.trim(),approved:false,timestamp:Date.now()});alert('Model submitted for review.');modelName.value='';modelCode.value=''});
+onValue(ref(db,'submissions'),snapshot=>{const section=document.querySelector('.community');const container=document.getElementById('communityProjectsContainer');container.innerHTML='';if(!snapshot.exists()){section.style.display='none';return}let hasApproved=false;const data=snapshot.val();Object.keys(data).forEach(key=>{const sub=data[key];if(sub.approved!==true)return;hasApproved=true;const card=document.createElement('article');card.className='card';card.dataset.id=key;card.innerHTML=`<div class="card-main community-open"><div class="icon">🧩</div><h3>${escapeHTML(sub.modelName)}</h3><p>Community simulation available from AtomicTanvir.</p><div class="creator-tag">By ${escapeHTML(sub.authorName)}</div></div><div class="interaction-bar"><button class="interact-btn like-btn" data-id="${key}">♥ <span class="l-count">0</span></button><button class="interact-btn comment-btn" data-id="${key}">Comments <span class="c-count">0</span></button></div><div class="comment-tray" id="tray-${key}"><div class="tray-comments-list" id="list-${key}"></div><div class="tray-form"><input id="name-input-${key}" placeholder="Your name"><textarea id="text-input-${key}" placeholder="Write a comment..." rows="2"></textarea><button class="tray-submit-btn" data-id="${key}">Post</button></div></div>`;card.querySelector('.community-open').addEventListener('click',()=>{const blob=new Blob([sub.code],{type:'text/html'});const url=URL.createObjectURL(blob);location.href=url});container.appendChild(card);setupInteractions(key)});section.style.display=hasApproved?'block':'none'});
+</script>
 </body>
 </html>
