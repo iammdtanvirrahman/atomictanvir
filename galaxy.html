@@ -10,33 +10,27 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;overflow:hidden;background:#020307}
 body{font-family:Inter,Arial,sans-serif;color:#eef4ff}
-canvas{display:block;width:100%;height:100%;cursor:grab}
+canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:none}
 canvas.dragging{cursor:grabbing}
-#loading{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:radial-gradient(circle at center,#101934 0,#05070f 46%,#020307 100%);transition:opacity .5s ease}
+#loading{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:radial-gradient(circle at center,#101934 0,#05070f 46%,#020307 100%);transition:opacity .45s ease}
 #loading.hide{opacity:0;pointer-events:none}
 .loadbox{width:min(440px,calc(100vw - 32px));padding:28px;border:1px solid rgba(255,255,255,.1);border-radius:24px;background:rgba(7,10,18,.86);backdrop-filter:blur(18px);box-shadow:0 28px 90px rgba(0,0,0,.55)}
-.brand{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#8de9ff;font-weight:800}
-.title{font-size:1.65rem;font-weight:800;margin-top:8px}
-.status{min-height:22px;margin-top:6px;color:#9eacc1;font-size:.86rem}
-.progress{margin-top:19px;height:9px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}
-.bar{height:100%;width:0;background:linear-gradient(90deg,#74ebff,#7f88ff);border-radius:999px;transition:width .08s linear}
-.row{display:flex;justify-content:space-between;margin-top:9px;color:#738198;font-size:.76rem}.pct{color:#edf6ff;font-weight:800}
-.ui{position:fixed;left:18px;top:18px;z-index:10;width:min(330px,calc(100vw - 36px));padding:18px;border-radius:20px;border:1px solid rgba(255,255,255,.09);background:rgba(6,9,18,.64);backdrop-filter:blur(16px);box-shadow:0 18px 55px rgba(0,0,0,.28)}
-.ui h1{font-size:1.35rem;margin-bottom:6px}.ui p{font-size:.84rem;line-height:1.5;color:#aab6c9}
-.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.controls button{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.055);color:#e9f3ff;border-radius:999px;padding:9px 13px;font-weight:700;cursor:pointer}.controls button:hover{background:rgba(124,233,255,.14);border-color:rgba(124,233,255,.23)}
+.brand{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#8de9ff;font-weight:800}.title{font-size:1.65rem;font-weight:800;margin-top:8px}.status{min-height:22px;margin-top:6px;color:#9eacc1;font-size:.86rem}.progress{margin-top:19px;height:9px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}.bar{height:100%;width:0;background:linear-gradient(90deg,#74ebff,#7f88ff);border-radius:999px;transition:width .08s linear}.row{display:flex;justify-content:space-between;margin-top:9px;color:#738198;font-size:.76rem}.pct{color:#edf6ff;font-weight:800}
+.ui{position:fixed;left:18px;top:18px;z-index:10;width:min(335px,calc(100vw - 36px));padding:18px;border-radius:20px;border:1px solid rgba(255,255,255,.09);background:rgba(6,9,18,.64);backdrop-filter:blur(16px);box-shadow:0 18px 55px rgba(0,0,0,.28)}
+.ui h1{font-size:1.35rem;margin-bottom:6px}.ui p{font-size:.84rem;line-height:1.5;color:#aab6c9}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.controls button{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.055);color:#e9f3ff;border-radius:999px;padding:9px 13px;font-weight:700;cursor:pointer}.controls button:hover{background:rgba(124,233,255,.14);border-color:rgba(124,233,255,.23)}
 .hint{position:fixed;right:18px;bottom:18px;z-index:10;padding:10px 14px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(6,9,18,.6);backdrop-filter:blur(14px);color:#b8c5d8;font-size:.78rem}
 #error{display:none;margin-top:12px;color:#ff9db8;font-size:.8rem;line-height:1.45}
 @media(max-width:650px){.ui{left:10px;top:10px}.hint{display:none}}
 </style>
 </head>
 <body>
-<div id="loading"><div class="loadbox"><div class="brand">AtomicTanvir</div><div class="title">Building Galaxy</div><div class="status" id="status">Preparing canvas renderer…</div><div class="progress"><div class="bar" id="bar"></div></div><div class="row"><span>Generating visual layers</span><span class="pct" id="pct">0%</span></div><div id="error"></div></div></div>
+<div id="loading"><div class="loadbox"><div class="brand">AtomicTanvir</div><div class="title">Building Galaxy</div><div class="status" id="status">Preparing live simulation…</div><div class="progress"><div class="bar" id="bar"></div></div><div class="row"><span>Loading simulation layers</span><span class="pct" id="pct">0%</span></div><div id="error"></div></div></div>
 <div class="ui">
-<h1>🌌 Galaxy Explorer</h1>
-<p>A face-on cinematic spiral galaxy with a luminous stellar core, layered arms, dark dust lanes, blue-green outer glow and thousands of individual stars.</p>
-<div class="controls"><button id="pause">Pause</button><button id="reset">Reset View</button><button id="speed">Slow Mode</button></div>
+  <h1>🌌 Galaxy Explorer</h1>
+  <p>Live procedural spiral galaxy with moving stars, dust lanes, a luminous core, teal outer haze and interactive camera control.</p>
+  <div class="controls"><button id="pause">Pause</button><button id="reset">Reset View</button><button id="speed">Slow Mode</button></div>
 </div>
-<div class="hint">Drag to explore • Wheel / pinch to zoom • Double-click to reset</div>
+<div class="hint">Drag to orbit • Wheel / pinch to zoom • Double-click to reset</div>
 <canvas id="galaxy"></canvas>
 <script>
 (() => {
@@ -47,226 +41,236 @@ canvas.dragging{cursor:grabbing}
   const pct=document.getElementById('pct');
   const status=document.getElementById('status');
   const error=document.getElementById('error');
-  if(!ctx){error.style.display='block';error.textContent='Canvas renderer unavailable.';return}
+  if(!ctx){error.style.display='block';error.textContent='Canvas renderer unavailable.';return;}
 
-  let W=innerWidth,H=innerHeight,DPR=Math.min(devicePixelRatio||1,1.5);
-  let cx=W/2,cy=H/2,scale=1,offsetX=0,offsetY=0,rotation=0;
-  let paused=false,slow=false,drag=false,lastX=0,lastY=0;
   const TAU=Math.PI*2;
-  const particles=[];
-  const dust=[];
+  const ARM_COUNT=4;
+  const STAR_COUNT=14500;
+  const DUST_COUNT=3200;
+  const BG_COUNT=1500;
   const stars=[];
-  const armCount=4;
-  const off=document.createElement('canvas');
-  const octx=off.getContext('2d',{alpha:false,desynchronized:true});
+  const dust=[];
+  const bg=[];
+  let W=innerWidth,H=innerHeight,DPR=Math.min(devicePixelRatio||1,1.5);
+  let cx=W/2,cy=H/2,radius=0,zoom=1,panX=0,panY=0,viewRotation=0;
+  let paused=false,slow=false,dragging=false,lastPointerX=0,lastPointerY=0,lastTime=performance.now();
+
+  function setProgress(v,text){v=Math.max(0,Math.min(100,Math.round(v)));bar.style.width=v+'%';pct.textContent=v+'%';status.textContent=text;}
+  const yieldFrame=()=>new Promise(resolve=>setTimeout(resolve,0));
+  const rand=(a,b)=>a+Math.random()*(b-a);
+  function normal(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(TAU*v)}
+  function color(){const r=Math.random();if(r<.07)return [120,185,255];if(r<.18)return [190,220,255];if(r<.73)return [255,245,218];if(r<.94)return [255,207,147];return [255,148,105]}
 
   function resize(){
     W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,1.5);
     canvas.width=Math.floor(W*DPR);canvas.height=Math.floor(H*DPR);
-    off.width=Math.max(900,Math.floor(Math.min(W,H)*1.25));
-    off.height=off.width;
-    cx=W/2;cy=H/2;
-    draw();
-  }
-  addEventListener('resize',resize);
-
-  function setProgress(v,t){
-    v=Math.max(0,Math.min(100,Math.round(v)));
-    bar.style.width=v+'%';pct.textContent=v+'%';status.textContent=t;
-  }
-  const next=()=>new Promise(r=>setTimeout(r,0));
-  const rand=(a,b)=>a+Math.random()*(b-a);
-  const normal=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(TAU*v)};
-
-  function starColor(){
-    const r=Math.random();
-    if(r<.07)return {r:120,g:185,b:255,a:rand(.55,.95)};
-    if(r<.18)return {r:190,g:215,b:255,a:rand(.52,.9)};
-    if(r<.76)return {r:255,g:244,b:214,a:rand(.48,.92)};
-    if(r<.94)return {r:255,g:205,b:138,a:rand(.48,.9)};
-    return {r:255,g:145,b:102,a:rand(.42,.82)};
+    cx=W/2;cy=H/2;radius=Math.min(W,H)*.43;
   }
 
   async function build(){
-    try{
-      resize();
-      particles.length=0;dust.length=0;stars.length=0;
-
-      setProgress(4,'Preparing deep-space background…');
-      for(let i=0;i<1800;i++){
-        const a=Math.random()*TAU,r=Math.pow(Math.random(),.45)*1.18;
-        stars.push({x:Math.cos(a)*r,y:Math.sin(a)*r,s:rand(.3,1.7),a:rand(.25,.9)});
-        if(i%180===0){setProgress(4+(i/1800)*8,'Preparing deep-space background…');await next()}
-      }
-
-      setProgress(13,'Painting stellar disk…');
-      const N=22000;
-      for(let i=0;i<N;i++){
-        const r=.025+Math.pow(Math.random(),.57)*.93;
-        const arm=i%armCount;
-        const base=arm*TAU/armCount;
-        const twist=2.15*r+1.55*r*r;
-        const spread=.055+.14*r;
-        let a=base+twist+normal()*spread;
-        const elliptic=1-.045*Math.pow(r,1.8);
-        let x=Math.cos(a)*r*elliptic;
-        let y=Math.sin(a)*r;
-        const clump=Math.sin(r*38+a*2);
-        const thickness=.008+.024*(1-r)+Math.max(0,clump)*.022;
-        y+=normal()*thickness;
-        const c=starColor();
-        particles.push({x,y,r:rand(.18,.82),c,heat:Math.random()});
-        if(i%700===0){setProgress(13+(i/N)*47,'Painting stellar disk…');await next()}
-      }
-
-      setProgress(61,'Sculpting glowing spiral arms…');
-      for(let i=0;i<6500;i++){
-        const r=.10+Math.pow(Math.random(),.72)*.86;
-        const arm=i%armCount;
-        const base=arm*TAU/armCount;
-        const a=base+2.15*r+1.55*r*r+normal()*(.035+.08*r);
-        const x=Math.cos(a)*r*(1+.015*normal());
-        const y=Math.sin(a)*r*(1+.015*normal());
-        dust.push({x,y,r:rand(.45,1.8),alpha:rand(.02,.095),warm:Math.random()});
-        if(i%500===0){setProgress(61+(i/6500)*18,'Sculpting glowing spiral arms…');await next()}
-      }
-
-      setProgress(80,'Carving dark dust lanes…');
-      await next();
-      setProgress(88,'Lighting the galactic core…');
-      await next();
-      setProgress(94,'Finishing cinematic color layers…');
-      await next();
-      setProgress(100,'Galaxy ready');
-      renderToOffscreen();
-      setTimeout(()=>loading.classList.add('hide'),220);
-      setTimeout(()=>loading.remove(),800);
-      requestAnimationFrame(animate);
-    }catch(e){console.error(e);error.style.display='block';error.textContent='Galaxy renderer failed safely. Refresh once to retry.';status.textContent='Initialization failed'}
-  }
-
-  function renderToOffscreen(){
-    const S=off.width;
-    octx.fillStyle='#03060b';octx.fillRect(0,0,S,S);
-
-    // deep teal outer haze
-    const haze=octx.createRadialGradient(S*.5,S*.5,S*.04,S*.5,S*.5,S*.49);
-    haze.addColorStop(0,'rgba(255,197,126,.20)');
-    haze.addColorStop(.18,'rgba(184,196,120,.18)');
-    haze.addColorStop(.44,'rgba(64,122,128,.16)');
-    haze.addColorStop(.74,'rgba(24,68,78,.10)');
-    haze.addColorStop(1,'rgba(0,0,0,0)');
-    octx.fillStyle=haze;octx.fillRect(0,0,S,S);
-
-    const center=S*.5, radius=S*.46;
-
-    // broad arm haze: many translucent curved strokes
-    for(let arm=0;arm<armCount;arm++){
-      for(let pass=0;pass<18;pass++){
-        octx.beginPath();
-        const start=arm*TAU/armCount+rand(-.025,.025);
-        for(let k=0;k<=140;k++){
-          const r=.08+k/140*.9;
-          const a=start+2.2*r+1.55*r*r+pass*.003;
-          const rr=radius*r;
-          const x=center+Math.cos(a)*rr;
-          const y=center+Math.sin(a)*rr;
-          if(k===0)octx.moveTo(x,y);else octx.lineTo(x,y);
-        }
-        octx.strokeStyle=`rgba(${pass<7?120:72},${pass<7?150:188},${pass<7?122:170},${.008+pass*.0017})`;
-        octx.lineWidth=rand(5,14)*(1-pass/28);
-        octx.stroke();
-      }
+    resize();
+    setProgress(3,'Preparing deep-space field…');
+    for(let i=0;i<BG_COUNT;i++){
+      const a=Math.random()*TAU,r=Math.pow(Math.random(),.48)*1.65;
+      bg.push({r, a, size:rand(.3,1.7), alpha:rand(.18,.8)});
+      if(i%150===0){setProgress(3+(i/BG_COUNT)*7,'Preparing deep-space field…');await yieldFrame();}
     }
 
-    // dust lanes — darker offset curves
-    for(let arm=0;arm<armCount;arm++){
-      for(let lane=0;lane<8;lane++){
-        octx.beginPath();
-        const start=arm*TAU/armCount+.10+lane*.012;
-        for(let k=0;k<=120;k++){
-          const r=.10+k/120*.82;
-          const a=start+2.2*r+1.55*r*r;
-          const rr=radius*r;
-          const x=center+Math.cos(a)*rr;
-          const y=center+Math.sin(a)*rr;
-          if(k===0)octx.moveTo(x,y);else octx.lineTo(x,y);
-        }
-        octx.strokeStyle=`rgba(3,5,7,${.035+lane*.006})`;
-        octx.lineWidth=rand(3,10);
-        octx.stroke();
-      }
+    setProgress(12,'Generating stellar arms…');
+    for(let i=0;i<STAR_COUNT;i++){
+      const r=.035+Math.pow(Math.random(),.58)*.965;
+      const arm=i%ARM_COUNT;
+      const armBase=arm*TAU/ARM_COUNT;
+      const spread=.035+.145*r;
+      const angle=armBase+2.12*r+1.72*r*r+normal()*spread;
+      const eccentric=1-.055*Math.pow(r,1.65);
+      const x=Math.cos(angle)*r*eccentric;
+      const y=Math.sin(angle)*r;
+      const c=color();
+      stars.push({
+        r,
+        a:angle,
+        x,y,
+        size:rand(.23,.78)*(r<.2?1.25:1),
+        c,
+        alpha:rand(.35,.92),
+        speed:(.0018/(.22+r*.78))*(.55+Math.random()*.65),
+        phase:Math.random()*TAU,
+        twinkle:rand(.3,1.4)
+      });
+      if(i%500===0){setProgress(12+(i/STAR_COUNT)*48,'Generating stellar arms…');await yieldFrame();}
     }
 
-    // stellar particles
-    for(const p of particles){
-      const x=center+p.x*radius;
-      const y=center+p.y*radius;
-      const rr=p.r*(p.c.r>245?.9:1.2);
-      octx.fillStyle=`rgba(${p.c.r},${p.c.g},${p.c.b},${p.c.a})`;
-      octx.beginPath();octx.arc(x,y,rr,0,TAU);octx.fill();
+    setProgress(61,'Generating dust lanes…');
+    for(let i=0;i<DUST_COUNT;i++){
+      const r=.08+Math.pow(Math.random(),.62)*.9;
+      const arm=i%ARM_COUNT;
+      const lane=arm*TAU/ARM_COUNT+2.12*r+1.72*r*r+.27;
+      dust.push({r,a:lane+normal()*(.025+.075*r),offset:normal()*(.006+.035*r),size:rand(.8,2.8),alpha:rand(.02,.085),speed:(.0012/(.3+r))*(.6+Math.random()*.7),phase:Math.random()*TAU});
+      if(i%300===0){setProgress(61+(i/DUST_COUNT)*18,'Generating dust lanes…');await yieldFrame();}
     }
 
-    // colored star-forming knots
-    for(let i=0;i<110;i++){
-      const arm=i%armCount,r=.22+Math.random()*.63,a=arm*TAU/armCount+2.2*r+1.55*r*r+normal()*.09;
-      const x=center+Math.cos(a)*radius*r,y=center+Math.sin(a)*radius*r;
-      const g=octx.createRadialGradient(x,y,0,x,y,rand(8,26));
-      g.addColorStop(0,'rgba(170,255,238,.20)');g.addColorStop(.45,'rgba(75,190,190,.08)');g.addColorStop(1,'rgba(0,0,0,0)');
-      octx.fillStyle=g;octx.beginPath();octx.arc(x,y,26,0,TAU);octx.fill();
-    }
-
-    // bright compact core
-    const core=octx.createRadialGradient(center,center,0,center,center,radius*.25);
-    core.addColorStop(0,'rgba(255,250,220,1)');
-    core.addColorStop(.10,'rgba(255,236,184,.96)');
-    core.addColorStop(.30,'rgba(255,190,108,.55)');
-    core.addColorStop(.60,'rgba(199,116,67,.18)');
-    core.addColorStop(1,'rgba(0,0,0,0)');
-    octx.fillStyle=core;octx.fillRect(center-radius*.28,center-radius*.28,radius*.56,radius*.56);
-
-    const inner=octx.createRadialGradient(center,center,0,center,center,radius*.08);
-    inner.addColorStop(0,'rgba(255,255,244,1)');inner.addColorStop(.35,'rgba(255,221,161,.8)');inner.addColorStop(1,'rgba(255,130,65,0)');
-    octx.fillStyle=inner;octx.beginPath();octx.arc(center,center,radius*.09,0,TAU);octx.fill();
-
-    // background pinpoints
-    octx.globalCompositeOperation='screen';
-    for(const s of stars){
-      const x=center+s.x*radius,y=center+s.y*radius;
-      octx.fillStyle=`rgba(190,220,255,${s.a})`;octx.beginPath();octx.arc(x,y,s.s,0,TAU);octx.fill();
-    }
-    octx.globalCompositeOperation='source-over';
-  }
-
-  function draw(){
-    if(!off.width)return;
-    ctx.setTransform(DPR,0,0,DPR,0,0);
-    ctx.fillStyle='#020307';ctx.fillRect(0,0,W,H);
-    const min=Math.min(W,H);const size=min*.96*scale;
-    ctx.save();ctx.translate(cx+offsetX,cy+offsetY);ctx.rotate(rotation);ctx.drawImage(off,-size/2,-size/2,size,size);ctx.restore();
-    const vignette=ctx.createRadialGradient(cx,cy,min*.18,cx,cy,min*.72);
-    vignette.addColorStop(0,'rgba(0,0,0,0)');vignette.addColorStop(1,'rgba(0,0,0,.52)');
-    ctx.fillStyle=vignette;ctx.fillRect(0,0,W,H);
-  }
-
-  function animate(now){
-    if(!paused)rotation+=(slow?.00008:.00023);
-    draw();
+    setProgress(80,'Creating luminous core…');
+    await yieldFrame();
+    setProgress(88,'Creating star-forming knots…');
+    await yieldFrame();
+    setProgress(95,'Starting live animation…');
+    await yieldFrame();
+    setProgress(100,'Galaxy ready');
+    setTimeout(()=>loading.classList.add('hide'),180);
+    setTimeout(()=>loading.remove(),700);
     requestAnimationFrame(animate);
   }
 
-  canvas.addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;lastY=e.clientY;canvas.classList.add('dragging');canvas.setPointerCapture(e.pointerId)});
-  canvas.addEventListener('pointermove',e=>{if(!drag)return;offsetX+=(e.clientX-lastX);offsetY+=(e.clientY-lastY);lastX=e.clientX;lastY=e.clientY;draw()});
-  canvas.addEventListener('pointerup',e=>{drag=false;canvas.classList.remove('dragging');try{canvas.releasePointerCapture(e.pointerId)}catch{}});
-  canvas.addEventListener('pointercancel',()=>{drag=false;canvas.classList.remove('dragging')});
-  canvas.addEventListener('wheel',e=>{e.preventDefault();const factor=Math.exp(-e.deltaY*.001);scale=Math.max(.55,Math.min(2.7,scale*factor));draw()},{passive:false});
-  canvas.addEventListener('dblclick',()=>{scale=1;offsetX=0;offsetY=0;draw()});
+  function worldToScreen(x,y){
+    const cr=Math.cos(viewRotation),sr=Math.sin(viewRotation);
+    const rx=x*cr-y*sr,ry=x*sr+y*cr;
+    return [cx+panX+rx*radius*zoom,cy+panY+ry*radius*zoom];
+  }
 
-  document.getElementById('pause').addEventListener('click',e=>{paused=!paused;e.target.textContent=paused?'Resume':'Pause'});
-  document.getElementById('speed').addEventListener('click',e=>{slow=!slow;e.target.textContent=slow?'Normal Speed':'Slow Mode'});
-  document.getElementById('reset').addEventListener('click',()=>{scale=1;offsetX=0;offsetY=0;rotation=0;draw()});
+  function drawBackground(time){
+    ctx.fillStyle='#020307';ctx.fillRect(0,0,W,H);
+    const outer=ctx.createRadialGradient(cx,cy,0,cx,cy,radius*1.5);
+    outer.addColorStop(0,'rgba(251,182,111,.11)');
+    outer.addColorStop(.18,'rgba(105,164,150,.12)');
+    outer.addColorStop(.43,'rgba(38,93,104,.10)');
+    outer.addColorStop(.72,'rgba(13,45,57,.07)');
+    outer.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=outer;ctx.fillRect(0,0,W,H);
 
-  setProgress(1,'Preparing canvas renderer…');
+    for(const s of bg){
+      const a=s.a+time*.00001;
+      const x=cx+panX+Math.cos(a)*s.r*radius*.9;
+      const y=cy+panY+Math.sin(a)*s.r*radius*.9;
+      if(x<-5||x>W+5||y<-5||y>H+5)continue;
+      ctx.fillStyle=`rgba(185,220,255,${s.alpha})`;
+      ctx.beginPath();ctx.arc(x,y,s.size,0,TAU);ctx.fill();
+    }
+  }
+
+  function drawArms(){
+    // broad, multi-pass gaseous arms that remain visible between individual stars
+    for(let arm=0;arm<ARM_COUNT;arm++){
+      for(let pass=0;pass<14;pass++){
+        ctx.beginPath();
+        const base=arm*TAU/ARM_COUNT + pass*.002;
+        for(let k=0;k<=120;k++){
+          const r=.05+k/120*.96;
+          const a=base+2.12*r+1.72*r*r;
+          const jitter=Math.sin(k*.37+pass)*.003;
+          const rr=r+jitter;
+          const [x,y]=worldToScreen(Math.cos(a)*rr,Math.sin(a)*rr);
+          if(k===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+        }
+        const alpha=.0085+pass*.0014;
+        ctx.strokeStyle=pass<7?`rgba(115,155,122,${alpha})`:`rgba(67,144,156,${alpha})`;
+        ctx.lineWidth=(13-pass*.55)*zoom;
+        ctx.stroke();
+      }
+    }
+  }
+
+  function drawDust(){
+    ctx.save();
+    ctx.globalCompositeOperation='multiply';
+    for(const d of dust){
+      const a=d.a;
+      const r=d.r;
+      const x=Math.cos(a)*r+Math.cos(a+Math.PI/2)*d.offset;
+      const y=Math.sin(a)*r+Math.sin(a+Math.PI/2)*d.offset;
+      const [sx,sy]=worldToScreen(x,y);
+      const len=7+22*r;
+      ctx.strokeStyle=`rgba(5,8,10,${d.alpha})`;
+      ctx.lineWidth=d.size*(1+.5*r)*zoom;
+      ctx.beginPath();ctx.moveTo(sx-len,sy-len*.15);ctx.lineTo(sx+len,sy+len*.15);ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawStars(time){
+    for(const p of stars){
+      const rx=Math.cos(p.a)*p.r*(1-.055*Math.pow(p.r,1.65));
+      const ry=Math.sin(p.a)*p.r;
+      const [sx,sy]=worldToScreen(rx,ry);
+      const tw=0.72+0.28*Math.sin(time*.001*p.twinkle+p.phase);
+      const a=p.alpha*tw;
+      ctx.fillStyle=`rgba(${p.c[0]},${p.c[1]},${p.c[2]},${a})`;
+      ctx.beginPath();ctx.arc(sx,sy,Math.max(.32,p.size*zoom),0,TAU);ctx.fill();
+    }
+  }
+
+  function drawKnots(time){
+    for(let arm=0;arm<ARM_COUNT;arm++){
+      for(let j=0;j<15;j++){
+        const r=.18+j*.043+0.015*Math.sin(j*2+arm);
+        const a=arm*TAU/ARM_COUNT+2.12*r+1.72*r*r+0.025*Math.sin(time*.0002+j);
+        const [x,y]=worldToScreen(Math.cos(a)*r,Math.sin(a)*r);
+        const g=ctx.createRadialGradient(x,y,0,x,y,10+10*r);
+        g.addColorStop(0,'rgba(185,255,226,.20)');
+        g.addColorStop(.4,'rgba(67,196,184,.08)');
+        g.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,18+12*r,0,TAU);ctx.fill();
+      }
+    }
+  }
+
+  function drawCore(time){
+    const breath=1+.035*Math.sin(time*.0013);
+    const glowR=radius*.19*breath;
+    const g=ctx.createRadialGradient(cx+panX,cy+panY,0,cx+panX,cy+panY,glowR);
+    g.addColorStop(0,'rgba(255,255,245,1)');
+    g.addColorStop(.08,'rgba(255,246,214,.98)');
+    g.addColorStop(.25,'rgba(255,210,145,.75)');
+    g.addColorStop(.48,'rgba(255,164,88,.33)');
+    g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g;ctx.fillRect(cx+panX-glowR,cy+panY-glowR,glowR*2,glowR*2);
+    const innerR=radius*.065*breath;
+    const h=ctx.createRadialGradient(cx+panX,cy+panY,0,cx+panX,cy+panY,innerR);
+    h.addColorStop(0,'rgba(255,255,250,1)');h.addColorStop(.35,'rgba(255,224,170,.95)');h.addColorStop(1,'rgba(255,120,55,0)');
+    ctx.fillStyle=h;ctx.beginPath();ctx.arc(cx+panX,cy+panY,innerR,0,TAU);ctx.fill();
+  }
+
+  function drawVignette(){
+    const g=ctx.createRadialGradient(cx,cy,Math.min(W,H)*.22,cx,cy,Math.min(W,H)*.72);
+    g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.5)');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  }
+
+  function draw(time){
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    drawBackground(time);
+    drawArms();
+    drawDust();
+    drawStars(time);
+    drawKnots(time);
+    drawCore(time);
+    drawVignette();
+  }
+
+  function animate(now){
+    const dt=Math.min((now-lastTime)/16.67,2);lastTime=now;
+    if(!paused){
+      const factor=slow?.35:1;
+      for(const p of stars)p.a+=p.speed*dt*factor;
+      for(const d of dust)d.a+=d.speed*dt*factor;
+      viewRotation+=.00003*dt*factor;
+    }
+    draw(now);
+    requestAnimationFrame(animate);
+  }
+
+  canvas.addEventListener('pointerdown',e=>{dragging=true;lastPointerX=e.clientX;lastPointerY=e.clientY;canvas.classList.add('dragging');canvas.setPointerCapture(e.pointerId)});
+  canvas.addEventListener('pointermove',e=>{if(!dragging)return;panX+=e.clientX-lastPointerX;panY+=e.clientY-lastPointerY;lastPointerX=e.clientX;lastPointerY=e.clientY});
+  canvas.addEventListener('pointerup',e=>{dragging=false;canvas.classList.remove('dragging');try{canvas.releasePointerCapture(e.pointerId)}catch{}});
+  canvas.addEventListener('pointercancel',()=>{dragging=false;canvas.classList.remove('dragging')});
+  canvas.addEventListener('wheel',e=>{e.preventDefault();zoom*=e.deltaY<0?1.07:.935;zoom=Math.max(.55,Math.min(1.9,zoom))},{passive:false});
+  canvas.addEventListener('dblclick',()=>{zoom=1;panX=0;panY=0;viewRotation=0});
+  addEventListener('resize',()=>{resize();draw(performance.now())});
+
+  document.getElementById('pause').onclick=e=>{paused=!paused;e.currentTarget.textContent=paused?'Resume':'Pause'};
+  document.getElementById('speed').onclick=e=>{slow=!slow;e.currentTarget.textContent=slow?'Normal Speed':'Slow Mode'};
+  document.getElementById('reset').onclick=()=>{zoom=1;panX=0;panY=0;viewRotation=0};
+
   build();
 })();
 </script>
